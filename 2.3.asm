@@ -58,6 +58,13 @@ main proc
         
     mov ah, 2
     mov dl, 10
+    int 21h 
+    
+        
+    ; PRINT NEW LINE 
+        
+    mov ah, 2
+    mov dl, 10
     int 21h
 
     ; CARRY BACK
