@@ -3,7 +3,7 @@
 
 .code
 
-maion proc
+main proc
     
     mov ah, 1
     int 21h
@@ -16,7 +16,7 @@ maion proc
     
     
     exit:
-    mov 4ch
+    mov ah,4ch
     int 21h
     main endp
 end main
