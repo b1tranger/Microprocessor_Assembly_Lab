@@ -9,7 +9,7 @@
      multi db ?
      divi db ?  
      
-     quot db ?
+     quot db ? ; to be used for digit separation in MUL
      rem db ?
      
      
@@ -30,7 +30,18 @@
     mov ah, 2
     mov dl, 32  
     int 21h  
-    ; ////////////////////  
+    ; //////////////////// 
+    
+    mov ah, 1
+    int 21h
+    sub al, 48  ; subtracting to convert from ASCII to Number values for operation
+    mov num2, al ; similar to storing to `bh`   
+
+    ; ////////////////////   
+    mov ah, 2
+    mov dl, 32  
+    int 21h  
+    ; //////////////////// 
     
     ; OBSERVING THE CASE WHERE DOUBLE DIGITS NEED TO BE OUTPUT
     
@@ -43,10 +54,19 @@
     
     ; separating digits before output
     
-     
+    mov al, multi
+    mov bl, 10
+    div bl
+    add al, 48
+    add ah, 48
+    mov quot,al
+    mov rem,ah     
     
     mov ah, 2
-    mov dl, multi  
+    mov dl, quot  
+    int 21h
+    mov ah, 2
+    mov dl, rem  
     int 21h
     
     
@@ -57,39 +77,6 @@
     ; ////////////////////
     
     
-    ; DIV      
-         
-    mov al, num1
-    div num2
-    add al, 48
-    add ah, 48
-    mov divi,al
-    mov rem,ah 
-    
-    mov ah, 2
-    mov dl, divi  
-    int 21h
-    
-    
-    ; ////////////////////   
-    mov ah, 2
-    mov dl, 32  
-    int 21h  
-    ; //////////////////// 
-    
-    mov ah, 2
-    mov dl, rem  
-    int 21h
-    
-    ; // ALT
-    ; mov al, num1
-    ; mov bl, num2
-    ; div bl
-    ; mov quot,al  
-    ; mov rem,ah
-    ; add quot, 30h  
-    ; add rem, 30h
-
 
        main endp
 end main
