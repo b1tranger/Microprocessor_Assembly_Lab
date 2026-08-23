@@ -17,7 +17,7 @@
         int 21h
         
         mov al, num1
-        and al, 0Fh
+        or al, 0D1h
         mov bl, al  
                 
         ; PRINT
@@ -49,7 +49,7 @@
         
        out:
         mov dl, al
-        mov al, 02h
+        mov ah, 02h  ; previously set al, causing unwanted output
         int 21h
         ret
         
