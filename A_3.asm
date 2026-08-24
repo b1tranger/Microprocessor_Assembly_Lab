@@ -18,7 +18,9 @@
 .code   
     main proc 
         mov ax, @data
-        mov ds, ax  
+        mov ds, ax
+        
+        ; ######################################  
         
         ;NUM 1 | AND op 
         
@@ -42,6 +44,19 @@
         
         mov ah, 4Ch
         int 21h
+        
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+     
+        
+        ; ###################################### 
          
         ;NUM 2 | OR op 
         
@@ -65,6 +80,19 @@
         
         mov ah, 4Ch
         int 21h
+        
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+      
+        
+        ; ###################################### 
          
         ;NUM 3 | SHL op 
         
@@ -87,7 +115,20 @@
         call print_hex
         
         mov ah, 4Ch
-        int 21h 
+        int 21h
+        
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+       
+        
+        ; ###################################### 
         
         ;NUM 4 | SHR op 
         
@@ -110,7 +151,20 @@
         call print_hex
         
         mov ah, 4Ch
-        int 21h 
+        int 21h
+        
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+     
+        
+        ; ######################################  
         
         ;NUM 5 | ROL op 
         
@@ -135,6 +189,19 @@
         mov ah, 4Ch
         int 21h
         
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+     
+        
+        ; ###################################### 
+        
         ;NUM 6 | ROR op 
         
         mov dx, offset msg6
@@ -156,7 +223,18 @@
         call print_hex
         
         mov ah, 4Ch
-        int 21h      
+        int 21h
+        
+        ; NEWLINE and CARRY BACK
+        
+        mov ah, 2
+        mov dl, 10
+        int 21h
+    
+        mov ah, 2
+        mov dl, 13
+        int 21h
+           
                
         main endp
      
