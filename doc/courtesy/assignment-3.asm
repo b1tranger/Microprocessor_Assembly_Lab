@@ -1,7 +1,7 @@
 .model small
 .stack 100h
 .data
-    num1 db 018h
+    num1 db 7Ah
     
     msg1 db "num1 : $"  
  
@@ -10,17 +10,14 @@
         mov ax, @data
         mov ds, ax  
         
-        ;NUM 1 | AND op 
-        
         mov dx, offset msg1
         mov ah, 09h
         int 21h
         
         mov al, num1
-        or al, 0D1h
+        ror al, 7
         mov bl, al  
                 
-        ; PRINT
         
         mov al, bl 
         shr al, 4
@@ -32,11 +29,7 @@
         
         mov ah, 4Ch
         int 21h
-        
-        
-        
-        
-        
+  
         main endp
      
     
@@ -49,10 +42,10 @@
         
        out:
         mov dl, al
-        mov ah, 02h  ; previously set al, causing unwanted output
+        mov ah, 02h 
         int 21h
         ret
         
     print_hex endp    
     
-                    end main
+   end main
