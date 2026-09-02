@@ -316,12 +316,22 @@ If you already know the input is an alphabet letter, XOR with `20h` flips Bit 5 
    - `add al, char` adds the ASCII character to whatever residual value was left in `AL` by previous interrupts. Always use `mov al, char`.
 2. **Printing `char` instead of `AL`**:
    - `mov dl, char` prints the untouched original variable. To print the procedure's return value, use `mov dl, al`.
-3. **Missing `jmp exit` after the IF block**:
-   - Without an unconditional jump past the ELSE block, the CPU falls through and executes both branches sequentially.
+3. **Missing `jmp to_Output` after the IF/ELSE branch (Sequential Fall-Through Bug)**:
+   - In assembly, **labels (`to_SMALL:`) do NOT stop or redirect the CPU**. If execution reaches a label sequentially, the CPU simply ignores the label marker and executes the instruction right beneath it.
+   - If you omit `jmp to_Output` after `sub al, 20h`:
+     1. Lowercase input `'a'` ($61h$) is converted: $\text{AL} - 20h = 41h$ (`'A'`).
+     2. Without `jmp to_Output`, CPU falls through into `to_SMALL:` and runs `add al, 20h`.
+     3. $\text{AL}$ becomes $41h + 20h = 61h$ (`'a'`).
+     4. **The subtraction is instantly undone**, and lowercase letters never become uppercase!
+4. **Comparing with `60h` vs `'a'` / `'Z'`**:
+   - `cmp al, 60h` + `jbe to_SMALL` works because `60h` (backtick `` ` ``) is the character immediately before `'a'`. Since $'A'..'Z' \le 60h$ and $'a'..'z' > 60h$, the condition cleanly separates uppercase and lowercase.
+   - However, writing `cmp al, 'a'` with `jb` or `cmp al, 'Z'` with `jbe` is far more readable and self-documenting.
 
 ---
 
+
 ## 10. Complete 8086 Jump Instructions Reference
+
 
 Jump instructions in 8086 are divided into four primary groups: **Unconditional Jumps**, **Unsigned Arithmetic/Comparison Jumps**, **Signed Arithmetic/Comparison Jumps**, and **Single-Flag / Special Register Jumps**.
 

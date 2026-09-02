@@ -41,16 +41,25 @@ main proc
     mov ah, 09h
     int 21h
       
-    ; IF BLOCK
+    ; IF BLOCK (if Capital, make Small)
     
     mov al, char                    ; storing `char` value to AL to compare with 61h
-    cmp al, 61h
-    ; jbe out 
-    call to_SMALL
+    cmp al, 60h                     ; comparing with the character before 'a' (" ' ")
+    jbe to_SMALL
     
-    ; ELSE BLOCK
+    ; ELSE BLOCK (if Small, make Capital)
     
-    add al, 7 
+    sub al, 20h 
+    
+    jmp to_Output
+    
+    to_SMALL:
+    add al, 20h
+    
+    
+    to_Output: 
+    
+    mov char, al
     
     mov ah, 02h
     mov dl, char
@@ -61,19 +70,6 @@ main proc
     int 21h      
      
     main endp  
-
-    to_CAPITAL proc
-        sub al, 20h    
-        
-        ret
-    to_CAPITAL endp 
-    
-  
-    to_SMALL proc  
-        add al, 20h
-        
-        ret
-    to_SMALL endp
 
 
 
