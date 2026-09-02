@@ -1,0 +1,188 @@
+# Procedures, Labels, and Control Flow in 8086 Assembly
+
+In 8086 assembly programming, structuring code and controlling the flow of execution involves two fundamental concepts: **Subroutines (Procedures)** and **Branching (Jumps)**. This document explains the differences between `PROC` directives, plain labels, `CALL`/`RET` mechanics, and conditional jumps (`JMP`, `JBE`, etc.), using the hexadecimal printing routine as a practical example.
+
+---
+
+## 1. Procedures (`PROC` / `ENDP`) vs. Plain Labels (`label:`)
+
+### What is a Procedure?
+A procedure (subroutine) in 8086 assembly is defined using the `PROC` and `ENDP` directives:
+
+```assembly
+print_hex PROC
+    ; Procedure body
+    ret
+print_hex ENDP
+```
+
+- **`PROC` and `ENDP` are Assembler Directives**: They are instructions for the assembler (MASM, TASM, emu8086), not actual CPU instructions.
+- **Memory Model / Return Type Handling**: When you define a procedure, the assembler determines whether it is `NEAR` (within the same code segment) or `FAR` (across different segments). When it encounters `RET`, it automatically generates either a near return (`RETN`, popping 2 bytes for `IP`) or a far return (`RETF`, popping 4 bytes for `IP` and `CS`).
+- **Scope & Readability**: They delineate clear modular boundaries for subroutines in your code.
+
+### What is a Plain Label?
+A label is simply a symbolic name marking a specific memory offset in the code segment:
+
+```assembly
+print_hex:
+    ; Routine body
+    ret
+```
+
+- **Address Marker**: `print_hex:` simply tells the assembler: *"Remember this memory address by the name `print_hex`."*
+
+### Can You Call a Plain Label (`call print_hex:`)?
+**Yes.** In 8086 assembly, the CPU's `CALL` instruction only requires an address (offset). Even if defined with a plain label, `CALL print_hex` will push the Instruction Pointer (`IP`) onto the stack and jump to that label. When the CPU reaches `RET`, it will pop `IP` off the stack and return.
+
+> [!NOTE]
+> While a plain label works with `CALL` in a `SMALL` memory model, using `PROC ... ENDP` is the standard practice because it prevents segment return bugs and makes the code modular and maintainable.
+
+---
+
+## 2. `CALL` / `RET` (Functions) vs. `JMP` / Conditional Jumps (Branching)
+
+A common misconception is treating branch labels (like `out:`) as user-defined functions called with jump instructions (`jbe`, `jmp`).
+
+### How `CALL` and `RET` Work (Subroutine Calls)
+1. **`CALL target`**:
+   - The CPU automatically pushes the address of the *next* instruction (the return address in `IP`) onto the Stack.
+   - It sets `IP` to the address of `target`.
+2. **`RET`**:
+   - The CPU pops the top 16-bit value from the Stack into `IP`.
+   - Execution resumes seamlessly right after the original `CALL` instruction.
+
+```
+Caller Code               Procedure (print_hex)
++-------------------+      +-------------------+
+| mov al, bl        |      | add al, 48        |
+| call print_hex ---+----->| ...               |
+| [Next Inst.] <----+------+--- ret            | (Pops return address)
++-------------------+      +-------------------+
+ (Stack saves IP)
+```
+
+---
+
+### How `JMP` and Conditional Jumps (`JBE`, `JE`, `JNE`, etc.) Work (Branching)
+- **Direct Control Transfer**: Jumps do **not** interact with the Stack. They do not store a return address.
+- **One-Way Execution**: A jump simply overwrites `IP` with the target label's address. There is no `RET` mechanism to return back automatically.
+- **Purpose**: Used to implement conditionals (`if-else`), loops (`while`, `for`), and multi-way branching.
+
+---
+
+### Comparison Summary
+
+| Feature | `CALL` / `RET` (Procedure / Subroutine) | `JMP` / Conditional Jumps (`JBE`, `JE`, etc.) |
+| :--- | :--- | :--- |
+| **Stack Usage** | **Pushes** return address (`IP`) to Stack. | **No stack modification**. |
+| **Return Mechanism** | `RET` pops `IP` to return to caller. | None. Execution flows forward from the jump target. |
+| **High-Level Analogy** | Calling a function: `myFunction();` | `if`, `else`, `goto`, `while`, `for` |
+| **Execution Flow** | Deviates temporarily, then returns. | Permanently transfers execution to target. |
+
+---
+
+## 3. Case Study: Dissecting the `print_hex` Routine
+
+Consider the hexadecimal print routine from `5.1.asm`:
+
+```assembly
+; In main:
+    mov al, bl 
+    shr al, 4          ; Get upper 4 bits (nibble)
+    call print_hex     ; [1] FUNCTION CALL
+
+    mov al, bl
+    and al, 0Fh        ; Get lower 4 bits (nibble)
+    call print_hex     ; [2] FUNCTION CALL
+    ...
+
+; Subroutine:
+print_hex proc
+    add al, 48         ; Convert 0-9 to ASCII '0'-'9' (48 = '0')
+    cmp al, 57         ; Compare with ASCII '9' (57 = '9')
+    jbe out            ; [3] CONDITIONAL JUMP (If al <= '9', skip letter adjustment)
+    add al, 7          ; [4] Adjustment for hex digits 10-15 ('A'-'F')
+    
+   out:                ; [5] BRANCH TARGET LABEL (Not a function)
+    mov dl, al
+    mov ah, 02h 
+    int 21h            ; Print character to console
+    ret                ; [6] RETURN to caller
+
+print_hex endp
+```
+
+### Trace & Execution Breakdown:
+
+1. **`call print_hex` (Lines 27 & 31)**:
+   - Pushes return address onto stack and transfers control to `print_hex`.
+2. **ASCII Conversion Math**:
+   - Digits `0` through `9` map to ASCII `30h`–`39h` (48–57 in decimal). Adding `48` converts them directly.
+   - Digits `10` through `15` (`0Ah`–`0Fh`) must map to ASCII `'A'`–`'F'` (`41h`–`46h` / 65–70 decimal).
+   - Adding `48` produces `58` to `63`. To reach `65` (`'A'`), an additional `+7` is needed ($58 + 7 = 65$).
+3. **`jbe out` (Line 43)**:
+   - If the value in `AL` is $\le 57$ (i.e., it is a digit `'0'`–`'9'`), it jumps directly to `out:`, skipping the `add al, 7`.
+   - If `AL` $> 57$, execution falls through and adds `7` to reach `'A'`–`'F'`.
+4. **`out:` (Line 46)**:
+   - This is **not a function**. It is simply the meeting point (merge label) of the `if-else` path before displaying the character.
+5. **`ret` (Line 50)**:
+   - Pops the return address stored during step 1 and returns control back to `main`.
+
+### High-Level Language Equivalent (C / C++):
+```c
+void print_hex(unsigned char al) {
+    al += 48;
+    if (al > 57) {       // In assembly: inverted condition via `jbe out`
+        al += 7;
+    }
+    // out:
+    putchar(al);
+}
+```
+
+---
+
+## 4. Key Takeaways & Best Practices
+
+1. **Use `PROC ... ENDP` for Functions**: Always wrap reusable subroutines in `proc` blocks and terminate them with `ret`.
+2. **Use Labels (`label:`) for Branching**: Use local labels with conditional jumps (`je`, `jne`, `jb`, `jbe`, `ja`, `jae`) for `if-else` logic and loops.
+3. **Never Forget `ret` in a Procedure**: Without `ret`, the CPU will not return to `main`; it will fall through and execute whatever instructions follow sequentially in memory, leading to crashes or undefined behavior.
+4. **Preserve Registers When Needed**: If a procedure alters registers that the caller depends on, use `PUSH` at the start and `POP` in reverse order before `RET`.
+
+---
+
+## 5. Branch Label Reach & Jump Ranges
+
+A branch label is **not restricted to the immediate next line**. Labels mark arbitrary points in memory, allowing forward jumps (skipping code blocks) or backward jumps (loops).
+
+### 1. Forward Branching (Skipping Code)
+Used for conditional execution like `if-else` blocks:
+```assembly
+    cmp al, 'Q'
+    je quit_program       ; Jumps forward over many instructions
+
+    ; Multiple lines of processing...
+    mov bx, 10
+    add ax, bx
+
+quit_program:
+    mov ah, 4Ch
+    int 21h
+```
+
+### 2. Backward Branching (Loops)
+Used to repeat execution:
+```assembly
+    mov cx, 5
+repeat_loop:
+    mov ah, 02h
+    mov dl, '*'
+    int 21h
+    dec cx
+    jnz repeat_loop       ; Jumps backward to repeat_loop
+```
+
+### 3. 8086 Jump Distance Limits
+- **Conditional Jumps (`JE`, `JNE`, `JB`, `JBE`, etc.)**: Use an 8-bit signed relative offset, giving a reach of **$-128$ to $+127$ bytes** (roughly 40–60 instructions).
+- **Near Unconditional Jump (`JMP label`)**: Uses a 16-bit relative offset, reaching anywhere within the **64 KB segment** ($-32,768$ to $+32,767$ bytes).
+- **Far Jump (`JMP FAR PTR label`)**: Reaches across different segments by changing both `CS` and `IP`.
