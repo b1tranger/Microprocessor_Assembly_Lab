@@ -4,7 +4,31 @@ In 8086 assembly programming, structuring code and controlling the flow of execu
 
 ---
 
+## Table of Contents
+
+1. [Procedures (`PROC` / `ENDP`) vs. Plain Labels (`label:`)](#1-procedures-proc--endp-vs-plain-labels-label)
+2. [`CALL` / `RET` (Functions) vs. `JMP` / Conditional Jumps (Branching)](#2-call--ret-functions-vs-jmp--conditional-jumps-branching)
+3. [Case Study: Dissecting the `print_hex` Routine](#3-case-study-dissecting-the-print_hex-routine)
+4. [Key Takeaways & Best Practices](#4-key-takeaways--best-practices)
+5. [Branch Label Reach & Jump Ranges](#5-branch-label-reach--jump-ranges)
+6. [Implementing IF-ELSE in 8086 Assembly](#6-implementing-if-else-in-8086-assembly)
+7. [Calling Procedures (`to_CAPITAL` & `to_SMALL`) in an IF-ELSE Block](#7-calling-procedures-to_capital--to_small-in-an-if-else-block)
+8. [Alternative IF-ELSE Methods Without `CMP` / `JBE`](#8-alternative-if-else-methods-without-cmp--jbe)
+   - [8.1 `TEST` Instruction (Bit 5 Checking)](#1-test-instruction-bit-5-checking)
+   - [8.2 Single-Instruction Case Toggle (XOR 20h)](#2-single-instruction-case-toggle-no-jumps--no-if-else)
+9. [Common Bugs to Avoid in `A_4.asm`](#9-common-bugs-to-avoid-in-a_4asm)
+10. [Complete 8086 Jump Instructions Reference](#10-complete-8086-jump-instructions-reference)
+    - [Group 1: Unconditional Jump (`JMP`)](#group-1-unconditional-jump)
+    - [Group 2: Unsigned Comparison Jumps (`JA`, `JB`, `JE`, etc.)](#group-2-unsigned-comparison-jumps)
+    - [Group 3: Signed Comparison Jumps (`JG`, `JL`, `JGE`, etc.)](#group-3-signed-comparison-jumps)
+    - [Group 4: Simple Flag & Register-Based Jumps (`JCXZ`, `JS`, `JO`, etc.)](#group-4-simple-flag--register-based-jumps)
+    - [Master Jump Summary Table](#master-jump-summary-table)
+11. [Branching (Jumps) vs. Procedure Calls (`CALL`/`RET`): Standard Practice & Trade-offs](#11-branching-jumps-vs-procedure-calls-callret-standard-practice--trade-offs)
+
+---
+
 ## 1. Procedures (`PROC` / `ENDP`) vs. Plain Labels (`label:`)
+
 
 ### What is a Procedure?
 A procedure (subroutine) in 8086 assembly is defined using the `PROC` and `ENDP` directives:
@@ -186,3 +210,292 @@ repeat_loop:
 - **Conditional Jumps (`JE`, `JNE`, `JB`, `JBE`, etc.)**: Use an 8-bit signed relative offset, giving a reach of **$-128$ to $+127$ bytes** (roughly 40–60 instructions).
 - **Near Unconditional Jump (`JMP label`)**: Uses a 16-bit relative offset, reaching anywhere within the **64 KB segment** ($-32,768$ to $+32,767$ bytes).
 - **Far Jump (`JMP FAR PTR label`)**: Reaches across different segments by changing both `CS` and `IP`.
+
+---
+
+## 6. Implementing IF-ELSE in 8086 Assembly
+
+In 8086 assembly, there is no high-level `if / else` syntax. Instead, every branch is implemented using **comparison/test instructions + conditional jumps + unconditional jumps (`JMP`)**.
+
+### Standard IF-ELSE Control Structure Pattern
+
+```
+           +------------------+
+           |   cmp / test     |
+           +------------------+
+                     |
+            [ Condition True? ]
+             /              \
+           YES               NO
+           /                  \
+   +---------------+     +---------------+
+   | IF Block Code |     | ELSE Block    |
+   | (e.g. CALL A) |     | (e.g. CALL B) |
+   | jmp end_if    |     +---------------+
+   +---------------+             |
+           \                     /
+            \                   /
+             +-----------------+
+             |  end_if / exit  |
+             +-----------------+
+```
+
+---
+
+## 7. Calling Procedures (`to_CAPITAL` & `to_SMALL`) in an IF-ELSE Block
+
+In `A_4.asm`, the goal is to toggle case:
+- If character is **Lowercase (`'a'`–`'z'`)**, call `to_CAPITAL` (`sub al, 20h`).
+- If character is **Uppercase (`'A'`–`'Z'`)**, call `to_SMALL` (`add al, 20h`).
+
+### Approach 1: Range-Based IF-ELSE with Procedures
+
+```assembly
+    mov al, char            ; Load input character
+
+    ; --- IF (al >= 'a' AND al <= 'z') -> LOWERCASE ---
+    cmp al, 'a'
+    jb check_upper          ; If < 'a', check uppercase branch
+    cmp al, 'z'
+    ja check_upper          ; If > 'z', check uppercase branch
+    
+    call to_CAPITAL         ; Character is lowercase -> convert to uppercase
+    jmp display_result      ; Jump past ELSE branch to avoid double conversion!
+
+check_upper:
+    ; --- ELSE IF (al >= 'A' AND al <= 'Z') -> UPPERCASE ---
+    cmp al, 'A'
+    jb display_result       ; Not a letter -> skip conversion
+    cmp al, 'Z'
+    ja display_result       ; Not a letter -> skip conversion
+    
+    call to_SMALL           ; Character is uppercase -> convert to lowercase
+
+display_result:
+    mov dl, al              ; Print converted AL (not original char!)
+    mov ah, 02h
+    int 21h
+```
+
+---
+
+## 8. Alternative IF-ELSE Methods Without `CMP` / `JBE`
+
+### 1. `TEST` Instruction (Bit 5 Checking)
+In ASCII, the only difference between uppercase and lowercase letters is **Bit 5** (`20h` = `0010 0000b`):
+- Uppercase `'A'` = `41h` (`0100 0001b`) $\rightarrow$ Bit 5 is **`0`**.
+- Lowercase `'a'` = `61h` (`0110 0001b`) $\rightarrow$ Bit 5 is **`1`**.
+
+```assembly
+    mov al, char
+    test al, 20h            ; Non-destructive AND with 00100000b
+    jz is_uppercase         ; If Zero Flag (ZF=1), Bit 5 is 0 -> Uppercase
+    
+    ; Bit 5 was 1 -> Lowercase
+    call to_CAPITAL
+    jmp display_result
+
+is_uppercase:
+    call to_SMALL
+
+display_result:
+```
+
+### 2. Single-Instruction Case Toggle (No Jumps / No IF-ELSE)
+If you already know the input is an alphabet letter, XOR with `20h` flips Bit 5 directly:
+```assembly
+    mov al, char
+    xor al, 20h             ; Toggles 'A' <-> 'a', 'B' <-> 'b'
+```
+
+---
+
+## 9. Common Bugs to Avoid in `A_4.asm`
+
+1. **`add al, char` instead of `mov al, char`**:
+   - `add al, char` adds the ASCII character to whatever residual value was left in `AL` by previous interrupts. Always use `mov al, char`.
+2. **Printing `char` instead of `AL`**:
+   - `mov dl, char` prints the untouched original variable. To print the procedure's return value, use `mov dl, al`.
+3. **Missing `jmp exit` after the IF block**:
+   - Without an unconditional jump past the ELSE block, the CPU falls through and executes both branches sequentially.
+
+---
+
+## 10. Complete 8086 Jump Instructions Reference
+
+Jump instructions in 8086 are divided into four primary groups: **Unconditional Jumps**, **Unsigned Arithmetic/Comparison Jumps**, **Signed Arithmetic/Comparison Jumps**, and **Single-Flag / Special Register Jumps**.
+
+---
+
+### Group 1: Unconditional Jump
+Transfers execution without checking any flags or conditions.
+
+* **`JMP target`**:
+  * Overwrites `IP` with target offset.
+  * **Short / Near**: Stays within code segment ($-128..+127$ bytes or $64\text{ KB}$).
+  * **Far**: Crosses segments by changing both `CS` and `IP`.
+
+---
+
+### Group 2: Unsigned Comparison Jumps
+Used after `CMP dest, src` when operands represent **unsigned numbers, ASCII character codes, or memory addresses**.
+
+* **`JE` / `JZ`** (*Equal / Zero*): Jump if `dest == src` ($\text{ZF} = 1$).
+* **`JNE` / `JNZ`** (*Not Equal / Not Zero*): Jump if `dest != src` ($\text{ZF} = 0$).
+* **`JA` / `JNBE`** (*Above / Not Below or Equal*): Jump if `dest > src` ($\text{CF} = 0 \text{ and } \text{ZF} = 0$).
+* **`JAE` / `JNB` / `JNC`** (*Above or Equal / Not Below / No Carry*): Jump if `dest >= src` ($\text{CF} = 0$).
+* **`JB` / `JNAE` / `JC`** (*Below / Not Above or Equal / Carry*): Jump if `dest < src` ($\text{CF} = 1$).
+* **`JBE` / `JNA`** (*Below or Equal / Not Above*): Jump if `dest <= src` ($\text{CF} = 1 \text{ or } \text{ZF} = 1$).
+
+> [!TIP]
+> Always use **Above / Below (`JA`, `JB`, `JAE`, `JBE`)** when comparing ASCII characters (like `'A'`, `'a'`, `'0'`) because ASCII values are strictly unsigned ($0..255$).
+
+---
+
+### Group 3: Signed Comparison Jumps
+Used after `CMP dest, src` when operands represent **signed two's complement integers** (where the highest bit represents the sign: $-128..+127$ or $-32768..+32767$).
+
+* **`JG` / `JNLE`** (*Greater / Not Less or Equal*): Jump if signed `dest > src` ($\text{ZF} = 0 \text{ and } \text{SF} = \text{OF}$).
+* **`JGE` / `JNL`** (*Greater or Equal / Not Less*): Jump if signed `dest >= src` ($\text{SF} = \text{OF}$).
+* **`JL` / `JNGE`** (*Less / Not Greater or Equal*): Jump if signed `dest < src` ($\text{SF} \ne \text{OF}$).
+* **`JLE` / `JNG`** (*Less or Equal / Not Greater*): Jump if signed `dest <= src` ($\text{ZF} = 1 \text{ or } \text{SF} \ne \text{OF}$).
+
+---
+
+### Group 4: Simple Flag & Register-Based Jumps
+
+| Instruction | Full Name | Flag / Register Condition | Common Use Case |
+| :--- | :--- | :--- | :--- |
+| **`JC`** | Jump if Carry | $\text{CF} = 1$ | Unsigned overflow, arithmetic carry |
+| **`JNC`** | Jump if No Carry | $\text{CF} = 0$ | Successful unsigned arithmetic |
+| **`JZ`** | Jump if Zero | $\text{ZF} = 1$ | Result is zero / strings matched |
+| **`JNZ`** | Jump if Not Zero | $\text{ZF} = 0$ | Loop counter $> 0$, non-zero test |
+| **`JS`** | Jump if Sign (Negative) | $\text{SF} = 1$ | Number is negative (MSB $= 1$) |
+| **`JNS`** | Jump if No Sign (Positive) | $\text{SF} = 0$ | Number is positive or zero |
+| **`JO`** | Jump if Overflow | $\text{OF} = 1$ | Signed arithmetic overflow |
+| **`JNO`** | Jump if No Overflow | $\text{OF} = 0$ | Safe signed arithmetic |
+| **`JP` / `JPE`** | Jump if Parity Even | $\text{PF} = 1$ | Even number of 1-bits (data transmission) |
+| **`JNP` / `JPO`** | Jump if Parity Odd | $\text{PF} = 0$ | Odd number of 1-bits |
+| **`JCXZ`** | Jump if `CX` is Zero | $\text{CX} = 0$ | Guard before entering `LOOP` blocks |
+
+---
+
+### Master Jump Summary Table
+
+| Mnemonic | Alternate Name | Meaning / Condition Checked | Flag Evaluation | Data Type |
+| :--- | :--- | :--- | :--- | :--- |
+| **`JMP`** | — | Unconditional Jump | None (Always jumps) | Any |
+| **`JE`** | `JZ` | Jump if Equal / Zero ($==$) | $\text{ZF} = 1$ | Any |
+| **`JNE`** | `JNZ` | Jump if Not Equal / Not Zero ($\ne$) | $\text{ZF} = 0$ | Any |
+| **`JA`** | `JNBE` | Jump if Above ($>$) | $\text{CF} = 0 \land \text{ZF} = 0$ | **Unsigned / ASCII** |
+| **`JAE`** | `JNB`, `JNC` | Jump if Above or Equal ($\ge$) | $\text{CF} = 0$ | **Unsigned / ASCII** |
+| **`JB`** | `JNAE`, `JC` | Jump if Below ($<$) | $\text{CF} = 1$ | **Unsigned / ASCII** |
+| **`JBE`** | `JNA` | Jump if Below or Equal ($\le$) | $\text{CF} = 1 \lor \text{ZF} = 1$ | **Unsigned / ASCII** |
+| **`JG`** | `JNLE` | Jump if Greater ($>$) | $\text{ZF} = 0 \land \text{SF} = \text{OF}$ | **Signed Integers** |
+| **`JGE`** | `JNL` | Jump if Greater or Equal ($\ge$) | $\text{SF} = \text{OF}$ | **Signed Integers** |
+| **`JL`** | `JNGE` | Jump if Less ($<$) | $\text{SF} \ne \text{OF}$ | **Signed Integers** |
+| **`JLE`** | `JNG` | Jump if Less or Equal ($\le$) | $\text{ZF} = 1 \lor \text{SF} \ne \text{OF}$ | **Signed Integers** |
+| **`JS`** | — | Jump if Sign / Negative | $\text{SF} = 1$ | Signed |
+| **`JNS`** | — | Jump if No Sign / Positive | $\text{SF} = 0$ | Signed |
+| **`JO`** | — | Jump if Overflow | $\text{OF} = 1$ | Signed Overflow |
+| **`JNO`** | — | Jump if No Overflow | $\text{OF} = 0$ | Signed Safe |
+| **`JP`** | `JPE` | Jump if Parity Even | $\text{PF} = 1$ | Bit parity check |
+| **`JNP`** | `JPO` | Jump if Parity Odd | $\text{PF} = 0$ | Bit parity check |
+| **`JCXZ`** | — | Jump if `CX` is Zero | $\text{CX} = 0$ | Loop bounds check |
+
+---
+
+## 11. Branching (Jumps) vs. Procedure Calls (`CALL`/`RET`): Standard Practice & Trade-offs
+
+Neither approach is universally "better"; each serves a specific architectural role in low-level and systems programming.
+
+### 1. Standard Practice Definitions
+
+#### A. Branching (Inline Jumps: `JMP`, `JE`, `JB`, `JBE`, etc.)
+- **Definition**: Direct transfer of the CPU Instruction Pointer (`IP`) to a local label within the same procedure.
+- **Hardware Mechanism**: Does **not** touch the stack. Modifies `IP` directly in a single step.
+- **Standard Purpose**: Implementing **local control flow** structures:
+  - `if-then-else` decisions
+  - `while`, `for`, `do-while` loops
+  - Switch/case jump tables
+  - Skipping unneeded blocks
+
+#### B. Procedure Calls (`CALL` / `RET` with `PROC ... ENDP`)
+- **Definition**: Invocation of an isolated, modular block of code that executes and automatically returns to the instruction immediately following the call site.
+- **Hardware Mechanism**: Pushes the return address (`IP` $\pm$ `CS`) onto the **Stack**, transfers control to the subroutine, and uses `RET` to pop the return address back.
+- **Standard Purpose**: Implementing **reusable subroutines and modular functions**:
+  - Code called from multiple locations (e.g., `print_hex` called twice in `5.1.asm`)
+  - Standalone operations (e.g., string manipulation, mathematical calculations, hardware drivers)
+  - Recursive algorithms
+
+---
+
+### 2. Comprehensive Comparison
+
+| Metric | Branching / Inline Jumps (`JMP` / Conditional) | Procedure Calls (`CALL` / `RET`) |
+| :--- | :--- | :--- |
+| **Stack Usage** | **0 bytes** (No stack interaction) | **2 bytes** (Near) or **4 bytes** (Far) pushed/popped |
+| **Execution Overhead** | **Fastest** (~8–15 CPU clock cycles) | **Slower** (~19–23 cycles for `CALL` + `RET`) |
+| **Code Reusability** | **Poor** (Can only flow to fixed targets; cannot return to varied callers) | **Excellent** (Can be called from 100 different places and return safely) |
+| **Memory Footprint** | Duplicates instructions if repeated throughout program | Saves code memory by consolidating duplicate logic |
+| **Scope & Organization** | Local to the current function | Global or modular across files/segments |
+| **Risk / Pitfalls** | "Spaghetti code" if overused for non-local flow | Stack overflow if unbalanced or missing `RET` |
+
+---
+
+### 3. Rules of Thumb: When to Use Which?
+
+```
+                     [ Is the task a single calculation/step (e.g. 1-2 lines)? ]
+                                     /                                  \
+                                   YES                                   NO
+                                   /                                       \
+         [ Called from multiple places in code? ]               [ Complex or multi-step logic ]
+                  /                      \                                   |
+                YES                       NO                                 v
+                 |                         |                          USE `PROC` (`CALL`/`RET`)
+                 v                         v                          (Modularity & Organization)
+          USE `PROC`                 USE INLINE JUMPS
+     (Saves duplicate bytes)       (Faster, no stack overhead)
+```
+
+1. **Use Inline Branching (`CMP` + `JB` / `JMP`) When:**
+   - The operation inside the branch is tiny (e.g. `sub al, 20h` or `add al, 20h` in `A_4.asm`).
+   - The operation is only executed in one place in the program.
+   - Micro-performance is critical and stack overhead should be eliminated.
+
+2. **Use Procedure Calls (`CALL` + `RET`) When:**
+   - The exact same routine is executed from two or more call sites (e.g., calling `print_hex` for both upper and lower nibbles in `5.1.asm`).
+   - The routine is long, complex, or self-contained (e.g. string formatting, reading multicharacter inputs).
+   - You want clean separation of concerns and readable, modular code.
+
+---
+
+### 4. Applied to `A_4.asm`
+
+In `A_4.asm`, converting case is just one instruction (`sub al, 20h` or `add al, 20h`):
+
+* **Inline Branch Approach (Clean & Fast)**:
+  ```assembly
+      cmp al, 'a'
+      jb not_lower
+      cmp al, 'z'
+      ja not_lower
+      sub al, 20h        ; Inlined directly (no procedure overhead)
+      jmp display
+
+  not_lower:
+      cmp al, 'A'
+      jb display
+      cmp al, 'Z'
+      ja display
+      add al, 20h        ; Inlined directly
+
+  display:
+  ```
+
+* **Procedure Approach (`PROC to_CAPITAL` / `PROC to_SMALL`)**:
+  - Ideal if `to_CAPITAL` will be called in several places across a larger program or exported for use by other modules.
+
+
+
