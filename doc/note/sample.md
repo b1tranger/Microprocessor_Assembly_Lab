@@ -538,7 +538,91 @@ int val = *ptr;     // Dereference
 
 ---
 
-## 12. Master Flags & Conditional Jumps Reference Table
+## 12. Complete 8086 Jump Instructions Reference
+
+Jump instructions in 8086 are divided into four primary groups: **Unconditional Jumps**, **Unsigned Arithmetic/Comparison Jumps**, **Signed Arithmetic/Comparison Jumps**, and **Single-Flag / Special Register Jumps**.
+
+---
+
+### Group 1: Unconditional Jump
+Transfers execution without checking any flags or conditions.
+
+* **`JMP target`**:
+  * Overwrites `IP` with target offset.
+  * **Short / Near**: Stays within code segment ($-128..+127$ bytes or $64\text{ KB}$).
+  * **Far**: Crosses segments by changing both `CS` and `IP`.
+
+---
+
+### Group 2: Unsigned Comparison Jumps
+Used after `CMP dest, src` when operands represent **unsigned numbers, ASCII character codes, or memory addresses**.
+
+* **`JE` / `JZ`** (*Equal / Zero*): Jump if `dest == src` ($\text{ZF} = 1$).
+* **`JNE` / `JNZ`** (*Not Equal / Not Zero*): Jump if `dest != src` ($\text{ZF} = 0$).
+* **`JA` / `JNBE`** (*Above / Not Below or Equal*): Jump if `dest > src` ($\text{CF} = 0 \text{ and } \text{ZF} = 0$).
+* **`JAE` / `JNB` / `JNC`** (*Above or Equal / Not Below / No Carry*): Jump if `dest >= src` ($\text{CF} = 0$).
+* **`JB` / `JNAE` / `JC`** (*Below / Not Above or Equal / Carry*): Jump if `dest < src` ($\text{CF} = 1$).
+* **`JBE` / `JNA`** (*Below or Equal / Not Above*): Jump if `dest <= src` ($\text{CF} = 1 \text{ or } \text{ZF} = 1$).
+
+> [!TIP]
+> Always use **Above / Below (`JA`, `JB`, `JAE`, `JBE`)** when comparing ASCII characters (like `'A'`, `'a'`, `'0'`) because ASCII values are strictly unsigned ($0..255$).
+
+---
+
+### Group 3: Signed Comparison Jumps
+Used after `CMP dest, src` when operands represent **signed two's complement integers** (where the highest bit represents the sign: $-128..+127$ or $-32768..+32767$).
+
+* **`JG` / `JNLE`** (*Greater / Not Less or Equal*): Jump if signed `dest > src` ($\text{ZF} = 0 \text{ and } \text{SF} = \text{OF}$).
+* **`JGE` / `JNL`** (*Greater or Equal / Not Less*): Jump if signed `dest >= src` ($\text{SF} = \text{OF}$).
+* **`JL` / `JNGE`** (*Less / Not Greater or Equal*): Jump if signed `dest < src` ($\text{SF} \ne \text{OF}$).
+* **`JLE` / `JNG`** (*Less or Equal / Not Greater*): Jump if signed `dest <= src` ($\text{ZF} = 1 \text{ or } \text{SF} \ne \text{OF}$).
+
+---
+
+### Group 4: Simple Flag & Register-Based Jumps
+
+| Instruction | Full Name | Flag / Register Condition | Common Use Case |
+| :--- | :--- | :--- | :--- |
+| **`JC`** | Jump if Carry | $\text{CF} = 1$ | Unsigned overflow, arithmetic carry |
+| **`JNC`** | Jump if No Carry | $\text{CF} = 0$ | Successful unsigned arithmetic |
+| **`JZ`** | Jump if Zero | $\text{ZF} = 1$ | Result is zero / strings matched |
+| **`JNZ`** | Jump if Not Zero | $\text{ZF} = 0$ | Loop counter $> 0$, non-zero test |
+| **`JS`** | Jump if Sign (Negative) | $\text{SF} = 1$ | Number is negative (MSB $= 1$) |
+| **`JNS`** | Jump if No Sign (Positive) | $\text{SF} = 0$ | Number is positive or zero |
+| **`JO`** | Jump if Overflow | $\text{OF} = 1$ | Signed arithmetic overflow |
+| **`JNO`** | Jump if No Overflow | $\text{OF} = 0$ | Safe signed arithmetic |
+| **`JP` / `JPE`** | Jump if Parity Even | $\text{PF} = 1$ | Even number of 1-bits (data transmission) |
+| **`JNP` / `JPO`** | Jump if Parity Odd | $\text{PF} = 0$ | Odd number of 1-bits |
+| **`JCXZ`** | Jump if `CX` is Zero | $\text{CX} = 0$ | Guard before entering `LOOP` blocks |
+
+---
+
+### Master Jump Summary Table
+
+| Mnemonic | Alternate Name | Meaning / Condition Checked | Flag Evaluation | Data Type |
+| :--- | :--- | :--- | :--- | :--- |
+| **`JMP`** | — | Unconditional Jump | None (Always jumps) | Any |
+| **`JE`** | `JZ` | Jump if Equal / Zero ($==$) | $\text{ZF} = 1$ | Any |
+| **`JNE`** | `JNZ` | Jump if Not Equal / Not Zero ($\ne$) | $\text{ZF} = 0$ | Any |
+| **`JA`** | `JNBE` | Jump if Above ($>$) | $\text{CF} = 0 \land \text{ZF} = 0$ | **Unsigned / ASCII** |
+| **`JAE`** | `JNB`, `JNC` | Jump if Above or Equal ($\ge$) | $\text{CF} = 0$ | **Unsigned / ASCII** |
+| **`JB`** | `JNAE`, `JC` | Jump if Below ($<$) | $\text{CF} = 1$ | **Unsigned / ASCII** |
+| **`JBE`** | `JNA` | Jump if Below or Equal ($\le$) | $\text{CF} = 1 \lor \text{ZF} = 1$ | **Unsigned / ASCII** |
+| **`JG`** | `JNLE` | Jump if Greater ($>$) | $\text{ZF} = 0 \land \text{SF} = \text{OF}$ | **Signed Integers** |
+| **`JGE`** | `JNL` | Jump if Greater or Equal ($\ge$) | $\text{SF} = \text{OF}$ | **Signed Integers** |
+| **`JL`** | `JNGE` | Jump if Less ($<$) | $\text{SF} \ne \text{OF}$ | **Signed Integers** |
+| **`JLE`** | `JNG` | Jump if Less or Equal ($\le$) | $\text{ZF} = 1 \lor \text{SF} \ne \text{OF}$ | **Signed Integers** |
+| **`JS`** | — | Jump if Sign / Negative | $\text{SF} = 1$ | Signed |
+| **`JNS`** | — | Jump if No Sign / Positive | $\text{SF} = 0$ | Signed |
+| **`JO`** | — | Jump if Overflow | $\text{OF} = 1$ | Signed Overflow |
+| **`JNO`** | — | Jump if No Overflow | $\text{OF} = 0$ | Signed Safe |
+| **`JP`** | `JPE` | Jump if Parity Even | $\text{PF} = 1$ | Bit parity check |
+| **`JNP`** | `JPO` | Jump if Parity Odd | $\text{PF} = 0$ | Bit parity check |
+| **`JCXZ`** | — | Jump if `CX` is Zero | $\text{CX} = 0$ | Loop bounds check |
+
+---
+
+### High-Level Expression to Flags Mapping Table
 
 | High-Level Expression | Type | Assembly Instruction | Jump Mnemonic | Hardware Flag Condition |
 | :--- | :--- | :--- | :--- | :--- |
