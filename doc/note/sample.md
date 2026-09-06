@@ -20,6 +20,12 @@ This document provides a comprehensive mapping of modern high-level programming 
    - [8.4 Loop Control: `break` and `continue`](#84-loop-control-break-and-continue)
 9. [Functions & Procedures (`CALL` / `RET`)](#9-functions--procedures-call--ret)
 10. [Arrays & Indexing (`arr[i]`)](#10-arrays--indexing-arri)
+    - [10.1 High-Level Concept (C Equivalent)](#101-high-level-concept-c-equivalent)
+    - [10.2 Base-Index Addressing & Static Array Initialization](#102-base-index-addressing--static-array-initialization)
+    - [10.3 Uninitialized ("Empty") Arrays (`DUP(?)`)](#103-uninitialized-empty-arrays-dup)
+    - [10.4 Taking User Input into an Array via Loop](#104-taking-user-input-into-an-array-via-loop)
+    - [10.5 Complete Working Program: Array Input and Output](#105-complete-working-program-array-input-and-output)
+    - [10.6 Hardware Addressing Modes](#106-hardware-addressing-modes)
 11. [Pointers & Memory Addresses (`*ptr` and `&var`)](#11-pointers--memory-addresses-ptr-and-var)
 12. [Complete 8086 Jump Instructions Reference](#12-complete-8086-jump-instructions-reference)
     - [Group 1: Unconditional Jump (`JMP`)](#group-1-unconditional-jump)
@@ -480,28 +486,155 @@ SP decrements by 2           Pushes Return IP                SP increments by 2
 
 ## 10. Arrays & Indexing (`arr[i]`)
 
-### High-Level Concept
+### 10.1 High-Level Concept (C Equivalent)
 ```c
+#include <stdio.h>
+
+// 1. Static Initialized Array & Direct Index Access
 char arr[5] = {'A', 'B', 'C', 'D', 'E'};
-char val = arr[2];
+char val = arr[2];                     // Access element at index 2 ('C')
+
+// 2. Uninitialized Array & Loop Input / Output
+char input_arr[5];                     // Empty array of 5 bytes
+
+// Input Loop: Read 5 characters into array
+for (int i = 0; i < 5; i++) {
+    input_arr[i] = getchar();
+}
+
+// Output Loop: Display 5 characters from array
+for (int i = 0; i < 5; i++) {
+    putchar(input_arr[i]);
+}
 ```
 
-### 8086 Assembly Base-Index Addressing
+---
+
+### 10.2 Base-Index Addressing & Static Array Initialization
 ```assembly
-.data
-    arr db 'A', 'B', 'C', 'D', 'E'
-    val db ?
+.DATA
+    arr DB 'A', 'B', 'C', 'D', 'E'
+    val DB ?
 
-.code
-    mov bx, offset arr   ; BX holds base pointer of array
-    mov si, 2            ; SI holds index i = 2
-    mov al, [bx + si]    ; Effective Address EA = DS: (BX + SI) -> 'C'
-    mov val, al
+.CODE
+    MOV BX, OFFSET arr   ; BX holds base pointer of array
+    MOV SI, 2            ; SI holds index i = 2
+    MOV AL, [BX + SI]    ; Effective Address EA = DS:(BX + SI) -> 'C'
+    MOV val, AL
 ```
 
-### Hardware Addressing Modes
+---
+
+### 10.3 Uninitialized ("Empty") Arrays (`DUP(?)`)
+
+In 8086 assembly, memory for an uninitialized array is allocated in the data segment using the `DUP(?)` directive:
+
+```assembly
+.DATA
+    ; 1. Initialized Array (Pre-filled values)
+    arr_init    DB 'A', 'B', 'C', 'D', 'E'  ; 5 bytes: 41h, 42h, 43h, 44h, 45h
+    
+    ; 2. Uninitialized / "Empty" Array (Allocates space without fixed values)
+    arr_empty   DB 5 DUP(?)                 ; Allocates 5 uninitialized bytes (like char arr[5];)
+    
+    ; 3. Zero-Initialized Array (Allocates and fills with 0)
+    arr_zeros   DB 5 DUP(0)                 ; 5 bytes: 00h, 00h, 00h, 00h, 00h
+    
+    ; 4. Uninitialized 16-bit Word Array
+    arr_words   DW 10 DUP(?)                ; Allocates 10 words (20 bytes total)
+```
+
+The `DUP(?)` directive tells the assembler to reserve that number of bytes/words in the segment without assigning pre-determined values (equivalent to `char arr[5];` in C).
+
+---
+
+### 10.4 Taking User Input into an Array via Loop
+
+To fill an empty array from user keyboard input:
+1. **Initialize a counter register**: `MOV CX, size` (number of elements to read).
+2. **Initialize an index register**: `MOV SI, 0` (or `MOV BX, OFFSET arr`).
+3. **Read each character inside the loop**: Call DOS `INT 21H / AH=01H`. The entered character is returned in `AL`.
+4. **Store into array memory**: Use indexed addressing `MOV arr[SI], AL` (or `MOV [BX + SI], AL`).
+5. **Increment index & repeat**: `INC SI` (or `ADD SI, 2` for words), then `LOOP`.
+
+```assembly
+    MOV SI, 0              ; Index i = 0
+    MOV CX, 5              ; Loop 5 times
+
+input_loop:
+    MOV AH, 01H            ; DOS Service: Read char with echo -> AL
+    INT 21H
+    MOV arr_empty[SI], AL  ; Store character into arr_empty[i]
+    INC SI                 ; i++
+    LOOP input_loop        ; Decrement CX, jump if CX != 0
+```
+
+---
+
+### 10.5 Complete Working Program: Array Input and Output
+
+This complete program reads 5 characters from the user into an uninitialized array, outputs a newline, and prints the array back out:
+
+```assembly
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    PROMPT_IN   DB 'Enter 5 characters: $'
+    PROMPT_OUT  DB 13, 10, 'Array contents: $'
+    ARR         DB 5 DUP(?)        ; Empty array of 5 bytes
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; 1. Display Input Prompt
+    MOV AH, 09H
+    LEA DX, PROMPT_IN
+    INT 21H
+
+    ; 2. Read 5 Characters into ARR using Loop
+    MOV SI, 0                      ; Index pointer i = 0
+    MOV CX, 5                      ; Count = 5
+
+read_loop:
+    MOV AH, 01H                    ; DOS character input -> returns in AL
+    INT 21H
+    MOV ARR[SI], AL                ; Store AL into memory address ARR + SI
+    INC SI                         ; SI = SI + 1 (step by 1 byte)
+    LOOP read_loop                 ; CX--, if CX != 0 goto read_loop
+
+    ; 3. Display Output Prompt
+    MOV AH, 09H
+    LEA DX, PROMPT_OUT
+    INT 21H
+
+    ; 4. Print Array Elements using Loop
+    MOV SI, 0                      ; Reset index pointer to start
+    MOV CX, 5                      ; Reset count to 5
+
+print_loop:
+    MOV DL, ARR[SI]                ; Load byte from array into DL
+    MOV AH, 02H                    ; DOS character output service
+    INT 21H
+    INC SI                         ; Advance index
+    LOOP print_loop                ; Repeat for all elements
+
+    ; 5. Exit Program
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+```
+
+---
+
+### 10.6 Hardware Addressing Modes
 The 8086 hardware supports compound memory addressing registers:
 $$\text{Physical Address} = (\text{DS} \times 16) + \text{Base} (\text{BX/BP}) + \text{Index} (\text{SI/DI}) + \text{Displacement}$$
+
+When accessing array bytes, the effective address `EA = ARR + SI` is computed directly by the Bus Interface Unit (BIU). For 16-bit word arrays (`DW`), each element occupies 2 bytes, so `ADD SI, 2` must be used instead of `INC SI`.
 
 ---
 
