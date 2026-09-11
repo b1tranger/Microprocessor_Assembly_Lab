@@ -1,4 +1,4 @@
-﻿# Lab Test 1 Preparation Guide: Comprehensive Topic Summary & Code Walkthrough
+# Lab Test 1 Preparation Guide: Comprehensive Topic Summary & Code Walkthrough
 
 This document serves as a master revision guide for **Lab Test 1**, synthesizing the theoretical principles, architectural mechanisms, and code implementations covered across **Lab 1 through Lab 7** in the 8086 Microprocessor & Assembly Language laboratory.
 
@@ -27,6 +27,9 @@ This document serves as a master revision guide for **Lab Test 1**, synthesizing
    - [3.2 8086 Hardware Division Rules](#32-8086-hardware-division-rules)
    - [3.3 ASCII & Radix Conversion Rules](#33-ascii--radix-conversion-rules)
    - [3.4 Top 5 Common Exam Bugs & Pitfalls](#34-top-5-common-exam-bugs--pitfalls)
+
+> [!TIP]
+> For deep architectural explanations of the **leading zero rule on hex literals (`0Ah`)**, **register hygiene & clearing `AH` before `DIV`**, and 8086 hardware constraints, see the companion guide: [`assembly_core_mechanics.md`](./assembly_core_mechanics.md).
 
 ---
 
