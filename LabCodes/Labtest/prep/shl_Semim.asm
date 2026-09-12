@@ -8,10 +8,10 @@
     mult db ?
 
     msg1 db 'Enter first digit: $'
-    msg2 db 0dh,0ah,'Enter second digit: $'
-    msg_q db 0dh,0ah,'Quotient = $'
-    msg_r db 0dh,0ah,'Remainder = $'
-    msg_shr db 0dh,0ah,'After SHR: $'
+    msg2 db 10,13,'Enter second digit: $'
+    msg_q db 10,13,'Quotient = $'
+    msg_r db 10,13,'Remainder = $'
+    msg_shl db 10,13,'After SHL: $'
 
 .code
     main proc
@@ -44,14 +44,17 @@
         mov  ah, 0
         div  bl
         mov  quot, al
-        mov  rem, ah
+        mov  rem, ah 
+        add  quot, 48 
+        add  rem, 48
+
 
         ; Print Quotient
         mov  dx, offset msg_q
         mov  ah, 09h
         int  21h
 
-        add  quot, 48
+        ;add quot, 48
         mov  ah, 02h
         mov  dl, quot
         int  21h
@@ -61,7 +64,7 @@
         mov  ah, 09h
         int  21h
 
-        add  rem, 48
+        ;add rem, 48
         mov  ah, 02h
         mov  dl, rem
         int  21h
@@ -71,12 +74,12 @@
         mov  bl, num2
         mul  bl
 
-        ; Shift Right (SHR) operation on multiplication result
-        shr  al, 1
+        ; Shift Left (SHL) operation on multiplication result[cite: 1]
+        shl  al, 1
         mov  bl, al ; Save result in BL for printing
 
-        ; Print SHR message
-        mov  dx, offset msg_shr
+        ; Print SHL message[cite: 1]
+        mov  dx, offset msg_shl
         mov  ah, 09h
         int  21h
 
@@ -115,4 +118,5 @@ out_label:
         ret
     print_hex endp
 
-    end main
+    end main   
+    ; ata sHL
