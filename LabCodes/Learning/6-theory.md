@@ -4,6 +4,22 @@ In 8086 microprocessor assembly programming, unexpected bugs often arise from ac
 
 ---
 
+## Table of Contents
+1. [Architecture of the `AX` Register](#1-architecture-of-the-ax-register)
+2. [Why Does `AX` / `AL` Get Corrupted?](#2-why-does-ax--al-get-corrupted)
+3. [Case 1: Value Corrupted Due to Leftover Value in `AH`](#3-case-1-value-corrupted-due-to-leftover-value-in-ah)
+4. [Case 2: Output Kept Intact by Explicitly Clearing `AH` (`mov ah, 0`)](#4-case-2-output-kept-intact-by-explicitly-clearing-ah-mov-ah-0)
+5. [Summary & Best Practices](#5-summary--best-practices)
+6. [Character Case Conversion & Bitwise XOR Toggling](#6-character-case-conversion--bitwise-xor-toggling)
+   - [6.1 The ASCII Case Bit Property (Bit 5 Alignment)](#61-the-ascii-case-bit-property-bit-5-alignment)
+   - [6.2 Comparison of Conversion Approaches](#62-comparison-of-conversion-approaches)
+   - [6.3 Bitwise Masking with XOR Under the Hood](#63-bitwise-masking-with-xor-under-the-hood)
+   - [6.4 String Definition & Embedded CRLF (`DB 13, 10`)](#64-string-definition--embedded-crlf-db-13-10)
+   - [6.5 Address Loading: `MOV DX, OFFSET` vs `LEA DX`](#65-address-loading-mov-dx-offset-vs-lea-dx)
+   - [6.6 Comparative Code Implementations (`6.1_CP.asm` vs `6.1_CP-alt.asm`)](#66-comparative-code-implementations-61_cpasm-vs-61_cp-altasm)
+
+---
+
 ## 1. Architecture of the `AX` Register
 
 The `AX` register is a **16-bit general-purpose accumulator** in the 8086 CPU. It is physically partitioned into two independently addressable 8-bit registers:
@@ -198,3 +214,200 @@ END MAIN
    - `INT 21h` routines and DOS function setup overwrite `AH` (and often `AL`). If a value in `AL` or `AH` is needed later, save it to another register (`BL`, `CL`) or push it to the stack (`PUSH AX` / `POP AX`).
 3. **Remember Register Aliasing**:
    - Any modification to `AH` or `AL` directly modifies `AX`.
+
+---
+
+## 6. Character Case Conversion & Bitwise XOR Toggling
+
+In Lab 6, the task is to read an ASCII alphabetic character from the console and convert or toggle its case. Understanding the underlying binary bit layout of ASCII glyphs enables elegant bitwise solutions that avoid branching and conditional jumps.
+
+### 6.1 The ASCII Case Bit Property (Bit 5 Alignment)
+
+In standard 7-bit / 8-bit ASCII encoding, uppercase and lowercase Latin characters are systematically paired:
+
+$$\text{'a'} = 01100001_2 = 61_{16} = 97_{10}$$
+$$\text{'A'} = 01000001_2 = 41_{16} = 65_{10}$$
+
+Notice the bitwise layout of the entire alphabet:
+- **Bits 0–4 (Weights $2^0$ through $2^4$, values $1$ to $26$)**: Represent the 1-based alphabetical index ($1 = \text{'A'/'a'}, 2 = \text{'B'/'b'}, \dots, 26 = \text{'Z'/'z'}$).
+- **Bit 5 (Weight $2^5 = 32_{10} = 20_{16}$)**: **The Case Selector Bit**.
+  - Lowercase characters have Bit 5 = `1` (`61h` to `7Ah`).
+  - Uppercase characters have Bit 5 = `0` (`41h` to `5Ah`).
+- **Bits 6–7**: Fixed prefix `01b` designating printable uppercase and lowercase alphabetic blocks.
+
+Because the numerical gap between `'a'` and `'A'` is exactly $97 - 65 = 32_{10} = 20_{16}$, case conversion is fundamentally a manipulation of **Bit 5**.
+
+### 6.2 Comparison of Conversion Approaches
+
+| Approach | Assembly Instruction | Mechanism | Pros & Cons |
+| :--- | :--- | :--- | :--- |
+| **Arithmetic Subtraction** | `SUB AL, 20h` (or `SUB AL, 32`) | $\text{AL} \leftarrow \text{AL} - 32$ | **Pros**: Simple arithmetic.<br>**Cons**: Unidirectional (Lower $\rightarrow$ Upper only). Passing uppercase `'A'` gives `'!'` ($65 - 32 = 33$). |
+| **Arithmetic Addition** | `ADD AL, 20h` (or `ADD AL, 32`) | $\text{AL} \leftarrow \text{AL} + 32$ | **Pros**: Simple arithmetic.<br>**Cons**: Unidirectional (Upper $\rightarrow$ Lower only). Passing lowercase `'a'` produces non-ASCII garbage ($97 + 32 = 129$). |
+| **Bitwise Force (AND/OR)** | `AND AL, 0DFh`<br>`OR AL, 20h` | Clears Bit 5 (`11011111b`)<br>Sets Bit 5 (`00100000b`) | **Pros**: Idempotent. Guarantees valid target case even if already in that case.<br>**Cons**: Directional; cannot dynamically toggle. |
+| **Bitwise Inversion (XOR)** | `XOR AL, 32`<br>*(or `XOR AL, 20h`)* | $\text{AL} \leftarrow \text{AL} \oplus 00100000_2$ | **Pros**: **Universal Bidirectional Toggle**. Automatically inverts Lower $\rightarrow$ Upper AND Upper $\rightarrow$ Lower in a single opcode without conditional jumps! |
+
+### 6.3 Bitwise Masking with XOR Under the Hood
+
+The Exclusive-OR (`XOR`) operation follows two axiomatic truth tables for any bit $x$:
+
+$$x \oplus 0 = x \quad \text{(Bit preserved)}$$
+$$x \oplus 1 = \text{NOT}(x) \quad \text{(Bit inverted / toggled)}$$
+
+To selectively toggle Bit 5 without disturbing any of the other 7 bits, we construct an 8-bit mask where **only Bit 5 is `1`**:
+
+$$\text{Binary Mask} = 00100000_2 = 32_{10} = 20_{16}$$
+
+#### Bit-by-Bit Transformation Trace:
+
+1. **Lowercase to Uppercase (`'a' \rightarrow 'A'`)**:
+   ```
+   Bit Index:      7 6 5 4 3 2 1 0
+   AL ('a'):       0 1 1 0 0 0 0 1  (97 dec / 61h)
+   Mask (32):      0 0 1 0 0 0 0 0  (32 dec / 20h)
+   --------------------------------- (XOR)
+   Result ('A'):   0 1 0 0 0 0 0 1  (65 dec / 41h)
+                       ^
+                Bit 5 flipped (1 -> 0)
+   ```
+
+2. **Uppercase to Lowercase (`'A' \rightarrow 'a'`)**:
+   ```
+   Bit Index:      7 6 5 4 3 2 1 0
+   AL ('A'):       0 1 0 0 0 0 0 1  (65 dec / 41h)
+   Mask (32):      0 0 1 0 0 0 0 0  (32 dec / 20h)
+   --------------------------------- (XOR)
+   Result ('a'):   0 1 1 0 0 0 0 1  (97 dec / 61h)
+                       ^
+                Bit 5 flipped (0 -> 1)
+   ```
+
+### 6.4 String Definition & Embedded CRLF (`DB 13, 10`)
+
+When structuring console user interfaces, moving to a new line typically requires emitting both:
+1. **Carriage Return (`CR = 13` / `0Dh`)**: Repositions cursor to column 0 (far-left margin).
+2. **Line Feed (`LF = 10` / `0Ah`)**: Advances cursor down to the subsequent row.
+
+#### Verbose Approach (Multiple Interrupt Calls):
+```assembly
+mov ah, 02h
+mov dl, 10          ; Line Feed
+int 21h
+mov dl, 13          ; Carriage Return
+int 21h
+```
+
+#### Optimized Approach (Embedded Control Bytes in `.DATA`):
+```assembly
+MSG2 DB 13, 10, 'Output: $'
+```
+When DOS service `INT 21H / AH=09H` outputs `MSG2`, it processes byte `13` and byte `10` as control instructions before printing the string characters, completely avoiding extra instruction bytes and saving CPU cycles.
+
+### 6.5 Address Loading: `MOV DX, OFFSET` vs `LEA DX`
+
+| Dimension | `MOV DX, OFFSET label` | `LEA DX, label` |
+| :--- | :--- | :--- |
+| **Instruction Meaning** | Move Immediate Offset | Load Effective Address |
+| **Resolution Phase** | **Assemble-time** (Compile-time) | **Run-time** (Executed by CPU ALU) |
+| **Machine Opcode Size** | Typically 3 bytes (`BA [Low] [High]`) | Typically 4 bytes (`8D 16 [Disp]`) |
+| **Execution Latency** | Faster (Immediate literal copy) | Adds ALU effective address calculation cycle |
+| **Flexibility** | Fixed labels only; cannot index registers | Computes register arithmetic: `LEA SI, [BX + DI + 4]` |
+| **Exam Recommendation** | Recommended for static strings in `.DATA` | Widely used across textbooks and assemblers for clarity |
+
+### 6.6 Comparative Code Implementations (`6.1_CP.asm` vs `6.1_CP-alt.asm`)
+
+#### Primary Approach: Arithmetic Subtraction (`6.1_CP.asm`)
+```assembly
+.model small
+.stack 100h
+.data
+    msg1 db "Input: $"
+    msg2 db "Output : $"
+    char db ?
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; Prompt Input
+    mov dx, offset msg1
+    mov ah, 09h
+    int 21h
+
+    ; Read character into AL
+    mov ah, 01h
+    int 21h
+
+    ; Subtraction conversion
+    sub al, 20h
+    mov char, al
+
+    ; Manual CRLF
+    mov ah, 02h
+    mov dl, 10
+    int 21h
+    mov ah, 02h
+    mov dl, 13
+    int 21h
+
+    ; Print Output
+    mov dx, offset msg2
+    mov ah, 09h
+    int 21h
+
+    mov ah, 02h
+    mov dl, char
+    int 21h
+
+exit:
+    mov ah, 4ch
+    int 21h
+main endp
+end main
+```
+
+#### Alternative Approach: Bitwise XOR Toggling (`6.1_CP-alt.asm`)
+```assembly
+.MODEL SMALL
+.STACK 100H
+.DATA
+    MSG1 DB 'Input: $'
+    MSG2 DB 13, 10, 'Output: $'      ; Embedded CR and LF control characters
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; 1. Display input prompt
+    LEA DX, MSG1
+    MOV AH, 09H
+    INT 21H
+
+    ; 2. Take input
+    MOV AH, 01H
+    INT 21H
+
+    ; 3. Universal bidirectional case toggle
+    XOR AL, 32                      ; Decimal 32 = 20h = 00100000b
+
+    ; 4. Preserve converted character
+    MOV BL, AL
+
+    ; 5. Output message (automatically issues CRLF first)
+    LEA DX, MSG2
+    MOV AH, 09H
+    INT 21H
+
+    ; 6. Display converted character
+    MOV DL, BL
+    MOV AH, 02H
+    INT 21H
+
+    ; 7. Exit
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+```
+

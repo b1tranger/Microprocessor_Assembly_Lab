@@ -16,7 +16,7 @@ This document serves as a master revision guide for **Lab Test 1**, synthesizing
      - [2.3.2 Multi-Digit Output Decomposition via Radix-10 Division](#232-multi-digit-output-decomposition-via-radix-10-division)
    - [2.4 Lab 4: Compound Academic Marks Calculation & Averages](#24-lab-4-compound-academic-marks-calculation--averages)
    - [2.5 Lab 5: Bitwise Operations & Hexadecimal Conversion Subroutines](#25-lab-5-bitwise-operations--hexadecimal-conversion-subroutines)
-   - [2.6 Lab 6: Character Case Conversion](#26-lab-6-character-case-conversion)
+   - [2.6 Lab 6: Character Case Conversion & Bitwise Toggling](#26-lab-6-character-case-conversion--bitwise-toggling)
    - [2.7 Lab 7: Loops, Conditional Filtering & 1D Array Processing](#27-lab-7-loops-conditional-filtering--1d-array-processing)
      - [2.7.1 Hardware Loops & Alphabet Traversal](#271-hardware-loops--alphabet-traversal)
      - [2.7.2 Conditional Element Filtering & Jump-Based Loops](#272-conditional-element-filtering--jump-based-loops)
@@ -26,7 +26,8 @@ This document serves as a master revision guide for **Lab Test 1**, synthesizing
    - [3.1 DOS Interrupt 21h Service Summary](#31-dos-interrupt-21h-service-summary)
    - [3.2 8086 Hardware Division Rules](#32-8086-hardware-division-rules)
    - [3.3 ASCII & Radix Conversion Rules](#33-ascii--radix-conversion-rules)
-   - [3.4 Top 5 Common Exam Bugs & Pitfalls](#34-top-5-common-exam-bugs--pitfalls)
+   - [3.4 Address Loading & String Formatting Cheatsheet](#34-address-loading--string-formatting-cheatsheet)
+   - [3.5 Top 5 Common Exam Bugs & Pitfalls](#35-top-5-common-exam-bugs--pitfalls)
 
 > [!TIP]
 > For deep architectural explanations of the **leading zero rule on hex literals (`0Ah`)**, **register hygiene & clearing `AH` before `DIV`**, and 8086 hardware constraints, see the companion guide: [`assembly_core_mechanics.md`](./assembly_core_mechanics.md).
@@ -39,13 +40,13 @@ The table below outlines each lab, the specific files implemented, the primary a
 
 | Lab | Source File(s) | Primary Algorithm / Task | Core Concepts & Prerequisites Required | Key Registers & Services | Common Exam Pitfalls |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Lab 1** | [`1.1.asm`](./lab-1/1.1.asm)<br>[`lab-1.asm`](./lab-1/lab-1.asm) *(Identical)* | **Direct String Display**<br>Load address of a string in memory and print it to standard output. | • Memory segmentation (`.DATA`, `.CODE`, `.STACK`)<br>• Initializing `DS` through accumulator `AX`<br>• Effective offset calculation (`OFFSET`)<br>• String termination using `$` | `DS`, `AX`<br>`DX` (string pointer)<br>`INT 21H / AH=09H`<br>`INT 21H / AH=4CH` | Forgetting `mov ds, ax`, resulting in garbage data or null pointer display. Omitting `$` at string tail. |
-| **Lab 2** | [`2.1.asm`](./lab-2/2.1.asm)<br>[`2.2.asm`](./lab-2/2.2.asm)<br>[`2.3.asm`](./lab-2/2.3.asm)<br>[`2.3-alt.asm`](./lab-2/2.3-alt.asm) | **Character I/O & Formatting**<br>Echoing single/multiple characters with formatted whitespace, CR (13), and LF (10). | • Console character input & output interrupts<br>• ASCII control characters (`10 = LF`, `13 = CR`, `32 = Space`)<br>• Staging multiple user inputs into separate 8-bit registers (`BL`, `BH`) | `AL` (input receiver)<br>`DL` (output carrier)<br>`BL`, `BH` (staging)<br>`INT 21H / AH=01H`<br>`INT 21H / AH=02H` | Forgetting carriage return (`13`) alongside line feed (`10`), causing diagonal cursor stair-stepping. Overwriting `AL` before saving previous input. |
-| **Lab 3** | [`3.1.asm`](./lab-3/3.1.asm)<br>[`3.2.asm`](./lab-3/3.2.asm) | **Single-Digit Arithmetic & 2-Digit Decimal Decomposition**<br>Perform `+`, `-`, `*`, `/` and split two-digit results into tens and units digits. | • ASCII to integer conversion (`- 48`)<br>• Integer to ASCII conversion (`+ 48`)<br>• Hardware multiplication (`MUL`) & division (`DIV`) register implicit destinations<br>• Radix-10 decomposition via `DIV 10` | `AL` (multiplier/dividend)<br>`AH` (remainder receiver)<br>`AX` (16-bit product / dividend)<br>`INT 21H / AH=02H` | Performing arithmetic directly on raw ASCII characters. Failing to isolate remainder (`AH`) and quotient (`AL`) after division. |
-| **Lab 4** | [`4.1_CP.asm`](./lab-4/4.1_CP.asm) | **Compound Marks Accumulation & Average Calculation**<br>Take 3 course grades, compute total marks, format 2-digit sum, and compute integer average. | • Sequential variable allocation in `.DATA`<br>• Multi-operand accumulation<br>• Clearing high byte `AH=0` before 8-bit division to prevent divide overflow exceptions<br>• Interleaved user prompts | `AL` (sum & dividend)<br>`AH` (zeroed out, then remainder)<br>`BL`, `BH` (divisors)<br>`INT 21H / AH=09H, 01H, 02H` | Leaving uninitialized garbage in `AH` before running `DIV reg8`, which triggers CPU Divide Error interrupt (Fault #DE). |
-| **Lab 5** | [`5.1.asm`](./lab-5/5.1.asm) | **Bitwise Manipulation & 2-Digit Hexadecimal Subroutine**<br>Apply bitwise `OR`, separate upper and lower nibbles, and convert to ASCII hex characters ('0'-'9', 'A'-'F'). | • Logical operations (`OR`, `AND`, `SHR`)<br>• Nibble isolation (shift upper nibble by 4; mask lower nibble with `0Fh`)<br>• Subroutine modularity (`CALL`, `RET`, stack tracking)<br>• Conditional ASCII hex adjustment (`+48`, `CMP 57`, `JBE`, `+7`) | `AL` (data byte / nibble)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`FLAGS` (CF, ZF from `CMP`) | Missing the `+7` offset for hex digits `10-15` (`0Ah-0Fh` $\rightarrow$ `'A'-'F'`). Forgetting `RET` in `PROC`, causing the CPU to execute subsequent memory fall-through. |
-| **Lab 6** | [`6.1_CP.asm`](./lab-6/6.1_CP.asm) | **Character Case Conversion**<br>Read a lowercase ASCII character and convert it to uppercase. | • ASCII binary encoding scheme (bit 5 determines case: `'a' = 61h`, `'A' = 41h`)<br>• Subtractive arithmetic conversion (`SUB AL, 20h`) or bitwise masking (`AND AL, 0DFh`)<br>• Console I/O sequencing | `AL` (input and conversion)<br>`DL` (output)<br>`INT 21H / AH=01H, 02H, 09H` | Modifying character without validating bounds, or confusing whether to `ADD 20h` (upper to lower) or `SUB 20h` (lower to upper). |
-| **Lab 7** | [`7.1_loop.asm`](./lab-7/7.1_loop.asm)<br>[`7.2_task.asm`](./lab-7/7.2_task.asm)<br>[`7.3_Array.asm`](./lab-7/7.3_Array.asm)<br>[`7.4_Array_sum.asm`](./lab-7/7.4_Array_sum.asm)<br>[`array_Jannat[7.3].asm`](./lab-7/array_Jannat%5B7.3%5D.asm)<br>[`array_sum_Jannat[7.4].asm`](./lab-7/array_sum_Jannat%5B7.4%5D.asm)<br>[`array_sum_Semim[7.4].asm`](./lab-7/array_sum_Semim%5B7.4%5D.asm) | **Hardware Loops, Conditional Filtering & 1D Array Operations**<br>Print alphabet sequences, skip specific characters, declare 1D byte arrays, traverse with pointers, and calculate vector sums. | • Dedicated counter register `CX` & hardware `LOOP` instruction (`CX <- CX - 1; JNZ`)<br>• Conditional branching (`CMP`, `JE`, `JBE`)<br>• 1D memory buffers (`array db ...`)<br>• Base indirect pointer indexing using Source Index (`SI`, `[SI]`)<br>• Pointer advancement (`INC SI`) | `CX` (loop counter)<br>`SI` (memory source index pointer)<br>`DL` (current element output)<br>`BL` (running sum accumulator)<br>`AL` (memory transfer mediator) | Placing `INC SI` or `INC DL` inside a skipped block, causing an infinite loop. Adding memory directly to accumulator with unaligned registers. |
+| **Lab 1** | [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/1.1.asm)<br>[`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/lab-1.asm) *(Identical)* | **Direct String Display**<br>Load address of a string in memory and print it to standard output. | • Memory segmentation (`.DATA`, `.CODE`, `.STACK`)<br>• Initializing `DS` through accumulator `AX`<br>• Effective offset calculation (`OFFSET`)<br>• String termination using `$` | `DS`, `AX`<br>`DX` (string pointer)<br>`INT 21H / AH=09H`<br>`INT 21H / AH=4CH` | Forgetting `mov ds, ax`, resulting in garbage data or null pointer display. Omitting `$` at string tail. |
+| **Lab 2** | [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.1.asm)<br>[`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.2.asm)<br>[`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3.asm)<br>[`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3-alt.asm) | **Character I/O & Formatting**<br>Echoing single/multiple characters with formatted whitespace, CR (13), and LF (10). | • Console character input & output interrupts<br>• ASCII control characters (`10 = LF`, `13 = CR`, `32 = Space`)<br>• Staging multiple user inputs into separate 8-bit registers (`BL`, `BH`) | `AL` (input receiver)<br>`DL` (output carrier)<br>`BL`, `BH` (staging)<br>`INT 21H / AH=01H`<br>`INT 21H / AH=02H` | Forgetting carriage return (`13`) alongside line feed (`10`), causing diagonal cursor stair-stepping. Overwriting `AL` before saving previous input. |
+| **Lab 3** | [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.1.asm)<br>[`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.2.asm) | **Single-Digit Arithmetic & 2-Digit Decimal Decomposition**<br>Perform `+`, `-`, `*`, `/` and split two-digit results into tens and units digits. | • ASCII to integer conversion (`- 48`)<br>• Integer to ASCII conversion (`+ 48`)<br>• Hardware multiplication (`MUL`) & division (`DIV`) register implicit destinations<br>• Radix-10 decomposition via `DIV 10` | `AL` (multiplier/dividend)<br>`AH` (remainder receiver)<br>`AX` (16-bit product / dividend)<br>`INT 21H / AH=02H` | Performing arithmetic directly on raw ASCII characters. Failing to isolate remainder (`AH`) and quotient (`AL`) after division. |
+| **Lab 4** | [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4/4.1_CP.asm) | **Compound Marks Accumulation & Average Calculation**<br>Take 3 course grades, compute total marks, format 2-digit sum, and compute integer average. | • Sequential variable allocation in `.DATA`<br>• Multi-operand accumulation<br>• Clearing high byte `AH=0` before 8-bit division to prevent divide overflow exceptions<br>• Interleaved user prompts | `AL` (sum & dividend)<br>`AH` (zeroed out, then remainder)<br>`BL`, `BH` (divisors)<br>`INT 21H / AH=09H, 01H, 02H` | Leaving uninitialized garbage in `AH` before running `DIV reg8`, which triggers CPU Divide Error interrupt (Fault #DE). |
+| **Lab 5** | [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5/5.1.asm) | **Bitwise Manipulation & 2-Digit Hexadecimal Subroutine**<br>Apply bitwise `OR`, separate upper and lower nibbles, and convert to ASCII hex characters ('0'-'9', 'A'-'F'). | • Logical operations (`OR`, `AND`, `SHR`)<br>• Nibble isolation (shift upper nibble by 4; mask lower nibble with `0Fh`)<br>• Subroutine modularity (`CALL`, `RET`, stack tracking)<br>• Conditional ASCII hex adjustment (`+48`, `CMP 57`, `JBE`, `+7`) | `AL` (data byte / nibble)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`FLAGS` (CF, ZF from `CMP`) | Missing the `+7` offset for hex digits `10-15` (`0Ah-0Fh` $\rightarrow$ `'A'-'F'`). Forgetting `RET` in `PROC`, causing the CPU to execute subsequent memory fall-through. |
+| **Lab 6** | [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP.asm)<br>[`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP-alt.asm) *(XOR Case Toggling)* | **Character Case Conversion & Toggling**<br>Read an ASCII character and convert or toggle its case (lower $\leftrightarrow$ upper) using arithmetic subtraction or bitwise XOR masking. | • ASCII binary encoding scheme (bit 5 determines case: `'a' = 61h`, `'A' = 41h`)<br>• Subtractive arithmetic conversion (`SUB AL, 20h`)<br>• Universal bitwise case toggling (`XOR AL, 32` / `20h`)<br>• Embedded CRLF string formatting (`DB 13, 10, ...`)<br>• Address loading mechanics (`LEA` vs `OFFSET`) | `AL` (input, conversion & toggling)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`INT 21H / AH=01H, 02H, 09H` | Modifying character without validating bounds, confusing whether to `ADD 20h` or `SUB 20h`, or using `SUB 20h` on uppercase input (which produces non-alphabetic ASCII). |
+| **Lab 7** | [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.1_loop.asm)<br>[`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.2_task.asm)<br>[`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.3_Array.asm)<br>[`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.4_Array_sum.asm)<br>[`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_Jannat%5B7.3%5D.asm)<br>[`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Jannat%5B7.4%5D.asm)<br>[`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm) | **Hardware Loops, Conditional Filtering & 1D Array Operations**<br>Print alphabet sequences, skip specific characters, declare 1D byte arrays, traverse with pointers, and calculate vector sums. | • Dedicated counter register `CX` & hardware `LOOP` instruction (`CX <- CX - 1; JNZ`)<br>• Conditional branching (`CMP`, `JE`, `JBE`)<br>• 1D memory buffers (`array db ...`)<br>• Base indirect pointer indexing using Source Index (`SI`, `[SI]`)<br>• Pointer advancement (`INC SI`) | `CX` (loop counter)<br>`SI` (memory source index pointer)<br>`DL` (current element output)<br>`BL` (running sum accumulator)<br>`AL` (memory transfer mediator) | Placing `INC SI` or `INC DL` inside a skipped block, causing an infinite loop. Adding memory directly to accumulator with unaligned registers. |
 
 ---
 
@@ -769,31 +770,81 @@ end main
 
 ---
 
-### 2.6 Lab 6: Character Case Conversion
-* **Files Analyzed**: [`6.1_CP.asm`](./lab-6/6.1_CP.asm).
-* **Core Problem**: Read an arbitrary lowercase character from standard input, convert it to its uppercase equivalent, and print the output.
+### 2.6 Lab 6: Character Case Conversion & Bitwise Toggling
+* **Files Analyzed**: [`6.1_CP.asm`](./lab-6/6.1_CP.asm) *(Subtractive approach)* and [`6.1_CP-alt.asm`](./lab-6/6.1_CP-alt.asm) *(XOR toggling alternative)*.
+* **Core Problem**: Read an arbitrary ASCII alphabetic character from standard input, convert or toggle its case between uppercase and lowercase, and display the transformed result with formatted output.
 
 #### Key Mechanics & Architectural Insights
-* **The ASCII Case Bit Property**:
-  - In ASCII, the difference between any lowercase letter and its corresponding uppercase letter is exactly $32_{10} = 20_{16}$:
-    $$\text{'a'} = 01100001_2 = 61_{16}$$
-    $$\text{'A'} = 01000001_2 = 41_{16}$$
-    $$\text{Bit 5 is the 'case bit' (1 for lowercase, 0 for uppercase)}.$$
-* **Conversion Techniques**:
-  1. **Arithmetic Subtraction**:
-     ```assembly
-     sub al, 20h         ; 'a' (61h) - 20h = 'A' (41h)
-     ```
-  2. **Bitwise Masking (Idempotent approach)**:
-     ```assembly
-     and al, 0DFh        ; 0DFh = 11011111b (clears bit 5, forcing uppercase)
-     ```
-* **Opposite Conversion (Uppercase to Lowercase)**:
-  - Add $20_{16}$ (`add al, 20h`) or set bit 5 (`or al, 20h`).
 
+1. **The ASCII Case Bit Property (Bit 5 Alignment)**:
+   - In standard ASCII encoding, corresponding uppercase and lowercase letters differ by exactly one bit: **Bit 5** (weight $2^5 = 32_{10} = 20_{16}$):
+     $$\text{'a'} = 01100001_2 = 61_{16} = 97_{10}$$
+     $$\text{'A'} = 01000001_2 = 41_{16} = 65_{10}$$
+   - Bit 5 is strictly `1` for all lowercase letters (`'a'-'z'`: `61h - 7Ah`) and strictly `0` for all uppercase letters (`'A'-'Z'`: `41h - 5Ah`).
+   - Bits 0–4 encode the letter's alphabetical rank ($1$ through $26$), and Bits 6–7 define the printable ASCII character block (`01b`).
+
+2. **Comparison of Case Conversion Techniques**:
+
+| Technique | Instruction | Operation | Characteristics & Limitations |
+| :--- | :--- | :--- | :--- |
+| **Arithmetic Subtraction** | `SUB AL, 20h` (or `SUB AL, 32`) | $\text{AL} \leftarrow \text{AL} - 32$ | **Directional only (Lower $\rightarrow$ Upper)**.<br>If applied to an uppercase character (`'A'`), the result is non-alphabetic (`'A' - 32 = '!'`). |
+| **Arithmetic Addition** | `ADD AL, 20h` (or `ADD AL, 32`) | $\text{AL} \leftarrow \text{AL} + 32$ | **Directional only (Upper $\rightarrow$ Lower)**.<br>If applied to a lowercase character (`'a'`), the result overflows into non-letter ASCII (`'a' + 32 = 81h`). |
+| **Bitwise Force (AND/OR)** | `AND AL, 0DFh`<br>`OR AL, 20h` | Clears Bit 5 (`0DFh = 11011111b`)<br>Sets Bit 5 (`20h = 00100000b`) | **Idempotent (Guaranteed target case)**.<br>`AND` guarantees uppercase even if already uppercase; `OR` guarantees lowercase even if already lowercase. |
+| **Bitwise Inversion (XOR)** *(Universal)* | `XOR AL, 32`<br>*(or `XOR AL, 20h`)* | $\text{AL} \leftarrow \text{AL} \oplus 00100000_2$ | **Universal Bidirectional Toggle**.<br>Flips Bit 5 ($0 \leftrightarrow 1$). Automatically inverts Lower $\rightarrow$ Upper **and** Upper $\rightarrow$ Lower without conditional jumps! |
+
+3. **Bitwise Masking with `XOR` Under the Hood**:
+   - **Fundamental Boolean Axioms**:
+     $$x \oplus 0 = x \quad \text{(Preserves the original bit)}$$
+     $$x \oplus 1 = \text{NOT}(x) \quad \text{(Inverts / toggles the bit)}$$
+   - **The Mask Value**:
+     - Decimal: `32`
+     - Hexadecimal: `20h`
+     - Binary: `0010 0000b` (Only Bit 5 is `1`; all other 7 bits are `0`)
+   - **Bit-by-Bit Logic Breakdown**:
+     - **Bits 0–4**: Mask is `0` $\rightarrow x \oplus 0 = x \rightarrow$ Letter identity preserved ($1$ to $26$).
+     - **Bit 5**: Mask is `1` $\rightarrow x \oplus 1 = \text{NOT}(x) \rightarrow$ **Toggled** ($0 \leftrightarrow 1$).
+     - **Bits 6–7**: Mask is `0` $\rightarrow x \oplus 0 = x \rightarrow$ ASCII letter block preserved (`01b`).
+
+```
+    Bit Position:   7   6   5   4   3   2   1   0
+    AL ('a'):       0   1   1   0   0   0   0   1   (97 dec / 61h)
+    Mask 32:        0   0   1   0   0   0   0   0   (32 dec / 20h)
+    ------------------------------------------------- (XOR)
+    Result ('A'):   0   1   0   0   0   0   0   1   (65 dec / 41h)
+                            ^
+                     Bit 5 flipped (1 -> 0)
+```
+```
+    Bit Position:   7   6   5   4   3   2   1   0
+    AL ('A'):       0   1   0   0   0   0   0   1   (65 dec / 41h)
+    Mask 32:        0   0   1   0   0   0   0   0   (32 dec / 20h)
+    ------------------------------------------------- (XOR)
+    Result ('a'):   0   1   1   0   0   0   0   1   (97 dec / 61h)
+                            ^
+                     Bit 5 flipped (0 -> 1)
+```
+
+4. **String Definition & Embedded CRLF (`DB 13, 10`)**:
+   - Instead of issuing separate DOS calls (`INT 21H / AH=02H`) for Line Feed (`10`) and Carriage Return (`13`), embedded control bytes can be placed directly in the `.DATA` string:
+     ```assembly
+     MSG2 DB 13, 10, 'Output: $'
+     ```
+   - When printed with `AH=09H`, DOS moves the cursor to column 0 (`13`) and drops down one row (`10`) automatically before rendering `'Output: '`.
+
+5. **Address Loading: `LEA` vs `OFFSET`**:
+
+| Directive / Instruction | Evaluation Timing | Hardware Execution | Best Use Case |
+| :--- | :--- | :--- | :--- |
+| **`MOV DX, OFFSET label`** | **Assemble-time** | Hardcodes immediate 16-bit constant address into instruction opcodes (`BA xx xx`). Faster, smaller binary footprint. | Static variables and fixed memory buffers declared in `.DATA`. |
+| **`LEA DX, label`** | **Run-time** | CPU calculates Effective Address (EA) dynamically via internal ALU address generator. | Dynamic pointers, array indexing with displacements (e.g., `LEA SI, [BX + DI + 4]`). |
+
+> [!NOTE]
+> For simple direct labels like `MSG1`, `LEA` adds slight CPU runtime calculation overhead compared to `OFFSET`, but is widely readable across assemblers.
+
+#### Code Listing: Primary Subtractive Approach (`6.1_CP.asm`)
 ```assembly
 ; ============================================================
-; Lab 6: Lowercase to Uppercase Case Conversion
+; Lab 6: Lowercase to Uppercase Case Conversion (Subtraction)
 ; File: 6.1_CP.asm
 ; ============================================================
 .model small
@@ -821,10 +872,11 @@ main proc
     sub al, 20h                     ; Subtract 32 (20h)
     mov char, al
 
-    ; Print CRLF
+    ; Print CRLF manually
     mov ah, 02h
     mov dl, 10
     int 21h
+    mov ah, 02h
     mov dl, 13
     int 21h
 
@@ -843,6 +895,59 @@ exit:
     int 21h
 main endp
 end main
+```
+
+#### Code Listing: Alternative XOR Toggling Approach (`6.1_CP-alt.asm`)
+```assembly
+; ============================================================
+; Lab 6 Alternative: Case Toggling via Bitwise XOR Masking
+; File: 6.1_CP-alt.asm
+; Reference: 8086 Assembly Cheatsheet / 6.1_CP.asm Alternative
+; ============================================================
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    MSG1 DB 'Input: $'
+    MSG2 DB 13, 10, 'Output: $'      ; Embedded CR (13) and LF (10) for automated newline
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; 1. Display Input Prompt
+    LEA DX, MSG1
+    MOV AH, 09H
+    INT 21H
+
+    ; 2. Read Single Character from Keyboard into AL
+    MOV AH, 01H
+    INT 21H
+
+    ; 3. Universal Case Toggling (Invert Bit 5)
+    ; 'a' (61h) XOR 20h -> 'A' (41h)
+    ; 'A' (41h) XOR 20h -> 'a' (61h)
+    XOR AL, 32
+
+    ; 4. Preserve Converted Character in BL
+    MOV BL, AL
+
+    ; 5. Display Output Message (Automatically issues CRLF first)
+    LEA DX, MSG2
+    MOV AH, 09H
+    INT 21H
+
+    ; 6. Display Converted Character
+    MOV DL, BL
+    MOV AH, 02H
+    INT 21H
+
+    ; 7. Return to DOS
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
 ```
 
 ---
@@ -1101,20 +1206,47 @@ end main
                       +-------------------+
                       | Upper to Lower    |  --> ADD AL, 20h ('A' -> 'a')
                       +-------------------+
+                      | Case Toggle (XOR) |  --> XOR AL, 32 / 20h ('a' <-> 'A')
+                      +-------------------+
                       | Hex Digit (10-15) |  --> ADD AL, 48 + 7 ('A'-'F')
                       +-------------------+
 ```
 
 ---
 
-### 3.4 Top 5 Common Exam Bugs & Pitfalls
+### 3.4 Address Loading & String Formatting Cheatsheet
+
+#### 1. String Definition & Formatting Control Bytes
+
+| Element | Syntax / Value | Architectural Function & Impact |
+| :--- | :--- | :--- |
+| **Data Byte** | `DB` | Allocates sequential 8-bit bytes in the `.DATA` segment. |
+| **Carriage Return** | `13` (`0Dh`) | Moves the console cursor to the far-left column (`\r`). |
+| **Line Feed** | `10` (`0Ah`) | Drops the console cursor straight down to the next row (`\n`). |
+| **DOS Terminator** | `'$'` (`24h`) | Tells DOS `INT 21H / AH=09H` to stop printing memory. |
+
+* **Embedded CRLF String Pattern**:
+  ```assembly
+  MSG2 DB 13, 10, 'Output: $'   ; Resets cursor to column 0 on new line, prints "Output: ", halts at $
+  ```
+
+#### 2. Address Loading: `MOV DX, OFFSET` vs `LEA DX`
+
+| Directive / Instruction | Evaluation Timing | Execution Mechanism | Primary Recommended Use Case |
+| :--- | :--- | :--- | :--- |
+| **`MOV DX, OFFSET label`** | Compile / Assemble-time | Hardcodes constant 16-bit address into opcode. Faster, fewer bytes. | Static variables and fixed memory buffers declared in `.DATA`. |
+| **`LEA DX, label`** | Run-time | Computes effective address dynamically using the CPU ALU. | Dynamic pointers, array displacements, e.g. `[BX + SI + 4]`. |
+
+---
+
+### 3.5 Top 5 Common Exam Bugs & Pitfalls
 
 1. **Uninitialized Data Segment**:
    - Omitting `mov ax, @data; mov ds, ax` means memory variables and string offsets point to unmapped or invalid physical addresses.
 2. **Leftover Garbage in `AH` Before `DIV`**:
    - Leaving `AH` unzeroed before `div bl` causes `AX` to be interpreted as hundreds or thousands, triggering CPU Divide Error (#DE). Always insert `mov ah, 0`.
 3. **Omitting Carriage Return (`13`)**:
-   - Outputting only Line Feed (`10`) drops the cursor vertically without returning to column 0. Always emit both `10` and `13`.
+   - Outputting only Line Feed (`10`) drops the cursor vertically without returning to column 0. Always emit both `10` and `13`, or embed `13, 10` inside the `.DATA` string.
 4. **Missing Subroutine `RET`**:
    - A procedure (`proc`) without `ret` falls through into whatever instructions follow sequentially in the code segment.
 5. **Array Out-of-Bounds in `LOOP`**:
