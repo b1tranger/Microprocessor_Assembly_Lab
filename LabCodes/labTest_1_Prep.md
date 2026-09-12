@@ -40,20 +40,20 @@ The table below outlines each lab, the specific files implemented, the primary a
 
 | Lab | Source File(s) | Primary Algorithm / Task | Core Concepts & Prerequisites Required | Key Registers & Services | Common Exam Pitfalls |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Lab 1** | [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/1.1.asm)<br>[`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/lab-1.asm) *(Identical)* | **Direct String Display**<br>Load address of a string in memory and print it to standard output. | • Memory segmentation (`.DATA`, `.CODE`, `.STACK`)<br>• Initializing `DS` through accumulator `AX`<br>• Effective offset calculation (`OFFSET`)<br>• String termination using `$` | `DS`, `AX`<br>`DX` (string pointer)<br>`INT 21H / AH=09H`<br>`INT 21H / AH=4CH` | Forgetting `mov ds, ax`, resulting in garbage data or null pointer display. Omitting `$` at string tail. |
-| **Lab 2** | [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.1.asm)<br>[`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.2.asm)<br>[`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3.asm)<br>[`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3-alt.asm) | **Character I/O & Formatting**<br>Echoing single/multiple characters with formatted whitespace, CR (13), and LF (10). | • Console character input & output interrupts<br>• ASCII control characters (`10 = LF`, `13 = CR`, `32 = Space`)<br>• Staging multiple user inputs into separate 8-bit registers (`BL`, `BH`) | `AL` (input receiver)<br>`DL` (output carrier)<br>`BL`, `BH` (staging)<br>`INT 21H / AH=01H`<br>`INT 21H / AH=02H` | Forgetting carriage return (`13`) alongside line feed (`10`), causing diagonal cursor stair-stepping. Overwriting `AL` before saving previous input. |
-| **Lab 3** | [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.1.asm)<br>[`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.2.asm) | **Single-Digit Arithmetic & 2-Digit Decimal Decomposition**<br>Perform `+`, `-`, `*`, `/` and split two-digit results into tens and units digits. | • ASCII to integer conversion (`- 48`)<br>• Integer to ASCII conversion (`+ 48`)<br>• Hardware multiplication (`MUL`) & division (`DIV`) register implicit destinations<br>• Radix-10 decomposition via `DIV 10` | `AL` (multiplier/dividend)<br>`AH` (remainder receiver)<br>`AX` (16-bit product / dividend)<br>`INT 21H / AH=02H` | Performing arithmetic directly on raw ASCII characters. Failing to isolate remainder (`AH`) and quotient (`AL`) after division. |
-| **Lab 4** | [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4/4.1_CP.asm) | **Compound Marks Accumulation & Average Calculation**<br>Take 3 course grades, compute total marks, format 2-digit sum, and compute integer average. | • Sequential variable allocation in `.DATA`<br>• Multi-operand accumulation<br>• Clearing high byte `AH=0` before 8-bit division to prevent divide overflow exceptions<br>• Interleaved user prompts | `AL` (sum & dividend)<br>`AH` (zeroed out, then remainder)<br>`BL`, `BH` (divisors)<br>`INT 21H / AH=09H, 01H, 02H` | Leaving uninitialized garbage in `AH` before running `DIV reg8`, which triggers CPU Divide Error interrupt (Fault #DE). |
-| **Lab 5** | [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5/5.1.asm) | **Bitwise Manipulation & 2-Digit Hexadecimal Subroutine**<br>Apply bitwise `OR`, separate upper and lower nibbles, and convert to ASCII hex characters ('0'-'9', 'A'-'F'). | • Logical operations (`OR`, `AND`, `SHR`)<br>• Nibble isolation (shift upper nibble by 4; mask lower nibble with `0Fh`)<br>• Subroutine modularity (`CALL`, `RET`, stack tracking)<br>• Conditional ASCII hex adjustment (`+48`, `CMP 57`, `JBE`, `+7`) | `AL` (data byte / nibble)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`FLAGS` (CF, ZF from `CMP`) | Missing the `+7` offset for hex digits `10-15` (`0Ah-0Fh` $\rightarrow$ `'A'-'F'`). Forgetting `RET` in `PROC`, causing the CPU to execute subsequent memory fall-through. |
-| **Lab 6** | [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP.asm)<br>[`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP-alt.asm) *(XOR Case Toggling)* | **Character Case Conversion & Toggling**<br>Read an ASCII character and convert or toggle its case (lower $\leftrightarrow$ upper) using arithmetic subtraction or bitwise XOR masking. | • ASCII binary encoding scheme (bit 5 determines case: `'a' = 61h`, `'A' = 41h`)<br>• Subtractive arithmetic conversion (`SUB AL, 20h`)<br>• Universal bitwise case toggling (`XOR AL, 32` / `20h`)<br>• Embedded CRLF string formatting (`DB 13, 10, ...`)<br>• Address loading mechanics (`LEA` vs `OFFSET`) | `AL` (input, conversion & toggling)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`INT 21H / AH=01H, 02H, 09H` | Modifying character without validating bounds, confusing whether to `ADD 20h` or `SUB 20h`, or using `SUB 20h` on uppercase input (which produces non-alphabetic ASCII). |
-| **Lab 7** | [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.1_loop.asm)<br>[`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.2_task.asm)<br>[`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.3_Array.asm)<br>[`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.4_Array_sum.asm)<br>[`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_Jannat%5B7.3%5D.asm)<br>[`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Jannat%5B7.4%5D.asm)<br>[`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm) | **Hardware Loops, Conditional Filtering & 1D Array Operations**<br>Print alphabet sequences, skip specific characters, declare 1D byte arrays, traverse with pointers, and calculate vector sums. | • Dedicated counter register `CX` & hardware `LOOP` instruction (`CX <- CX - 1; JNZ`)<br>• Conditional branching (`CMP`, `JE`, `JBE`)<br>• 1D memory buffers (`array db ...`)<br>• Base indirect pointer indexing using Source Index (`SI`, `[SI]`)<br>• Pointer advancement (`INC SI`) | `CX` (loop counter)<br>`SI` (memory source index pointer)<br>`DL` (current element output)<br>`BL` (running sum accumulator)<br>`AL` (memory transfer mediator) | Placing `INC SI` or `INC DL` inside a skipped block, causing an infinite loop. Adding memory directly to accumulator with unaligned registers. |
+| **Lab 1** | [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1_String_Display/1.1.asm)<br>[`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1_String_Display/lab-1.asm) *(Identical)* | **Direct String Display**<br>Load address of a string in memory and print it to standard output. | • Memory segmentation (`.DATA`, `.CODE`, `.STACK`)<br>• Initializing `DS` through accumulator `AX`<br>• Effective offset calculation (`OFFSET`)<br>• String termination using `$` | `DS`, `AX`<br>`DX` (string pointer)<br>`INT 21H / AH=09H`<br>`INT 21H / AH=4CH` | Forgetting `mov ds, ax`, resulting in garbage data or null pointer display. Omitting `$` at string tail. |
+| **Lab 2** | [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.1.asm)<br>[`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.2.asm)<br>[`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.3.asm)<br>[`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.3-alt.asm) | **Character I/O & Formatting**<br>Echoing single/multiple characters with formatted whitespace, CR (13), and LF (10). | • Console character input & output interrupts<br>• ASCII control characters (`10 = LF`, `13 = CR`, `32 = Space`)<br>• Staging multiple user inputs into separate 8-bit registers (`BL`, `BH`) | `AL` (input receiver)<br>`DL` (output carrier)<br>`BL`, `BH` (staging)<br>`INT 21H / AH=01H`<br>`INT 21H / AH=02H` | Forgetting carriage return (`13`) alongside line feed (`10`), causing diagonal cursor stair-stepping. Overwriting `AL` before saving previous input. |
+| **Lab 3** | [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.1.asm)<br>[`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.2.asm) | **Single-Digit Arithmetic & 2-Digit Decimal Decomposition**<br>Perform `+`, `-`, `*`, `/` and split two-digit results into tens and units digits. | • ASCII to integer conversion (`- 48`)<br>• Integer to ASCII conversion (`+ 48`)<br>• Hardware multiplication (`MUL`) & division (`DIV`) register implicit destinations<br>• Radix-10 decomposition via `DIV 10` | `AL` (multiplier/dividend)<br>`AH` (remainder receiver)<br>`AX` (16-bit product / dividend)<br>`INT 21H / AH=02H` | Performing arithmetic directly on raw ASCII characters. Failing to isolate remainder (`AH`) and quotient (`AL`) after division. |
+| **Lab 4** | [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4_Marks_Calculation/4.1_CP.asm) | **Compound Marks Accumulation & Average Calculation**<br>Take 3 course grades, compute total marks, format 2-digit sum, and compute integer average. | • Sequential variable allocation in `.DATA`<br>• Multi-operand accumulation<br>• Clearing high byte `AH=0` before 8-bit division to prevent divide overflow exceptions<br>• Interleaved user prompts | `AL` (sum & dividend)<br>`AH` (zeroed out, then remainder)<br>`BL`, `BH` (divisors)<br>`INT 21H / AH=09H, 01H, 02H` | Leaving uninitialized garbage in `AH` before running `DIV reg8`, which triggers CPU Divide Error interrupt (Fault #DE). |
+| **Lab 5** | [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5_Bitwise_Hex_Display/5.1.asm) | **Bitwise Manipulation & 2-Digit Hexadecimal Subroutine**<br>Apply bitwise `OR`, separate upper and lower nibbles, and convert to ASCII hex characters ('0'-'9', 'A'-'F'). | • Logical operations (`OR`, `AND`, `SHR`)<br>• Nibble isolation (shift upper nibble by 4; mask lower nibble with `0Fh`)<br>• Subroutine modularity (`CALL`, `RET`, stack tracking)<br>• Conditional ASCII hex adjustment (`+48`, `CMP 57`, `JBE`, `+7`) | `AL` (data byte / nibble)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`FLAGS` (CF, ZF from `CMP`) | Missing the `+7` offset for hex digits `10-15` (`0Ah-0Fh` $\rightarrow$ `'A'-'F'`). Forgetting `RET` in `PROC`, causing the CPU to execute subsequent memory fall-through. |
+| **Lab 6** | [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6_Case_Conversion/6.1_CP.asm)<br>[`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6_Case_Conversion/6.1_CP-alt.asm) *(XOR Case Toggling)* | **Character Case Conversion & Toggling**<br>Read an ASCII character and convert or toggle its case (lower $\leftrightarrow$ upper) using arithmetic subtraction or bitwise XOR masking. | • ASCII binary encoding scheme (bit 5 determines case: `'a' = 61h`, `'A' = 41h`)<br>• Subtractive arithmetic conversion (`SUB AL, 20h`)<br>• Universal bitwise case toggling (`XOR AL, 32` / `20h`)<br>• Embedded CRLF string formatting (`DB 13, 10, ...`)<br>• Address loading mechanics (`LEA` vs `OFFSET`) | `AL` (input, conversion & toggling)<br>`BL` (preservation register)<br>`DL` (output carrier)<br>`INT 21H / AH=01H, 02H, 09H` | Modifying character without validating bounds, confusing whether to `ADD 20h` or `SUB 20h`, or using `SUB 20h` on uppercase input (which produces non-alphabetic ASCII). |
+| **Lab 7** | [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.1_loop.asm)<br>[`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.2_task.asm)<br>[`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.3_Array.asm)<br>[`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.4_Array_sum.asm)<br>[`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_Jannat%5B7.3%5D.asm)<br>[`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_sum_Jannat%5B7.4%5D.asm)<br>[`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_sum_Semim%5B7.4%5D.asm) | **Hardware Loops, Conditional Filtering & 1D Array Operations**<br>Print alphabet sequences, skip specific characters, declare 1D byte arrays, traverse with pointers, and calculate vector sums. | • Dedicated counter register `CX` & hardware `LOOP` instruction (`CX <- CX - 1; JNZ`)<br>• Conditional branching (`CMP`, `JE`, `JBE`)<br>• 1D memory buffers (`array db ...`)<br>• Base indirect pointer indexing using Source Index (`SI`, `[SI]`)<br>• Pointer advancement (`INC SI`) | `CX` (loop counter)<br>`SI` (memory source index pointer)<br>`DL` (current element output)<br>`BL` (running sum accumulator)<br>`AL` (memory transfer mediator) | Placing `INC SI` or `INC DL` inside a skipped block, causing an infinite loop. Adding memory directly to accumulator with unaligned registers. |
 
 ---
 
 ## 2. Lab-by-Lab Deep Dive & Code Walkthroughs
 
 ### 2.1 Lab 1: Environment Setup & Direct String Display
-* **Files Analyzed**: [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/1.1.asm) and [`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/lab-1.asm) *(Identical implementations; merged into one)*.
+* **Files Analyzed**: [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1_String_Display/1.1.asm) and [`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1_String_Display/lab-1.asm) *(Identical implementations; merged into one)*.
 * **Core Problem**: Setting up the standard 8086 segment architecture, allocating memory, and printing a predefined text string to the console.
 
 #### Key Mechanics & Architectural Insights
@@ -106,7 +106,7 @@ end main
 ### 2.2 Lab 2: Character I/O, Formatting & Multi-Input Staging
 
 #### 2.2.1 Character Echo & Whitespace / Newline Sequences
-* **Files Analyzed**: [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.1.asm) and [`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.2.asm).
+* **Files Analyzed**: [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.1.asm) and [`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.2.asm).
 * **Core Problem**: Reading a single character from the keyboard, generating custom spacing and line breaks, and displaying the character back to the screen.
 
 #### Key Mechanics & Architectural Insights
@@ -166,7 +166,7 @@ end main
 ---
 
 #### 2.2.2 Staged Multi-Input Buffering & Prompt Interleaving
-* **Files Analyzed**: [`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3.asm) and [`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3-alt.asm) *(Alternative attempted embedding newlines inside `.DATA` strings)*.
+* **Files Analyzed**: [`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.3.asm) and [`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2_Character_IO/2.3-alt.asm) *(Alternative attempted embedding newlines inside `.DATA` strings)*.
 * **Core Problem**: Interleaving text prompts with user inputs, preserving multiple distinct inputs across registers, and echoing them in a formatted output block.
 
 #### Key Mechanics & Architectural Insights
@@ -283,7 +283,7 @@ end main
 ### 2.3 Lab 3: Single-Digit Arithmetic & Multi-Digit Output Decomposition
 
 #### 2.3.1 Fundamental 4-Operation Arithmetic
-* **Files Analyzed**: [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.1.asm).
+* **Files Analyzed**: [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.1.asm).
 * **Core Problem**: Read two single-digit numeric inputs from standard input, execute addition, subtraction, multiplication, and division, and output each result separated by spaces.
 
 #### Key Mechanics & Architectural Insights
@@ -420,7 +420,7 @@ end main
 ---
 
 #### 2.3.2 Multi-Digit Output Decomposition via Radix-10 Division
-* **Files Analyzed**: [`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.2.asm).
+* **Files Analyzed**: [`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.2.asm).
 * **Core Problem**: If multiplication yields a product $\ge 10$ (e.g., $4 \times 3 = 12$), adding 48 directly produces character code $60$ (`<`), corrupting the output. The numerical value must be decomposed into individual decimal digits.
 
 #### Key Mechanics & Architectural Insights
@@ -497,7 +497,7 @@ end main
 ---
 
 ### 2.4 Lab 4: Compound Academic Marks Calculation & Averages
-* **Files Analyzed**: [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4/4.1_CP.asm).
+* **Files Analyzed**: [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4_Marks_Calculation/4.1_CP.asm).
 * **Core Problem**: Prompt user for 3 subject marks, calculate the total sum, display the 2-digit total marks, and calculate/display the integer average mark.
 
 #### Key Mechanics & Architectural Insights
@@ -659,7 +659,7 @@ end main
 ---
 
 ### 2.5 Lab 5: Bitwise Operations & Hexadecimal Conversion Subroutines
-* **Files Analyzed**: [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5/5.1.asm).
+* **Files Analyzed**: [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5_Bitwise_Hex_Display/5.1.asm).
 * **Core Problem**: Perform bitwise logical manipulation (`OR`) on a data byte, isolate the upper and lower 4-bit nibbles, and convert them to human-readable ASCII hexadecimal digits ('0'-'9', 'A'-'F') using a reusable procedure (`PROC`).
 
 #### Key Mechanics & Architectural Insights
@@ -771,7 +771,7 @@ end main
 ---
 
 ### 2.6 Lab 6: Character Case Conversion & Bitwise Toggling
-* **Files Analyzed**: [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP.asm) *(Subtractive approach)* and [`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP-alt.asm) *(XOR toggling alternative)*.
+* **Files Analyzed**: [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6_Case_Conversion/6.1_CP.asm) *(Subtractive approach)* and [`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6_Case_Conversion/6.1_CP-alt.asm) *(XOR toggling alternative)*.
 * **Core Problem**: Read an arbitrary ASCII alphabetic character from standard input, convert or toggle its case between uppercase and lowercase, and display the transformed result with formatted output.
 
 #### Key Mechanics & Architectural Insights
@@ -955,7 +955,7 @@ END MAIN
 ### 2.7 Lab 7: Loops, Conditional Filtering & 1D Array Processing
 
 #### 2.7.1 Hardware Loops & Alphabet Traversal
-* **Files Analyzed**: [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.1_loop.asm).
+* **Files Analyzed**: [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.1_loop.asm).
 * **Core Problem**: Sequentially display all 26 lowercase English alphabet characters ('a' through 'z') using the hardware loop counter register.
 
 #### Key Mechanics & Architectural Insights
@@ -998,7 +998,7 @@ end main
 ---
 
 #### 2.7.2 Conditional Element Filtering & Jump-Based Loops
-* **Files Analyzed**: [`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.2_task.asm) and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm) *(which actually contains Semim's upper-case A-Z filtering algorithm skipping 'S')*.
+* **Files Analyzed**: [`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.2_task.asm) and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_sum_Semim%5B7.4%5D.asm) *(which actually contains Semim's upper-case A-Z filtering algorithm skipping 'S')*.
 * **Core Problem**: Iterate through an alphabet sequence while skipping a specific character (e.g., skip letter `'s'` or `'S'`).
 
 #### Key Mechanics & Architectural Insights
@@ -1046,7 +1046,7 @@ end main
 ---
 
 #### 2.7.3 1D Array Declaration & Pointer Traversal
-* **Files Analyzed**: [`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.3_Array.asm) and [`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_Jannat%5B7.3%5D.asm).
+* **Files Analyzed**: [`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.3_Array.asm) and [`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_Jannat%5B7.3%5D.asm).
 * **Core Problem**: Define a contiguous 1-dimensional array of byte-sized integers in the data segment, load its base address into a pointer index register, and traverse it using indexed addressing to print each element separated by spaces.
 
 #### Key Mechanics & Architectural Insights
@@ -1105,7 +1105,7 @@ end main
 ---
 
 #### 2.7.4 Linear Array Summation & Accumulator Patterns
-* **Files Analyzed**: [`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.4_Array_sum.asm), [`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Jannat%5B7.4%5D.asm), and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm).
+* **Files Analyzed**: [`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/7.4_Array_sum.asm), [`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_sum_Jannat%5B7.4%5D.asm), and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7_Loops_and_Arrays/array_sum_Semim%5B7.4%5D.asm).
 * **Core Problem**: Traverse an integer array, sum all its values into an accumulator register, and print the single-digit sum.
 
 #### Key Mechanics & Critical Bug Analysis

@@ -1,199 +1,247 @@
-﻿# Theory & Comparative Analysis: `shl_Semim.asm` vs. `shr_Semim.asm`
+# Theory & Comparative Analysis: `shl_Semim.asm` vs. `shr_Semim.asm`
 
-This document provides a comprehensive technical comparison, architectural breakdown, and theory guide for [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) and [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm).
+This document provides a comprehensive technical comparison, architectural breakdown, and theory guide for [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shl_Semim.asm), [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim.asm), and the exact sample-output variant [`shr_Semim[mod].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim%5Bmod%5D.asm) in [`LabCodes/Labtest/prep/CSE55-096/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096).
 
 ---
 
 ## Table of Contents
-1. [Overview & High-Level Summary](#1-overview--high-level-summary)
-2. [Key Code Differences Side-by-Side](#2-key-code-differences-side-by-side)
-   - [Difference 1: The `SHL` vs `SHR` Implementation Discrepancy (Code Bug)](#difference-1-the-shl-vs-shr-implementation-discrepancy-code-bug)
-   - [Difference 2: Newline String Literals (`0Dh,0Ah` vs `10,13`)](#difference-2-newline-string-literals-0dh0ah-vs-1013)
-   - [Difference 3: Immediate vs. Lazy ASCII Conversion](#difference-3-immediate-vs-lazy-ascii-conversion)
-3. [Microprocessor Mechanics: Shift Operations (`SHL` vs `SHR`)](#3-microprocessor-mechanics-shift-operations-shl-vs-shr)
-   - [Bitwise Mechanics of `SHR` (Shift Right)](#bitwise-mechanics-of-shr-shift-right)
-   - [Bitwise Mechanics of `SHL` (Shift Left)](#bitwise-mechanics-of-shl-shift-left)
-   - [Mathematical Significance](#mathematical-significance)
-4. [Nibble Separation and Hex Printing Mechanics](#4-nibble-separation-and-hex-printing-mechanics)
-5. [Step-by-Step Execution Trace](#5-step-by-step-execution-trace)
-6. [Corrected Implementation for `shl_Semim.asm`](#6-corrected-implementation-for-shl_semimasm)
-7. [Summary Table of Differences](#7-summary-table-of-differences)
+1. [Official Examination Context (UITS Lab Test 01)](#1-official-examination-context-uits-lab-test-01)
+   - [1.1 Task Specification & Set Division](#11-task-specification--set-division)
+   - [1.2 Required Sample Output](#12-required-sample-output)
+2. [Code Evolution & Status of `shl_Semim.asm`](#2-code-evolution--status-of-shl_semimasm)
+   - [2.1 The Historical Copy-Paste Bug](#21-the-historical-copy-paste-bug)
+   - [2.2 The Verified Bug Fix](#22-the-verified-bug-fix)
+3. [Key Code Differences Side-by-Side](#3-key-code-differences-side-by-side)
+   - [3.1 Shift Operation: `SHL` vs. `SHR`](#31-shift-operation-shl-vs-shr)
+   - [3.2 ASCII Conversion Timing](#32-ascii-conversion-timing)
+   - [3.3 Newline String Literals (`10, 13`)](#33-newline-string-literals-10-13)
+4. [Microprocessor Mechanics: Shift & Rotate Operations](#4-microprocessor-mechanics-shift--rotate-operations)
+   - [4.1 Bitwise Mechanics of `SHR` (Logical Shift Right)](#41-bitwise-mechanics-of-shr-logical-shift-right)
+   - [4.2 Bitwise Mechanics of `SHL` (Logical Shift Left)](#42-bitwise-mechanics-of-shl-logical-shift-left)
+   - [4.3 Hardware Shift Count Constraint (The `CL` Rule)](#43-hardware-shift-count-constraint-the-cl-rule)
+5. [The Sample Output Discrepancy & Resolution (`shr_Semim[mod].asm`)](#5-the-sample-output-discrepancy--resolution-shr_semimmodasm)
+   - [5.1 Why `shr al, 1` Produces `0CH`](#51-why-shr-al-1-produces-0ch)
+   - [5.2 Why `shr al, 4` Produces `01H`](#52-why-shr-al-4-produces-01h)
+6. [Nibble Separation & Hexadecimal ASCII Subroutine](#6-nibble-separation--hexadecimal-ascii-subroutine)
+7. [Step-by-Step Execution Traces](#7-step-by-step-execution-traces)
+   - [7.1 Trace for Set A with 1-bit Shift (`shr_Semim.asm`)](#71-trace-for-set-a-with-1-bit-shift-shr_semimasm)
+   - [7.2 Trace for Set A with 4-bit Shift (`shr_Semim[mod].asm`)](#72-trace-for-set-a-with-4-bit-shift-shr_semimmodasm)
+   - [7.3 Trace for Set B with 1-bit Shift (`shl_Semim.asm`)](#73-trace-for-set-b-with-1-bit-shift-shl_semimasm)
+8. [Master Comparative Summary Table](#8-master-comparative-summary-table)
 
 ---
 
-## 1. Overview & High-Level Summary
+## 1. Official Examination Context (UITS Lab Test 01)
 
-Both programs prompt the user for two single-digit decimal inputs (`num1` and `num2`), compute their integer quotient and remainder (`num2 / num1`), print both results to the console, and then compute the product (`num1 * num2`).
+### 1.1 Task Specification & Set Division
+Both assembly programs directly implement the official questions from **University of Information Technology & Sciences (UITS)**, **Department of Computer Science and Engineering**:
+* **Course**: Microprocessors & Microcontrollers Lab (`CSE0611323`)
+* **Semester**: Autumn 2026 | **Section**: 6A | **Duration**: 1 Hour | **Marks**: 10
+* **Set Allocation**:
+  - **Set A**: Implemented in [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim.asm). Requires performing a Shift Right (`SHR`) on the multiplication product.
+  - **Set B**: Implemented in [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shl_Semim.asm). Requires performing a Shift Left (`SHL`) on the multiplication product.
 
-However, there are three primary differences:
-1. **Intended Shift Operation**: [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) is named after `SHL`, but **erroneously still contains `shr al, 1`** and uses string `msg_shr` (`'After SHR: $'`).
-2. **ASCII Conversion Timing**: [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm) converts `quot` and `rem` to ASCII characters (`+48`) immediately after `div bl`, whereas [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) delays this conversion until right before each display interrupt.
-3. **Newline Representation**: [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) uses standard DOS hex notation `0dh, 0ah` ($\text{CR} \rightarrow \text{LF}$), while [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm) uses decimal `10, 13` ($\text{LF} \rightarrow \text{CR}$).
+### 1.2 Required Sample Output
+The official question paper dictates strict compliance with the following format:
+```text
+Enter first digit: 3
+Enter second digit: 8
+Quotient= 2
+Remainder = 2
+After SHR: 01H
+```
+*(For Set B, the final line reads `After SHL: <HEX_VALUE>H`)*.
 
 ---
 
-## 2. Key Code Differences Side-by-Side
+## 2. Code Evolution & Status of `shl_Semim.asm`
 
-### Difference 1: The `SHL` vs `SHR` Implementation Discrepancy (Code Bug)
-
-- In [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm#L77-L84):
+### 2.1 The Historical Copy-Paste Bug
+In early versions of the code, [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shl_Semim.asm) suffered from a common assembly lab bug:
+* The file was created by duplicating [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim.asm).
+* Lines 74–81 erroneously retained:
   ```assembly
   ; Shift Right (SHR) operation on multiplication result
-  shr  al, 1
-  mov  bl, al ; Save result in BL for printing
-
-  ; Print SHR message
+  shr  al, 1          ; <--- BUG: In shl_Semim.asm, it still executed SHR!
+  mov  bl, al
   mov  dx, offset msg_shr
-  mov  ah, 09h
-  int  21h
   ```
-- In [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm#L74-L81):
-  ```assembly
-  ; Shift Right (SHR) operation on multiplication result
-  shr  al, 1          ; <--- BUG: File is named shl_Semim.asm but still executes SHR!
-  mov  bl, al ; Save result in BL for printing
 
-  ; Print SHR message
-  mov  dx, offset msg_shr
-  mov  ah, 09h
-  int  21h
-  ```
-> [!WARNING]
-> [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) is currently an almost identical duplicate of [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm) regarding the shift operation. It was intended to execute `shl al, 1` and display `After SHL: `, but the author copied the block from `shr_Semim.asm` without updating the mnemonic and prompt.
-
----
-
-### Difference 2: Newline String Literals (`0Dh,0Ah` vs `10,13`)
-
-| File | Code Declaration | Representation | Order |
-| :--- | :--- | :--- | :--- |
-| [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm#L11-L14) | `0dh, 0ah` | Hexadecimal | `13` (CR = `\r`), then `10` (LF = `\n`) — Standard DOS |
-| [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm#L11-L14) | `10, 13` | Decimal | `10` (LF = `\n`), then `13` (CR = `\r`) — Inverted Order |
-
-While DOS video drivers in EMU8086 handle both sequences by resetting the cursor column and advancing the line, the standard convention is `0Dh, 0Ah` (CRLF).
-
----
-
-### Difference 3: Immediate vs. Lazy ASCII Conversion
-
-#### In [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm#L46-L70):
+### 2.2 The Verified Bug Fix
+The file has since been **corrected and verified**:
 ```assembly
-div  bl
+; In shl_Semim.asm (lines 14, 78, 82, 122):
+msg_shl db 10,13,'After SHL: $'       ; Dedicated SHL string
+...
+shl  al, 1                            ; Corrected shift instruction
+mov  bl, al                           ; Save shifted product in BL
+...
+mov  dx, offset msg_shl               ; Displays msg_shl
+...
+; ata sHL                             ; Author confirmation note
+```
+
+---
+
+## 3. Key Code Differences Side-by-Side
+
+### 3.1 Shift Operation: `SHL` vs. `SHR`
+
+```assembly
+; Set A: shr_Semim.asm (lines 77-84)
+mov  al, num1
+mov  bl, num2
+mul  bl                               ; AX = num1 * num2
+shr  al, 1                            ; Logical Shift Right by 1
+mov  bl, al
+mov  dx, offset msg_shr
+mov  ah, 09h
+int  21h
+
+; Set B: shl_Semim.asm (lines 72-84)
+mov  al, num1
+mov  bl, num2
+mul  bl                               ; AX = num1 * num2
+shl  al, 1                            ; Logical Shift Left by 1
+mov  bl, al
+mov  dx, offset msg_shl
+mov  ah, 09h
+int  21h
+```
+
+---
+
+### 3.2 ASCII Conversion Timing
+
+Both files perform integer division (`div bl`) on `num2 / num1`:
+```assembly
+mov  al, num2
+mov  bl, num1
+mov  ah, 0                            ; Register hygiene: clears AH before DIV
+div  bl                               ; AL = Quotient, AH = Remainder
 mov  quot, al
 mov  rem, ah 
-add  quot, 48        ; Immediate ASCII conversion right after DIV
+add  quot, 48                         ; Immediate conversion to ASCII
 add  rem, 48
-
-; Print Quotient
-mov  dx, offset msg_q
-mov  ah, 09h
-int  21h
-;add quot, 48        ; Commented out
-mov  ah, 02h
-mov  dl, quot
-int  21h
-
-; Print Remainder
-mov  dx, offset msg_r
-mov  ah, 09h
-int  21h
-;add rem, 48         ; Commented out
-mov  ah, 02h
-mov  dl, rem
-int  21h
 ```
-
-#### In [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm#L46-L67):
-```assembly
-div  bl
-mov  quot, al        ; Stored as raw numerical values
-mov  rem, ah
-
-; Print Quotient
-mov  dx, offset msg_q
-mov  ah, 09h
-int  21h
-add  quot, 48        ; Converted right before printing
-mov  ah, 02h
-mov  dl, quot
-int  21h
-
-; Print Remainder
-mov  dx, offset msg_r
-mov  ah, 09h
-int  21h
-add  rem, 48         ; Converted right before printing
-mov  ah, 02h
-mov  dl, rem
-int  21h
-```
-
-**Architectural Insight**:
-- Storing raw numeric values (`shl_Semim.asm`) is considered better programming practice because `quot` and `rem` remain numeric quantities if subsequent calculations are needed.
-- Storing ASCII values (`shr_Semim.asm`) prevents reusing `quot` or `rem` in arithmetic without re-subtracting `48`.
+> [!NOTE]
+> Later in the display block, redundant lines such as `;add quot, 48` remain commented out, confirming that conversion is handled immediately after division.
 
 ---
 
-## 3. Microprocessor Mechanics: Shift Operations (`SHL` vs `SHR`)
+### 3.3 Newline String Literals (`10, 13`)
 
-### Bitwise Mechanics of `SHR` (Shift Right)
-`SHR destination, 1` performs an **unsigned logical right shift**:
+Both files declare strings using decimal ASCII constants:
+```assembly
+msg2 db 10, 13, 'Enter second digit: $'
+msg_q db 10, 13, 'Quotient = $'
+msg_r db 10, 13, 'Remainder = $'
+```
+- `10` = Line Feed (`LF`, `\n`)
+- `13` = Carriage Return (`CR`, `\r`)
+- This orders the control sequence as `LF -> CR`. While standard DOS formatting is `CR -> LF` (`13, 10` / `0Dh, 0Ah`), modern DOS emulators (EMU8086, DOSBox) interpret both orders equivalently to reposition the cursor at the start of the next line.
+
+---
+
+## 4. Microprocessor Mechanics: Shift & Rotate Operations
+
+### 4.1 Bitwise Mechanics of `SHR` (Logical Shift Right)
+`SHR reg, 1` performs an unsigned logical right shift:
 1. All bits shift right by 1 position.
 2. The Most Significant Bit (MSB, Bit 7) is filled with `0`.
-3. The Least Significant Bit (LSB, Bit 0) is shifted into the **Carry Flag (CF)**.
+3. The Least Significant Bit (LSB, Bit 0) is pushed into the **Carry Flag (CF)**.
+4. **Mathematical Effect**: Computes integer division by 2 ($\lfloor X / 2 \rfloor$).
 
-```
+```text
 +---+    +---+---+---+---+---+---+---+---+    +---+
 | 0 | -> | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | -> |CF |
 +---+    +---+---+---+---+---+---+---+---+    +---+
 ```
 
-### Bitwise Mechanics of `SHL` (Shift Left)
-`SHL destination, 1` performs an **unsigned logical left shift**:
+### 4.2 Bitwise Mechanics of `SHL` (Logical Shift Left)
+`SHL reg, 1` performs an unsigned logical left shift:
 1. All bits shift left by 1 position.
 2. The Least Significant Bit (LSB, Bit 0) is filled with `0`.
-3. The Most Significant Bit (MSB, Bit 7) is shifted into the **Carry Flag (CF)**.
+3. The Most Significant Bit (MSB, Bit 7) is pushed into the **Carry Flag (CF)**.
+4. **Mathematical Effect**: Computes multiplication by 2 ($X \times 2$), provided no overflow beyond 8 bits occurs.
 
-```
+```text
 +---+    +---+---+---+---+---+---+---+---+    +---+
 |CF | <- | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | <- | 0 |
 +---+    +---+---+---+---+---+---+---+---+    +---+
 ```
 
-### Mathematical Significance
-- **`SHR destination, 1`**: Computes integer division by 2 ($\lfloor X / 2 \rfloor$).
-- **`SHL destination, 1`**: Computes multiplication by 2 ($X \times 2$), provided no overflow occurs.
+### 4.3 Hardware Shift Count Constraint (The `CL` Rule)
+In pure 8086 processor architecture:
+- An immediate count of `1` is valid directly in the opcode (`SHR AL, 1`, `SHL AL, 1`).
+- Immediate shift counts greater than 1 (`SHR AL, 4`) are **invalid** on original 8086 hardware and require loading into the `CL` register:
+  ```assembly
+  mov cl, 4
+  shr al, cl
+  ```
+  *(EMU8086 allows `shr al, 4` in extended 80186+ emulation mode).*
 
 ---
 
-## 4. Nibble Separation and Hex Printing Mechanics
+## 5. The Sample Output Discrepancy & Resolution (`shr_Semim[mod].asm`)
 
-Both files print the shift result in 2-digit Hexadecimal notation followed by `'H'` using the same nibble separation algorithm:
+A key analytical finding in this repository centers on [`shr_Semim[mod].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim%5Bmod%5D.asm).
+
+### 5.1 Why `shr al, 1` Produces `0CH`
+Given sample inputs `num1 = 3` and `num2 = 8`:
+1. Multiplication:
+   $$\text{Product} = 3 \times 8 = 24_{10} = 0001\ 1000_2 = 18_{16}$$
+2. Shifting right by 1 bit:
+   $$0001\ 1000_2 \gg 1 = 0000\ 1100_2 = 12_{10} = 0\text{C}_{16}$$
+3. Resulting Output:
+   ```text
+   After SHR: 0CH
+   ```
+   **Problem**: This does *not* match the sample output printed on the official exam sheet (`After SHR: 01H`).
+
+### 5.2 Why `shr al, 4` Produces `01H`
+In [`shr_Semim[mod].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim%5Bmod%5D.asm#L78), the shift instruction was updated:
+```assembly
+shr  al, 4    ; <----- MODIFIED: `Question did not specify how many bits to SHR`
+```
+1. Shifting right by 4 bits:
+   $$0001\ 1000_2 \gg 4 = 0000\ 0001_2 = 1_{10} = 01_{16}$$
+2. Resulting Output:
+   ```text
+   After SHR: 01H
+   ```
+   **Result**: This matches the question paper sample output **byte-for-byte**!
+
+---
+
+## 6. Nibble Separation & Hexadecimal ASCII Subroutine
+
+Both programs format their shift result as two hex digits followed by `'H'`:
 
 ```assembly
-; Print HIGH nibble
+; 1. Print HIGH nibble (bits 7..4)
 mov  al, bl
-shr  al, 4           ; Moves bits 7..4 down to bits 3..0
+shr  al, 4                   ; Shift bits 7..4 into position 3..0
 call print_hex
 
-; Print LOW nibble
+; 2. Print LOW nibble (bits 3..0)
 mov  al, bl
-and  al, 0Fh         ; Masks off upper 4 bits (0000 1111b)
+and  al, 0Fh                 ; Mask off upper nibble (0000 1111b)
 call print_hex
 
-; Print 'H' suffix
+; 3. Print 'H' suffix
 mov  dl, 'H'
 mov  ah, 02h
 int  21h
 ```
 
-The procedure `print_hex` translates values `00h..0Fh` to `'0'..'9'` or `'A'..'F'`:
+### The `print_hex` Subroutine:
 ```assembly
 print_hex proc
-    add al, 48       ; Map 0..9 to '0'..'9' (ASCII 48..57)
+    add al, 48               ; Base offset: converts 0..9 to '0'..'9' (ASCII 48..57)
     cmp al, 57
-    jbe out_label
-    add al, 7        ; Map 10..15 to 'A'..'F' (58 + 7 = 65 = 'A')
+    jbe out_label            ; If <= '9', ready to print
+    add al, 7                ; For 10..15: 58 + 7 = 65 ('A') through 70 ('F')
 out_label:
     mov dl, al
     mov ah, 02h
@@ -204,74 +252,59 @@ print_hex endp
 
 ---
 
-## 5. Step-by-Step Execution Trace
+## 7. Step-by-Step Execution Traces
 
-Assume user inputs:
-- First digit `num1` = `2`
-- Second digit `num2` = `6`
+Assume candidate inputs:
+- First digit `num1 = 3`
+- Second digit `num2 = 8`
 
-1. **Division**:
-   - `AL = 6`, `BL = 2`, `AH = 0`
-   - `DIV BL` $\rightarrow$ Quotient in `AL = 3`, Remainder in `AH = 0`.
-   - Output: `Quotient = 3`, `Remainder = 0`.
+### 7.1 Trace for Set A with 1-bit Shift (`shr_Semim.asm`)
+1. **Division (`num2 / num1` $\rightarrow$ `8 / 3`)**:
+   - `AL = 08h`, `AH = 00h`, `BL = 03h`
+   - `DIV BL` $\rightarrow$ `AL = 02h` (Quotient), `AH = 02h` (Remainder).
+   - Display:
+     ```text
+     Quotient = 2
+     Remainder = 2
+     ```
+2. **Multiplication (`3 * 8`)**:
+   - `AL = 03h`, `BL = 08h`
+   - `MUL BL` $\rightarrow$ `AX = 0018h` (`24` decimal, `0001 1000b`).
+3. **Shift Right (`shr al, 1`)**:
+   - `0001 1000b` $\gg 1 = 0000\ 1100_2 = 0\text{C}_{16}$.
+   - High nibble: `0` $\rightarrow$ `'0'`
+   - Low nibble: `12` $\rightarrow$ `'C'`
+   - Display: `After SHR: 0CH`
 
-2. **Multiplication**:
-   - `AL = 2`, `BL = 6`
-   - `MUL BL` $\rightarrow$ `AX = 000Ch` (`12` decimal, `0000 1100b`).
+### 7.2 Trace for Set A with 4-bit Shift (`shr_Semim[mod].asm`)
+1. **Shift Right (`shr al, 4`)**:
+   - `0001 1000b` $\gg 4 = 0000\ 0001_2 = 01_{16}$.
+   - High nibble: `0` $\rightarrow$ `'0'`
+   - Low nibble: `1` $\rightarrow$ `'1'`
+   - Display: `After SHR: 01H` *(Exact match with UITS sample output)*.
 
-3. **Shift Operation Comparison**:
-   - **Under `SHR AL, 1` (executed in both existing files)**:
-     - Binary: `0000 1100b` $\gg 1 = 0000\ 0110_2$ (`06h`, `6` decimal).
-     - High nibble: `0`
-     - Low nibble: `6`
-     - Output: `After SHR: 06H`
-   - **Under `SHL AL, 1` (intended for `shl_Semim.asm`)**:
-     - Binary: `0000 1100b` $\ll 1 = 0001\ 1000_2$ (`18h`, `24` decimal).
-     - High nibble: `1`
-     - Low nibble: `8`
-     - Output: `After SHL: 18H`
-
----
-
-## 6. Corrected Implementation for `shl_Semim.asm`
-
-To fix `shl_Semim.asm` so that it matches its filename and performs a left shift:
-
-```diff
--.data
--    msg_shr db 0dh,0ah,'After SHR: $'
-+.data
-+    msg_shl db 0dh,0ah,'After SHL: $'
-
--.code
--    ; Shift Right (SHR) operation on multiplication result
--    shr  al, 1
--    mov  bl, al ; Save result in BL for printing
--
--    ; Print SHR message
--    mov  dx, offset msg_shr
--    mov  ah, 09h
--    int  21h
-+.code
-+    ; Shift Left (SHL) operation on multiplication result
-+    shl  al, 1
-+    mov  bl, al ; Save result in BL for printing
-+
-+    ; Print SHL message
-+    mov  dx, offset msg_shl
-+    mov  ah, 09h
-+    int  21h
-```
+### 7.3 Trace for Set B with 1-bit Shift (`shl_Semim.asm`)
+1. **Shift Left (`shl al, 1`)**:
+   - `0001 1000b` $\ll 1 = 0011\ 0000_2 = 48_{10} = 30_{16}$.
+   - High nibble: `3` $\rightarrow$ `'3'`
+   - Low nibble: `0` $\rightarrow$ `'0'`
+   - Display: `After SHL: 30H`
 
 ---
 
-## 7. Summary Table of Differences
+## 8. Master Comparative Summary Table
 
-| Feature | [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm) | [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shr_Semim.asm) | Notes / Recommendations |
+| Feature / Metric | [`shr_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim.asm) | [`shr_Semim[mod].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shr_Semim%5Bmod%5D.asm) | [`shl_Semim.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/CSE55-096/shl_Semim.asm) |
 | :--- | :--- | :--- | :--- |
-| **Shift instruction** | `shr al, 1` (Line 75) | `shr al, 1` (Line 78) | `shl_Semim.asm` has a copy-paste bug and should use `shl al, 1`. |
-| **Prompt string** | `'After SHR: $'` | `'After SHR: $'` | Should be `'After SHL: $'` in `shl_Semim.asm`. |
-| **Newline literals** | `0dh, 0ah` (Hex CRLF) | `10, 13` (Dec LFCR) | Standard is `0dh, 0ah` ($13, 10$). |
-| **ASCII adjustment** | Performed on-demand right before printing (`add quot, 48`). | Performed immediately after `div` (`add quot, 48`), printing code commented out. | On-demand conversion preserves numeric semantics. |
-| **Nibble extraction** | `shr al, 4` & `and al, 0Fh` | `shr al, 4` & `and al, 0Fh` | Identical 2-digit Hex printing routine. |
-| **Hex procedure** | Identical `print_hex` | Identical `print_hex` | Identical logic (`+48`, `cmp 57`, `+7`). |
+| **Exam Assignment** | Set A (Shift Right) | Set A (Sample Output Match) | Set B (Shift Left) |
+| **Shift Instruction** | `shr al, 1` | `shr al, 4` | `shl al, 1` |
+| **Multiplication ($3 \times 8$)** | $24_{10} = 18_{16}$ | $24_{10} = 18_{16}$ | $24_{10} = 18_{16}$ |
+| **Shift Output for Inputs 3, 8** | `After SHR: 0CH` | `After SHR: 01H` *(Matches PDF)* | `After SHL: 30H` |
+| **Display Message** | `msg_shr` (`'After SHR: $'`) | `msg_shr` (`'After SHR: $'`) | `msg_shl` (`'After SHL: $'`) |
+| **Newline Delimiters** | `10, 13` (LF, CR) | `10, 13` (LF, CR) | `10, 13` (LF, CR) |
+| **ASCII Transformation** | Immediate (`add quot, 48`) | Immediate (`add quot, 48`) | Immediate (`add quot, 48`) |
+| **Register Clearing (`AH=0`)** | Yes (`mov ah, 0`) | Yes (`mov ah, 0`) | Yes (`mov ah, 0`) |
+| **Hex Printing Logic** | High nibble + Low nibble | High nibble + Low nibble | High nibble + Low nibble |
+
+---
+*Maintained under [Microprocessor & Assembly Lab Repository](https://github.com/b1tranger/Microprocessor_Assembly_Lab).*
