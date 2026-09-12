@@ -30,7 +30,7 @@ This document serves as a master revision guide for **Lab Test 1**, synthesizing
    - [3.5 Top 5 Common Exam Bugs & Pitfalls](#35-top-5-common-exam-bugs--pitfalls)
 
 > [!TIP]
-> For deep architectural explanations of the **leading zero rule on hex literals (`0Ah`)**, **register hygiene & clearing `AH` before `DIV`**, and 8086 hardware constraints, see the companion guide: [`assembly_core_mechanics.md`](./assembly_core_mechanics.md).
+> For deep architectural explanations of the **leading zero rule on hex literals (`0Ah`)**, **register hygiene & clearing `AH` before `DIV`**, and 8086 hardware constraints, see the companion guide: [`assembly_core_mechanics.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/assembly_core_mechanics.md).
 
 ---
 
@@ -53,7 +53,7 @@ The table below outlines each lab, the specific files implemented, the primary a
 ## 2. Lab-by-Lab Deep Dive & Code Walkthroughs
 
 ### 2.1 Lab 1: Environment Setup & Direct String Display
-* **Files Analyzed**: [`1.1.asm`](./lab-1/1.1.asm) and [`lab-1.asm`](./lab-1/lab-1.asm) *(Identical implementations; merged into one)*.
+* **Files Analyzed**: [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/1.1.asm) and [`lab-1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/lab-1.asm) *(Identical implementations; merged into one)*.
 * **Core Problem**: Setting up the standard 8086 segment architecture, allocating memory, and printing a predefined text string to the console.
 
 #### Key Mechanics & Architectural Insights
@@ -106,7 +106,7 @@ end main
 ### 2.2 Lab 2: Character I/O, Formatting & Multi-Input Staging
 
 #### 2.2.1 Character Echo & Whitespace / Newline Sequences
-* **Files Analyzed**: [`2.1.asm`](./lab-2/2.1.asm) and [`2.2.asm`](./lab-2/2.2.asm).
+* **Files Analyzed**: [`2.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.1.asm) and [`2.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.2.asm).
 * **Core Problem**: Reading a single character from the keyboard, generating custom spacing and line breaks, and displaying the character back to the screen.
 
 #### Key Mechanics & Architectural Insights
@@ -166,7 +166,7 @@ end main
 ---
 
 #### 2.2.2 Staged Multi-Input Buffering & Prompt Interleaving
-* **Files Analyzed**: [`2.3.asm`](./lab-2/2.3.asm) and [`2.3-alt.asm`](./lab-2/2.3-alt.asm) *(Alternative attempted embedding newlines inside `.DATA` strings)*.
+* **Files Analyzed**: [`2.3.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3.asm) and [`2.3-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-2/2.3-alt.asm) *(Alternative attempted embedding newlines inside `.DATA` strings)*.
 * **Core Problem**: Interleaving text prompts with user inputs, preserving multiple distinct inputs across registers, and echoing them in a formatted output block.
 
 #### Key Mechanics & Architectural Insights
@@ -283,7 +283,7 @@ end main
 ### 2.3 Lab 3: Single-Digit Arithmetic & Multi-Digit Output Decomposition
 
 #### 2.3.1 Fundamental 4-Operation Arithmetic
-* **Files Analyzed**: [`3.1.asm`](./lab-3/3.1.asm).
+* **Files Analyzed**: [`3.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.1.asm).
 * **Core Problem**: Read two single-digit numeric inputs from standard input, execute addition, subtraction, multiplication, and division, and output each result separated by spaces.
 
 #### Key Mechanics & Architectural Insights
@@ -420,7 +420,7 @@ end main
 ---
 
 #### 2.3.2 Multi-Digit Output Decomposition via Radix-10 Division
-* **Files Analyzed**: [`3.2.asm`](./lab-3/3.2.asm).
+* **Files Analyzed**: [`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3/3.2.asm).
 * **Core Problem**: If multiplication yields a product $\ge 10$ (e.g., $4 \times 3 = 12$), adding 48 directly produces character code $60$ (`<`), corrupting the output. The numerical value must be decomposed into individual decimal digits.
 
 #### Key Mechanics & Architectural Insights
@@ -497,7 +497,7 @@ end main
 ---
 
 ### 2.4 Lab 4: Compound Academic Marks Calculation & Averages
-* **Files Analyzed**: [`4.1_CP.asm`](./lab-4/4.1_CP.asm).
+* **Files Analyzed**: [`4.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-4/4.1_CP.asm).
 * **Core Problem**: Prompt user for 3 subject marks, calculate the total sum, display the 2-digit total marks, and calculate/display the integer average mark.
 
 #### Key Mechanics & Architectural Insights
@@ -659,7 +659,7 @@ end main
 ---
 
 ### 2.5 Lab 5: Bitwise Operations & Hexadecimal Conversion Subroutines
-* **Files Analyzed**: [`5.1.asm`](./lab-5/5.1.asm).
+* **Files Analyzed**: [`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5/5.1.asm).
 * **Core Problem**: Perform bitwise logical manipulation (`OR`) on a data byte, isolate the upper and lower 4-bit nibbles, and convert them to human-readable ASCII hexadecimal digits ('0'-'9', 'A'-'F') using a reusable procedure (`PROC`).
 
 #### Key Mechanics & Architectural Insights
@@ -771,7 +771,7 @@ end main
 ---
 
 ### 2.6 Lab 6: Character Case Conversion & Bitwise Toggling
-* **Files Analyzed**: [`6.1_CP.asm`](./lab-6/6.1_CP.asm) *(Subtractive approach)* and [`6.1_CP-alt.asm`](./lab-6/6.1_CP-alt.asm) *(XOR toggling alternative)*.
+* **Files Analyzed**: [`6.1_CP.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP.asm) *(Subtractive approach)* and [`6.1_CP-alt.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-6/6.1_CP-alt.asm) *(XOR toggling alternative)*.
 * **Core Problem**: Read an arbitrary ASCII alphabetic character from standard input, convert or toggle its case between uppercase and lowercase, and display the transformed result with formatted output.
 
 #### Key Mechanics & Architectural Insights
@@ -955,7 +955,7 @@ END MAIN
 ### 2.7 Lab 7: Loops, Conditional Filtering & 1D Array Processing
 
 #### 2.7.1 Hardware Loops & Alphabet Traversal
-* **Files Analyzed**: [`7.1_loop.asm`](./lab-7/7.1_loop.asm).
+* **Files Analyzed**: [`7.1_loop.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.1_loop.asm).
 * **Core Problem**: Sequentially display all 26 lowercase English alphabet characters ('a' through 'z') using the hardware loop counter register.
 
 #### Key Mechanics & Architectural Insights
@@ -998,7 +998,7 @@ end main
 ---
 
 #### 2.7.2 Conditional Element Filtering & Jump-Based Loops
-* **Files Analyzed**: [`7.2_task.asm`](./lab-7/7.2_task.asm) and [`array_sum_Semim[7.4].asm`](./lab-7/array_sum_Semim%5B7.4%5D.asm) *(which actually contains Semim's upper-case A-Z filtering algorithm skipping 'S')*.
+* **Files Analyzed**: [`7.2_task.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.2_task.asm) and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm) *(which actually contains Semim's upper-case A-Z filtering algorithm skipping 'S')*.
 * **Core Problem**: Iterate through an alphabet sequence while skipping a specific character (e.g., skip letter `'s'` or `'S'`).
 
 #### Key Mechanics & Architectural Insights
@@ -1046,7 +1046,7 @@ end main
 ---
 
 #### 2.7.3 1D Array Declaration & Pointer Traversal
-* **Files Analyzed**: [`7.3_Array.asm`](./lab-7/7.3_Array.asm) and [`array_Jannat[7.3].asm`](./lab-7/array_Jannat%5B7.3%5D.asm).
+* **Files Analyzed**: [`7.3_Array.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.3_Array.asm) and [`array_Jannat[7.3].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_Jannat%5B7.3%5D.asm).
 * **Core Problem**: Define a contiguous 1-dimensional array of byte-sized integers in the data segment, load its base address into a pointer index register, and traverse it using indexed addressing to print each element separated by spaces.
 
 #### Key Mechanics & Architectural Insights
@@ -1105,7 +1105,7 @@ end main
 ---
 
 #### 2.7.4 Linear Array Summation & Accumulator Patterns
-* **Files Analyzed**: [`7.4_Array_sum.asm`](./lab-7/7.4_Array_sum.asm), [`array_sum_Jannat[7.4].asm`](./lab-7/array_sum_Jannat%5B7.4%5D.asm), and [`array_sum_Semim[7.4].asm`](./lab-7/array_sum_Semim%5B7.4%5D.asm).
+* **Files Analyzed**: [`7.4_Array_sum.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/7.4_Array_sum.asm), [`array_sum_Jannat[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Jannat%5B7.4%5D.asm), and [`array_sum_Semim[7.4].asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-7/array_sum_Semim%5B7.4%5D.asm).
 * **Core Problem**: Traverse an integer array, sum all its values into an accumulator register, and print the single-digit sum.
 
 #### Key Mechanics & Critical Bug Analysis

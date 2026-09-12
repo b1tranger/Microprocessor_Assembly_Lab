@@ -6,6 +6,7 @@
    - [1. File Naming & Destination](#1-file-naming--destination)
    - [2. Automatic Updates](#2-automatic-updates)
    - [3. Mandatory Table of Contents (TOC)](#3-mandatory-table-of-contents-toc)
+   - [4. GitHub Repository Link Prefix for File References](#4-github-repository-link-prefix-for-file-references)
 3. [Content & Formatting Standards](#content--formatting-standards)
 4. [Conversation & Prompt Archiving Guidelines (`doc/prompts/`)](#4-conversation--prompt-archiving-guidelines-docprompts)
    - [1. Destination & Naming](#1-destination--naming)
@@ -38,6 +39,12 @@ This document provides instructions for automatically documenting assembly theor
 * The Table of Contents must:
   - List all primary (`##`) and secondary (`###`) sections using GitHub Flavored Markdown anchor links (e.g. `[Title](#anchor-link)`).
   - Be kept in sync and automatically updated whenever new sections are added or revised.
+
+### 4. GitHub Repository Link Prefix for File References
+* **Repository-Relative Web URLs**: All repository file references, source code links, and cross-file links in documentation and theory notes (`.md` files) must use absolute GitHub repository URLs rather than local paths (`./path` or `file:///...`).
+* **Base URL Format**: `https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/<path-from-repo-root>`
+  - Example: [`1.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-1/1.1.asm)
+  - Example with line numbers: [`shl_Semim.asm#L74-L81`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/Labtest/prep/shl_Semim.asm#L74-L81)
 
 ---
 
@@ -84,7 +91,7 @@ Each archived session entry must begin with structured metadata:
 - **Conversation ID**: `<conversation-id>`
 - **Timestamp**: `<YYYY-MM-DDTHH:MM:SS+Offset>`
 - **Model**: `<Model Name>`
-- **Target File**: [`<filename>`](file:///path/to/file)
+- **Target File**: [`<filename>`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/path/to/file)
 ```
 
 ### 3. Standard Archive Structure
