@@ -34,7 +34,11 @@ This document provides a comprehensive mapping of modern high-level programming 
     - [Group 4: Simple Flag & Register-Based Jumps (`JCXZ`, `JS`, `JO`, etc.)](#group-4-simple-flag--register-based-jumps)
     - [Master Jump Summary Table](#master-jump-summary-table)
     - [High-Level Expression to Flags Mapping Table](#high-level-expression-to-flags-mapping-table)
-
+13. [Double Digit Display Mechanics: Base-10 Arithmetic vs. Base-16 Bitwise Extraction](#13-double-digit-display-mechanics-base-10-arithmetic-vs-base-16-bitwise-extraction)
+    - [13.1 BASE-16 (Hex) vs. BASE-10 (Decimal) Architectural Foundation](#131-base-16-hex-vs-base-10-decimal-architectural-foundation)
+    - [13.2 Detailed Side-by-Side Comparison: `5.1.asm` vs. `3.2.asm`](#132-detailed-side-by-side-comparison-51asm-vs-32asm)
+    - [13.3 Register Lifecycle & Phase Analysis: Does `AL` Store Binary?](#133-register-lifecycle--phase-analysis-does-al-store-binary)
+    - [13.4 ASCII Conversion Mechanics: Direct (`+48`) vs. Branching (`+48 / +7`)](#134-ascii-conversion-mechanics-direct-48-vs-branching-48--7)
 
 ---
 
@@ -772,3 +776,131 @@ Used after `CMP dest, src` when operands represent **signed two's complement int
 | **Bit Check (e.g. `(x & mask) == 0`)** | Bitwise | `test x, mask` | **`JZ`** | $\text{ZF} = 1$ |
 | **Counter Loop (`for i=N..1`)** | Counter | *None* | **`LOOP`** | Decrements `CX`, jumps if $\text{CX} \ne 0$ |
 | **Zero Guard (`if (cx == 0)`)** | Register | *None* | **`JCXZ`** | Jumps if $\text{CX} == 0$ |
+
+---
+
+## 13. Double Digit Display Mechanics: Base-10 Arithmetic vs. Base-16 Bitwise Extraction
+
+In high-level languages like C/C++, printing numbers in decimal or hex is abstracted behind format specifiers (`printf("%d", n)` or `printf("%X", n)`). In 8086 assembly, the console service (`INT 21h / AH=02h`) **only outputs one ASCII character byte at a time**. 
+
+When displaying numbers that span two digits, the programmer must explicitly isolate the individual digits and translate each into its corresponding ASCII encoding. Two completely different paradigms exist depending on the numeric base:
+1. **Base-16 (Hexadecimal)** via Bitwise Shifts & Masks ([`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5_Bitwise_Hex_Display/5.1.asm)).
+2. **Base-10 (Decimal)** via Arithmetic Division ([`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.2.asm)).
+
+---
+
+### 13.1 BASE-16 (Hex) vs. BASE-10 (Decimal) Architectural Foundation
+
+The hardware reason why bitwise shifts work for Hexadecimal but fail for Decimal stems from whether the number base aligns with powers of 2 ($2^n$):
+
+```
++-------------------------------------------------------------------------------+
+|                      BASE-16 (Hex) vs. BASE-10 (Decimal)                      |
++-------------------------------------------------------------------------------+
+| Hexadecimal (Base-16):                                                        |
+|   - 16 = 2^4 (power of 2).                                                    |
+|   - Exactly 4 bits (1 nibble) = 1 hex digit.                                  |
+|   - 1 Byte (8 bits) = Exactly TWO 4-bit nibbles: [Upper 4 bits] [Lower 4 bits]|
+|   - Digits align with hardware bit boundaries, so SHR and AND work directly!  |
+|                                                                               |
+| Decimal (Base-10):                                                            |
+|   - 10 is NOT a power of 2 (2^3 = 8 < 10 < 2^4 = 16).                         |
+|   - Decimal digits do NOT align with bit boundaries.                          |
+|   - You cannot shift or mask 0001 1100b (28) to separate 2 and 8.             |
+|   - You MUST use mathematical division: DIV 10.                               |
++-------------------------------------------------------------------------------+
+```
+
+#### Why Can't We Use `SHR` / `AND` for Decimal?
+- An 8-bit byte holding `28` decimal contains the bit pattern `0001 1100b`.
+- If you perform `SHR AL, 4`, you get `0000 0001b` ($1$), not the tens digit $2$!
+- If you perform `AND AL, 0Fh`, you get `0000 1100b` ($12$), not the units digit $8$!
+- Because base-10 digits do not partition on 4-bit boundaries, bit manipulation cannot decompose decimal numbers. Arithmetic division by 10 is mathematically mandatory.
+
+---
+
+### 13.2 Detailed Side-by-Side Comparison: `5.1.asm` vs. `3.2.asm`
+
+```
+                  5.1.asm (Hexadecimal)                 3.2.asm (Decimal)
+               +--------------------------+         +--------------------------+
+Digit          | Bitwise Manipulation:    |         | Arithmetic Division:     |
+Separation     | - Upper: SHR AL, 4       |         | - DIV BL (where BL = 10) |
+Mechanism      | - Lower: AND AL, 0Fh     |         | - AL = Tens, AH = Units  |
+               +--------------------------+         +--------------------------+
+                            |                                    |
+CPU Clock      | 1 to 2 Clock Cycles      |         | 80 to 90 Clock Cycles    |
+Efficiency     | (Extremely fast)         |         | (Microcoded division)    |
+               +--------------------------+         +--------------------------+
+                            |                                    |
+ASCII          | + 48 for digits 0-9      |         | + 48 for both digits     |
+Conversion     | + 48 + 7 (+55) for A-F   |         | (Digits never exceed 9)  |
+               | (Requires conditional)   |         | (No branching needed)    |
+               +--------------------------+         +--------------------------+
+                            |                                    |
+Modularity     | Reusable Subroutine      |         | Sequential Inline Code   |
+               | (CALL print_hex)         |         | (Store in variables)     |
+               +--------------------------+         +--------------------------+
+```
+
+#### Detailed Comparison Table
+
+| Feature | Base-10 Decimal ([`3.2.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-3_Arithmetic_Operations/3.2.asm)) | Base-16 Hexadecimal ([`5.1.asm`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/LabCodes/lab-5_Bitwise_Hex_Display/5.1.asm)) |
+| :--- | :--- | :--- |
+| **Target Representation** | Decimal characters (`'0'`–`'9'`) | Hex characters (`'0'`–`'9'`, `'A'`–`'F'`) |
+| **Digit Separation Method** | `DIV BL` (with `BL = 10`):<br>$\text{Quotient} = N / 10$, $\text{Remainder} = N \pmod{10}$ | `SHR AL, 4` (upper nibble)<br>`AND AL, 0Fh` (lower nibble) |
+| **Operand Requirements** | Must set up dividend in `AX` (`AH = 0`, `AL = value`) | Single register `AL` can be manipulated directly |
+| **CPU Execution Overhead** | **High** (~80–90 clock cycles per division) | **Minimal** (1–2 clock cycles per shift/mask) |
+| **Output Storage** | `AL` receives Tens, `AH` receives Units | `AL` receives each 4-bit nibble sequentially |
+| **ASCII Transformation** | Unconditional `ADD reg, 48` | `ADD AL, 48`; if $> 57$, `ADD AL, 7` |
+| **High-Level Analogy** | `tens = n / 10; units = n % 10;` | `hi = (n >> 4) & 0xF; lo = n & 0xF;` |
+
+---
+
+### 13.3 Register Lifecycle & Phase Analysis: Does `AL` Store Binary?
+
+At the physical silicon level, **`AL` always and exclusively stores binary voltages (`0`s and `1`s)** in both routines. The semantic distinction lies in what those binary bits represent across execution stages:
+
+```
+[Phase 1: Raw Numeric Magnitude]
+   AL holds binary integer quantity:
+   - 3.2.asm: 0001 1100b (Value: 28 decimal)
+   - 5.1.asm: 1101 0001b (Value: 0D1h / 209 decimal)
+             |
+             v
+[Phase 2: Separated Digits]
+   AL holds individual digit quantities:
+   - 3.2.asm: AL = 0000 0010b (2 tens), AH = 0000 1000b (8 units)
+   - 5.1.asm: AL = 0000 1101b (Upper: 13d / 'D'), AL = 0000 0001b (Lower: 1d / '1')
+             |
+             v
+[Phase 3: ASCII Glyph Code Encoding]
+   AL holds standard 7/8-bit ASCII character codes for INT 21h display:
+   - 3.2.asm: AL = 0011 0010b ('2' / 50d / 32h), AH = 0011 1000b ('8' / 56d / 38h)
+   - 5.1.asm: AL = 0100 0100b ('D' / 68d / 44h), AL = 0011 0001b ('1' / 49d / 31h)
+```
+
+---
+
+### 13.4 ASCII Conversion Mechanics: Direct (`+48`) vs. Branching (`+48 / +7`)
+
+When converting isolated numeric digits to ASCII display codes:
+
+1. **Decimal Digits ($0 \le d \le 9$)**:
+   - The ASCII range for digits `'0'`–`'9'` spans `30h`–`39h` (`48`–`57` in decimal).
+   - Adding `48` (`'0'`) directly produces the exact printable character.
+   - Because a decimal digit never exceeds 9, **no branching or condition checking is needed**.
+
+2. **Hexadecimal Digits ($0 \le d \le 15$)**:
+   - Digits $0 \dots 9$ map to `'0'`–`'9'` (`30h`–`39h` / 48–57).
+   - Digits $10 \dots 15$ map to `'A'`–`'F'` (`41h`–`46h` / 65–70).
+   - Between ASCII `'9'` (57) and `'A'` (65), there is a gap of **7 non-alphanumeric punctuation characters** (`:`, `;`, `<`, `=`, `>`, `?`, `@`).
+   - If a nibble is $\ge 10$, adding `48` lands in the punctuation gap ($10 + 48 = 58 = \text{':'}$). Adding an extra `7` bridges this gap ($58 + 7 = 65 = \text{'A'}$):
+     ```assembly
+     add al, 48
+     cmp al, 57         ; '9'
+     jbe print_char
+     add al, 7          ; Skip 7 ASCII punctuation symbols to reach 'A'-'F'
+     print_char:
+     ```
+
