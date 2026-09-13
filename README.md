@@ -19,6 +19,7 @@ This repository contains lab experiments, assignments, and study materials for t
 4. [Method 3: Standalone DOSBox with TASM & Turbo Debugger (TD)](#4-method-3-standalone-dosbox-with-tasm--turbo-debugger-td)
 5. [Recommended Hybrid Workflow](#5-recommended-hybrid-workflow)
 6. [Troubleshooting & Common Pitfalls](#6-troubleshooting--common-pitfalls)
+7. [Conceptual Notes, High-Level Mappings & Must-Knows (`doc/note/`)](#7-conceptual-notes-high-level-mappings--must-knows-docnote)
 
 ---
 
@@ -199,6 +200,30 @@ flowchart TD
   mov al, [number]
   div bl
   ```
+
+---
+
+## 7. Conceptual Notes, High-Level Mappings & Must-Knows (`doc/note/`)
+
+The [`doc/note/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/) directory contains modular architectural explanations, mappings of high-level programming language constructs (C/C++) to 8086 assembly, and high-yield cheatsheets:
+
+* **[8086 Assembly Must-Knows & High-Yield Pitfalls](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/0.mustKnows.md)**:
+  Essential architectural tidbits, register hygiene (`mov al, 0`), program termination (`mov ah, 4ch`), tri-representation of ASCII (`'0'`, `48`, `30h`), why ALU instructions never need `int 21h`, and hardware multi-bit shift rules.
+
+### Modular Topic Notes:
+1. **[`1. The Foundation: CPU Execution & The Decoupled FLAGS Model`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/1.The%20Foundation%20CPU%20Execution%20and%20Decoupled%20FLAGS%20Model.md)**
+2. **[`2. Variables & Assignment`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/2.Variables%20and%20Assignment.md)**
+3. **[`3. Simple IF Statement (Inverted Branching)`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/3.Simple%20IF%20Statement.md)**
+4. **[`4. IF-ELSE Statement (Fall-Through Prevention)`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/4.IF-ELSE%20Statement.md)**
+5. **[`5. ELSE-IF Ladder & Chained Conditionals`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/5.ELSE-IF%20Ladder%20and%20Chained%20Conditionals.md)**
+6. **[`6. Compound Conditions: Logical AND & OR`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/6.Compound%20Conditions%20Logical%20AND%20and%20OR.md)**
+7. **[`7. Switch / Case Statements & Jump Tables`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/7.Switch%20Case%20Statements%20and%20Jump%20Tables.md)**
+8. **[`8. Loops: While, Do-While, and For`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/8.Loops%20While%20Do-While%20and%20For.md)**
+9. **[`9. Functions & Procedures (CALL / RET & The Stack)`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/9.Functions%20and%20Procedures.md)**
+10. **[`10. Arrays & Indexing (DUP(?), Base-Index Addressing)`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/10.Arrays%20and%20Indexing.md)**
+11. **[`11. Pointers & Memory Addresses (LEA vs. OFFSET)`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/11.Pointers%20and%20Memory%20Addresses.md)**
+12. **[`12. Complete 8086 Jump Instructions Reference`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/12.Complete%208086%20Jump%20Instructions%20Reference.md)**
+13. **[`13. Double Digit Display Mechanics: Base-10 vs. Base-16`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/note/13.Double%20Digit%20Display%20Mechanics%20Base-10%20vs%20Base-16.md)**
 
 ---
 
