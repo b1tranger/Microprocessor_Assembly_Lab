@@ -18,20 +18,20 @@
 
 main proc
 
-    mov ax, @data ; source @data goes into ax (destination)
+    mov ax, @data                   ; source @data goes into ax (destination)
     mov ds,ax
     
-    mov dx, offset myname ; calling the index pointer of myname
-    mov ah, 09h ; output instruction
-    int 21h ; interrupt / more instructions will be added
+    mov dx, offset myname           ; calling the index pointer of myname
+    mov ah, 09h                     ; output instruction
+    int 21h                         ; interrupt / executing the previous instruction
 
 
 ; ###############  Exit Section  ###############    
 
 
-exit: ; to indicate exit sequence we need to create an "exit level"
+exit:                               ; to indicate exit sequence we need to create an "exit level"
   
-    mov ah, 4ch
+    mov ah, 4ch                     ; terminate instruction
     int 21h
     
     main endp
