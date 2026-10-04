@@ -117,7 +117,7 @@ Each entry must contain the following core sections:
    - The relevant code snippets or diff blocks from the assembly file under review.
 3. **`## 3. Analysis & Key Insights`**:
    - Core explanation, register/flag mechanics, bug discovery, or theoretical breakdown.
-4. **`## 4. Final Solution & Output`**:
+4. **`## 4. Final Solution & Output`**: Include the final AI response verbatim exactly as delivered in the chat (never use placeholders like `*(Refer to output in main chat)*` or truncated summaries).
    - Resulting assembly code, procedure updates, or verification notes.
 
 ### 4. Automatic Archiving Trigger
