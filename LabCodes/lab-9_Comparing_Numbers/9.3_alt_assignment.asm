@@ -51,7 +51,7 @@
         cmp al, ah
         jg  a_is_big  ; if bl bigger than bh then jg flag on
         jl  b_is_big  ; if bh bigger than bl then jl flag on
-        je  both_are_equal  ; if bl and bh both are equal then je
+        je  b_is_big ; in case of equal case we can compare any one with the 3rd
 
 a_is_big:
         ; bl is big so print variable a 
