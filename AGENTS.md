@@ -114,11 +114,14 @@ Each entry must contain the following core sections:
    - Exact user prompt quoted in a code block.
    - Metadata snippet (active document, cursor line).
 2. **`## 2. Code Inspected / Modified`**:
-   - The relevant code snippets or diff blocks from the assembly file under review.
-3. **`## 3. Analysis & Key Insights`**:
-   - Core explanation, register/flag mechanics, bug discovery, or theoretical breakdown.
-4. **`## 4. Final Solution & Output`**: Include the final AI response verbatim exactly as delivered in the chat (never use placeholders like `*(Refer to output in main chat)*` or truncated summaries).
+   - The relevant code snippets or diff blocks from the assembly/source file under review.
+3. **`## 3. Agent's Internal Thoughts & Reasoning Trail`**:
+   - The agent's step-by-step thinking process, internal reasoning (`<thought>` / Chain of Thought), hypotheses explored, troubleshooting sequence, and bug elimination decisions.
+4. **`## 4. Analysis & Key Insights`**:
+   - Core explanation, register/flag/hardware mechanics, bug root cause discovery, or theoretical breakdown.
+5. **`## 5. Final Solution & Output`**: Include the final AI response verbatim exactly as delivered in the chat (never use placeholders like `*(Refer to output in main chat)*` or truncated summaries).
    - Resulting assembly code, procedure updates, or verification notes.
+
 
 ### 4. Automatic Archiving Trigger
 * When a debugging sequence, major code improvement, or multi-turn conceptual explanation concludes, archive the interaction into `doc/prompts/` following the above structure.

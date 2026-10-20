@@ -20,6 +20,8 @@ This repository contains lab experiments, assignments, and study materials for t
 5. [Recommended Hybrid Workflow](#5-recommended-hybrid-workflow)
 6. [Troubleshooting & Common Pitfalls](#6-troubleshooting--common-pitfalls)
 7. [Conceptual Notes, High-Level Mappings & Must-Knows (`doc/note/`)](#7-conceptual-notes-high-level-mappings--must-knows-docnote)
+8. [Microprocessor & Microcontroller Lab Project: ESP32 NAS & Web Server (`Project.MM`)](#8-microprocessor--microcontroller-lab-project-esp32-nas--web-server-projectmm)
+
 
 ---
 
@@ -227,4 +229,30 @@ The [`doc/note/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/
 
 ---
 
+## 8. Microprocessor & Microcontroller Lab Project: ESP32 NAS & Web Server (`Project.MM`)
+
+This repository also contains the term project: an **ESP32 Embedded NAS & Static Web Node** with a simulated FAT32 MicroSD card module over hardware SPI, designed to run locally in VS Code using Wokwi.
+
+### Fresh Machine Setup Sequence:
+When cloning this repository onto a new computer:
+
+1. **Install Dependencies & Toolchains**:
+   Run the automated installer inside [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup):
+   ```powershell
+   .\Project.MM\setup\install_dependencies.ps1
+   ```
+2. **Acquire Free Wokwi License**:
+   Install the **Wokwi Simulator** extension in VS Code $\rightarrow$ press `F1` $\rightarrow$ run **`Wokwi: Request a New License`** $\rightarrow$ log in on [wokwi.com](https://wokwi.com) and click **GET YOUR LICENSE**.
+3. **Compile the Firmware**:
+   ```powershell
+   .\Project.MM\setup\build_firmware.ps1
+   ```
+4. **Run the Simulation Standalone**:
+   Open [`Project.MM/ESP32_NAS_Server`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server) in VS Code, launch the network bridge (`.\wokwigw.exe --forward 9080:10.13.37.2:80`), and start the simulation from `diagram.json`.
+
+*For detailed instructions, architecture breakdown, and helper scripts, refer to the dedicated [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md) and [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md).*
+
+---
+
 *Authored for the UITS Microprocessor & Assembly Language Lab repository.*
+

@@ -81,26 +81,26 @@ gateway = "ws://localhost:9011"
 
 
 ### 3. `diagram.json`
-Specifies virtual hardware and hardware SPI wiring:
+Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed silkscreen pin names):
 - **`wokwi-esp32-devkit-v1`**: Core MCU board.
 - **`wokwi-microsd-card`**: SPI MicroSD card module.
 - **Pin Connections**:
-  - `3V3` $\rightarrow$ `VCC`
-  - `GND` $\rightarrow$ `GND`
-  - `GPIO 5` $\rightarrow$ `CS` (Chip Select)
-  - `GPIO 23` $\rightarrow$ `DI` / MOSI
-  - `GPIO 19` $\rightarrow$ `DO` / MISO
-  - `GPIO 18` $\rightarrow$ `CLK` / SCK
+  - `esp:3V3` $\rightarrow$ `sd1:VCC`
+  - `esp:GND.1` $\rightarrow$ `sd1:GND`
+  - `esp:D5` $\rightarrow$ `sd1:CS` (Chip Select)
+  - `esp:D23` $\rightarrow$ `sd1:DI` (MOSI)
+  - `esp:D19` $\rightarrow$ `sd1:DO` (MISO)
+  - `esp:D18` $\rightarrow$ `sd1:SCK` (Serial Clock)
 
 ### 4. `src/main.cpp`
-Firmware responsibilities:
-- Initializes hardware SPI on GPIO 5 and mounts the FAT32 SD filesystem.
-- Pre-seeds `/www/index.html` and `/lab_report.txt` automatically if they do not exist.
-- Connects to the simulated Wi-Fi access point (`Wokwi-GUEST`).
-- Starts an HTTP server on port 80 with 3 endpoints:
-  - `GET /`: NAS dashboard listing directory contents with download links.
-  - `GET /site`: Static website hosted from `/www/index.html`.
-  - `GET /get?file=<filename>`: Binary octet stream download handler.
+Firmware architecture:
+- **Phase 1 Storage**: Explicitly initializes `SPI.begin(18, 19, 23, 5)` and mounts FAT32 SD filesystem via `SD.begin(5, SPI)`. Automatically seeds `/www/index.html` and `/lab_report.txt` and enumerates files.
+- **Phase 2 Networking**: Connects to `Wokwi-GUEST` Wi-Fi, hosts web endpoints on port 80 (`/`, `/site`, `/get`), and executes automated internal self-diagnostics on FreeRTOS Core 1.
+
+> [!TIP]
+> For automated one-click dependency installation, automated build scripts, and offline tools, check out [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup) and [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md).
+
+
 
 ---
 
