@@ -2,11 +2,11 @@
 .SYNOPSIS
     Builds the ESP32 NAS Firmware using PlatformIO CLI.
 .DESCRIPTION
-    Runs compilation inside ESP32_NAS_Server/ and verifies output binaries.
+    Runs compilation inside LocalConfig/ and verifies output binaries.
 #>
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectDir = Join-Path (Split-Path -Parent $scriptDir) "ESP32_NAS_Server"
+$projectDir = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig"
 
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host " Building ESP32 NAS Firmware with PlatformIO " -ForegroundColor Cyan

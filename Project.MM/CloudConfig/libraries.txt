@@ -1,0 +1,2 @@
+# Wokwi Cloud Library Manifest
+# All core dependencies (WiFi, WebServer, HTTPClient, SPI, SD, FS) are built directly into the ESP32 Arduino Core.

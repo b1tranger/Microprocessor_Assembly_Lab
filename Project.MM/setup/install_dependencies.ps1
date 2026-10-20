@@ -34,12 +34,12 @@ if ($LASTEXITCODE -eq 0) {
 Write-Host "`n[3/3] Verifying Wokwi IoT Gateway (wokwigw.exe)..." -ForegroundColor Yellow
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $gwPath = Join-Path $scriptDir "wokwigw.exe"
-$projectGwPath = Join-Path (Split-Path -Parent $scriptDir) "ESP32_NAS_Server\wokwigw.exe"
+$projectGwPath = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig\wokwigw.exe"
 
 if (Test-Path $gwPath) {
     Write-Host "wokwigw.exe is present in setup/ folder." -ForegroundColor Green
     if (-not (Test-Path $projectGwPath)) {
-        Write-Host "Copying wokwigw.exe to ESP32_NAS_Server/..." -ForegroundColor Cyan
+        Write-Host "Copying wokwigw.exe to LocalConfig/..." -ForegroundColor Cyan
         Copy-Item -Path $gwPath -Destination $projectGwPath -Force
     }
 } else {

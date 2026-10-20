@@ -49,14 +49,14 @@ Run in PowerShell:
 *What this does:*
 1. Verifies Python availability.
 2. Installs/updates PlatformIO CLI via pip.
-3. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `ESP32_NAS_Server/`.
+3. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `LocalConfig/`.
 
 ### Step 2: Compile the Project
 ```powershell
 .\Project.MM\setup\build_firmware.ps1
 ```
 *What this does:*
-Builds `Project.MM/ESP32_NAS_Server/src/main.cpp` into `.pio/build/esp32dev/firmware.bin`.
+Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin`.
 
 ### Step 3: Launch Network Gateway
 ```powershell
@@ -96,14 +96,14 @@ If you prefer installing dependencies manually:
 ### D. Wokwi IoT Gateway (`wokwigw`)
 The gateway binary `wokwigw.exe` is already pre-packaged in this folder:
 - Path: [`Project.MM/setup/wokwigw.exe`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/wokwigw.exe)
-- Copy: [`Project.MM/ESP32_NAS_Server/wokwigw.exe`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server/wokwigw.exe)
+- Copy: [`Project.MM/LocalConfig/wokwigw.exe`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwigw.exe)
 *(Latest releases are also available at [https://github.com/wokwi/wokwigw/releases](https://github.com/wokwi/wokwigw/releases)).*
 
 ---
 
 ## 5. Hardware Wiring & Pin Mapping Reference
 
-In [`Project.MM/ESP32_NAS_Server/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server/diagram.json), ensure the correct silkscreen identifiers are used:
+In [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json), ensure the correct silkscreen identifiers are used:
 
 | ESP32 Pin Identifier | MicroSD (`sd1`) Pin | Function / SPI Bus |
 | :--- | :--- | :--- |
@@ -121,23 +121,23 @@ In [`Project.MM/ESP32_NAS_Server/diagram.json`](https://github.com/b1tranger/Mic
 
 ## 6. How to Run the Project Outside `setup/`
 
-Once the one-time setup above is finished, you do **NOT** need the `setup/` folder during day-to-day work. You run the project entirely inside [`Project.MM/ESP32_NAS_Server`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server):
+Once the one-time setup above is finished, you do **NOT** need the `setup/` folder during day-to-day work. You run the project entirely inside [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig):
 
-### Step 1: Open `ESP32_NAS_Server` in VS Code
+### Step 1: Open `LocalConfig` in VS Code
 In VS Code, select **File > Open Folder...** and choose:
 ```text
-Project.MM/ESP32_NAS_Server
+Project.MM/LocalConfig
 ```
 
 ### Step 2: Start the Local Network Bridge
-In a terminal window (PowerShell) inside `Project.MM/ESP32_NAS_Server`:
+In a terminal window (PowerShell) inside `Project.MM/LocalConfig`:
 ```powershell
 .\wokwigw.exe --forward 9080:10.13.37.2:80
 ```
 *(Leave this running in the background).*
 
 ### Step 3: Run the Simulation
-1. Open [`Project.MM/ESP32_NAS_Server/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server/diagram.json).
+1. Open [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json).
 
 2. Press **`F1`** and run **`Wokwi: Start Simulator`** (or click the green Play button on the canvas).
 3. The Serial Monitor will output:

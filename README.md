@@ -248,7 +248,8 @@ When cloning this repository onto a new computer:
    .\Project.MM\setup\build_firmware.ps1
    ```
 4. **Run the Simulation Standalone**:
-   Open [`Project.MM/ESP32_NAS_Server`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/ESP32_NAS_Server) in VS Code, launch the network bridge (`.\wokwigw.exe --forward 9080:10.13.37.2:80`), and start the simulation from `diagram.json`.
+   Open [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig) in VS Code, launch the network bridge (`.\wokwigw.exe --forward 9080:10.13.37.2:80`), and start the simulation from `diagram.json`.
+   *(Alternatively, run completely in-browser without any setup using [`Project.MM/CloudConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)).*
 
 *For detailed instructions, architecture breakdown, and helper scripts, refer to the dedicated [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md) and [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md).*
 

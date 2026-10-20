@@ -26,14 +26,16 @@ By running simulation locally, the ESP32 code executes via your local compiler t
 ## Project Directory Structure
 
 ```text
-Project.MM/ESP32_NAS_Server/
+Project.MM/LocalConfig/
 │
 ├── .gitignore             # Ignores .pio/ build artifacts and local IDE files
 ├── platformio.ini         # Toolchain & dependency configuration
 ├── wokwi.toml             # Wokwi simulation descriptor
 ├── diagram.json           # Circuit schematics and SPI pin mappings
+├── wokwigw.exe            # Local network gateway binary
 ├── README.md              # Project documentation and execution instructions
-│
+├── include/
+│   └── html_templates.h   # Modular glassmorphic HTML/CSS templates & PROGMEM strings
 └── src/
     └── main.cpp           # ESP32 C++ firmware code
 ```
@@ -92,22 +94,26 @@ Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed sil
   - `esp:D19` $\rightarrow$ `sd1:DO` (MISO)
   - `esp:D18` $\rightarrow$ `sd1:SCK` (Serial Clock)
 
-### 4. `src/main.cpp`
+### 4. `include/html_templates.h`
+Modular UI templates:
+- Contains glassmorphic dark UI CSS styles, responsive layouts, storage bar templates, and the static website template (`SEED_INDEX_HTML`).
+- Stored directly in Flash ROM using `PROGMEM` and C++ raw string literals `R"rawliteral(...)rawliteral"`, keeping internal SRAM free.
+
+### 5. `src/main.cpp`
 Firmware architecture:
 - **Phase 1 Storage**: Explicitly initializes `SPI.begin(18, 19, 23, 5)` and mounts FAT32 SD filesystem via `SD.begin(5, SPI)`. Automatically seeds `/www/index.html` and `/lab_report.txt` and enumerates files.
-- **Phase 2 Networking**: Connects to `Wokwi-GUEST` Wi-Fi, hosts web endpoints on port 80 (`/`, `/site`, `/get`), and executes automated internal self-diagnostics on FreeRTOS Core 1.
+- **Phase 2 Networking**: Connects to `Wokwi-GUEST` Wi-Fi, hosts web endpoints on port 80 (`/`, `/site`, `/get`, `/upload`, `/delete`), and executes automated internal self-diagnostics on FreeRTOS Core 1.
 
 > [!TIP]
-> For automated one-click dependency installation, automated build scripts, and offline tools, check out [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup) and [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md).
-
-
+> - For a complete project show walkthrough, oral defense script, and architectural Q&A, refer to the **[Presentation Guide](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)**.
+> - For automated one-click dependency installation, automated build scripts, and offline tools, check out [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup) and [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md).
 
 ---
 
 ## Step-by-Step Simulation Execution
 
 ### Step 1: Open the Project in VS Code
-Open the directory `Project.MM/ESP32_NAS_Server` directly in VS Code (`File` > `Open Folder...`). This ensures PlatformIO immediately detects `platformio.ini`.
+Open the directory `Project.MM/LocalConfig` directly in VS Code (`File` > `Open Folder...`). This ensures PlatformIO immediately detects `platformio.ini`.
 
 ### Step 2: Compile the Firmware
 - Click the **PlatformIO Build checkmark (✓)** on the bottom blue status bar, or press `Ctrl + Alt + B`.
@@ -141,7 +147,7 @@ To forward browser requests from your workstation directly into the simulated ES
 1. Download the standalone **Wokwi IoT Gateway (`wokwigw`)** binary:
    - Official releases: [https://github.com/wokwi/wokwigw/releases](https://github.com/wokwi/wokwigw/releases)
 2. Place `wokwigw.exe` in your project folder or system PATH.
-3. Open a terminal in `Project.MM/ESP32_NAS_Server` and run:
+3. Open a terminal in `Project.MM/LocalConfig` and run:
    - **Windows**:
      ```powershell
      .\wokwigw.exe --forward 9080:10.13.37.2:80
@@ -185,7 +191,7 @@ Once `wokwigw` is running, open any browser on your machine:
        ```
     6. Only now open `http://localhost:9080/` in your browser.
 
-- **PlatformIO CLI**: If you prefer CLI builds, run `pio run` inside `Project.MM/ESP32_NAS_Server`.
+- **PlatformIO CLI**: If you prefer CLI builds, run `pio run` inside `Project.MM/LocalConfig`.
 - **Wokwi License**: If the simulation prompts for a license, select `Request License` in the Command Palette (free for open source / personal testing).
 - **IP Mismatch**: The standard Wokwi gateway subnet is `10.13.37.2`. If your Serial Monitor displays a different node IP address, adjust the forwarding argument: `--forward 9080:<node-ip>:80`.
 

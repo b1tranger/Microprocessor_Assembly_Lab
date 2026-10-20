@@ -10,7 +10,7 @@ $gwPath = Join-Path $scriptDir "wokwigw.exe"
 
 if (-not (Test-Path $gwPath)) {
     # Check parent project folder
-    $gwPath = Join-Path (Split-Path -Parent $scriptDir) "ESP32_NAS_Server\wokwigw.exe"
+    $gwPath = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig\wokwigw.exe"
 }
 
 if (-not (Test-Path $gwPath)) {

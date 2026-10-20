@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "author": "Gaus Saraf Murady",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-microsd-card", "id": "sd1", "top": 0, "left": 220, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:3V3", "sd1:VCC", "red", [ "v0" ] ],
+    [ "esp:GND.1", "sd1:GND", "black", [ "v0" ] ],
+    [ "esp:D5", "sd1:CS", "yellow", [ "v0" ] ],
+    [ "esp:D23", "sd1:DI", "blue", [ "v0" ] ],
+    [ "esp:D19", "sd1:DO", "green", [ "v0" ] ],
+    [ "esp:D18", "sd1:SCK", "orange", [ "v0" ] ]
+  ]
+}
