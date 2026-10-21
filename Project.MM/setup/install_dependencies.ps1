@@ -16,14 +16,45 @@ Write-Host "==================================================" -ForegroundColor
 
 # 1. Check Python
 Write-Host "`n[1/3] Checking Python installation..." -ForegroundColor Yellow
+$pythonAvailable = $false
 try {
     $pythonCmd = Get-Command python -ErrorAction Stop
     $pythonVersion = & $pythonCmd.Source --version 2>&1
     Write-Host "Found: $pythonVersion ($($pythonCmd.Source))" -ForegroundColor Green
+    $pythonAvailable = $true
 } catch {
-    Write-Host "[ERROR] Python is not installed or not in PATH!" -ForegroundColor Red
-    Write-Host "Please install Python 3.10+ from https://www.python.org/ and check 'Add Python to PATH'." -ForegroundColor Red
-    exit 1
+    Write-Host "[WARNING] Python is not installed or not in PATH." -ForegroundColor Yellow
+    $setupPythonScript = Join-Path $scriptDir "setup_python.ps1"
+    if (Test-Path $setupPythonScript) {
+        Write-Host "Launching automated Python setup script..." -ForegroundColor Cyan
+        & $setupPythonScript
+        # Refresh current session PATH after running setup
+        $machinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+        $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+        $env:PATH = "$machinePath;$userPath"
+
+        # Check standard default installation folder if needed
+        $localPythonDir = Join-Path $env:LOCALAPPDATA "Programs\Python\Python312"
+        $localScriptsDir = Join-Path $localPythonDir "Scripts"
+        if (Test-Path (Join-Path $localPythonDir "python.exe")) {
+            $env:PATH = "$localPythonDir;$localScriptsDir;$env:PATH"
+        }
+
+        try {
+            $pythonCmd = Get-Command python -ErrorAction Stop
+            $pythonVersion = & $pythonCmd.Source --version 2>&1
+            Write-Host "[OK] Python is now ready: $pythonVersion" -ForegroundColor Green
+            $pythonAvailable = $true
+        } catch {
+            Write-Host "[ERROR] Python installation completed but was not detected in the current terminal session." -ForegroundColor Red
+            Write-Host "Please restart your terminal/Command Prompt and run this script again." -ForegroundColor Yellow
+            exit 1
+        }
+    } else {
+        Write-Host "[ERROR] setup_python.ps1 not found." -ForegroundColor Red
+        Write-Host "Please install Python 3.10+ from https://www.python.org/ and check 'Add Python to PATH'." -ForegroundColor Red
+        exit 1
+    }
 }
 
 # 2. Install / Upgrade PlatformIO Core

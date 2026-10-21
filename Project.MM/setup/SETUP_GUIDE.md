@@ -39,10 +39,26 @@ All simulation runs locally using:
 
 ## 3. Automated One-Click Setup
 
-Inside the `setup/` directory, three automated script pairs (`.bat` and `.ps1`) manage the entire environment:
+Inside the `setup/` directory, automated script pairs (`.bat` and `.ps1`) manage the entire environment:
 
 > [!TIP]
 > **Windows PowerShell Execution Policy Note**: If Windows displays `running scripts is disabled on this system`, either double-click the companion `.bat` launcher or run with `-ExecutionPolicy Bypass`.
+
+### Step 0: Python Installation (For New / Fresh Devices)
+If a device has not installed Python yet, run the automated Python installer:
+```cmd
+.\Project.MM\setup\setup_python.bat
+```
+*Or via PowerShell:*
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\setup_python.ps1
+```
+*What this does:*
+1. Checks if Python 3 is already installed and in PATH.
+2. If missing, attempts silent installation via `winget` (Windows Package Manager).
+3. If `winget` is unavailable, automatically downloads and silently runs the official Python 64-bit installer with `Add Python to PATH` enabled.
+4. Refreshes the environment variables so Python is immediately ready.
+*(Note: `install_dependencies.bat` will also detect missing Python and invoke this automatically if needed!)*
 
 ### Step 1: Verify & Install Dependencies
 Run via **Batch Launcher** (Bypasses execution policy restrictions automatically):
@@ -54,7 +70,7 @@ Run via **Batch Launcher** (Bypasses execution policy restrictions automatically
 powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies.ps1
 ```
 *What this does:*
-1. Verifies Python availability.
+1. Verifies Python availability (and triggers automated setup if missing).
 2. Installs/updates PlatformIO CLI via pip.
 3. Automatically registers the Python `Scripts` directory to the User PATH if missing so the `pio` command is available everywhere.
 4. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `LocalConfig/`.

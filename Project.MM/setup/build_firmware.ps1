@@ -15,7 +15,11 @@ Write-Host "==================================================" -ForegroundColor
 
 Push-Location $projectDir
 try {
-    python -m platformio run
+    Write-Host "`n[INFO] Starting compilation..." -ForegroundColor Cyan
+    Write-Host "[INFO] Note: First-time runs download ~600MB of Espressif toolchains & cores in the background." -ForegroundColor Gray
+    Write-Host "[INFO] Subsequent runs compile incrementally in just a few seconds.`n" -ForegroundColor Gray
+    
+    python -u -m platformio run
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`n[SUCCESS] Firmware compiled successfully!" -ForegroundColor Green
         $binPath = Join-Path $projectDir ".pio\build\esp32dev\firmware.bin"
