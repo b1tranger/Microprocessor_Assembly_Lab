@@ -74,6 +74,7 @@ powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies
 2. Installs/updates PlatformIO CLI via pip.
 3. Automatically registers the Python `Scripts` directory to the User PATH if missing so the `pio` command is available everywhere.
 4. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `LocalConfig/`.
+5. Pre-installs Espressif 32 toolchains and framework packages with live download progress bars so subsequent builds execute in seconds.
 
 ### Step 2: Compile the Project
 ```cmd
@@ -84,7 +85,7 @@ powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies
 powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1
 ```
 *What this does:*
-Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin`.
+Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin` (with live progress bars if toolchain packages are not yet cached).
 
 ### Step 3: Launch Network Gateway
 ```cmd

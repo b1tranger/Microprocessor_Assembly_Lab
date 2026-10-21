@@ -12,10 +12,15 @@ $gwPath = Join-Path $scriptDir "wokwigw.exe"
 
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host " ESP32 NAS Project - Dependency Verification " -ForegroundColor Cyan
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PYTHONIOENCODING = "utf-8"
+$env:PYTHONUNBUFFERED = "1"
+
 Write-Host "==================================================" -ForegroundColor Cyan
 
 # 1. Check Python
-Write-Host "`n[1/3] Checking Python installation..." -ForegroundColor Yellow
+Write-Host "`n[1/4] Checking Python installation..." -ForegroundColor Yellow
 $pythonAvailable = $false
 try {
     $pythonCmd = Get-Command python -ErrorAction Stop
@@ -58,7 +63,7 @@ try {
 }
 
 # 2. Install / Upgrade PlatformIO Core
-Write-Host "`n[2/3] Installing / Upgrading PlatformIO CLI..." -ForegroundColor Yellow
+Write-Host "`n[2/4] Installing / Upgrading PlatformIO CLI..." -ForegroundColor Yellow
 python -m pip install -U platformio
 if ($LASTEXITCODE -eq 0) {
     Write-Host "PlatformIO CLI is installed and ready." -ForegroundColor Green
@@ -87,7 +92,7 @@ try {
 }
 
 # 3. Check wokwigw.exe
-Write-Host "`n[3/3] Verifying Wokwi IoT Gateway (wokwigw.exe)..." -ForegroundColor Yellow
+Write-Host "`n[3/4] Verifying Wokwi IoT Gateway (wokwigw.exe)..." -ForegroundColor Yellow
 
 if (Test-Path $gwPath) {
     Write-Host "wokwigw.exe is present in setup/ folder." -ForegroundColor Green
@@ -103,6 +108,26 @@ if (Test-Path $gwPath) {
         Write-Host "Downloaded wokwigw.exe successfully." -ForegroundColor Green
     } catch {
         Write-Host "[ERROR] Failed to download wokwigw.exe: $_" -ForegroundColor Red
+    }
+}
+
+# 4. Check Espressif 32 Toolchains & Framework
+Write-Host "`n[4/4] Verifying Espressif 32 toolchains & framework..." -ForegroundColor Yellow
+$pioPackagesDir = Join-Path $env:USERPROFILE ".platformio\packages"
+$xtensaTool = Join-Path $pioPackagesDir "toolchain-xtensa-esp-elf"
+$arduinoEsp32 = Join-Path $pioPackagesDir "framework-arduinoespressif32"
+$localConfigDir = Join-Path $projectDir "LocalConfig"
+
+if ((Test-Path $xtensaTool) -and (Test-Path $arduinoEsp32)) {
+    Write-Host "Espressif 32 toolchain and Arduino core are cached and ready." -ForegroundColor Green
+} else {
+    Write-Host "Downloading Espressif 32 toolchains & framework packages (~600MB)..." -ForegroundColor Cyan
+    Write-Host "Live download progress will be shown below:" -ForegroundColor Gray
+    python -u -m platformio pkg install -d $localConfigDir
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Espressif 32 packages installed successfully." -ForegroundColor Green
+    } else {
+        Write-Host "[WARNING] Package pre-installation returned non-zero code. build_firmware.bat will retry upon compilation." -ForegroundColor Yellow
     }
 }
 
