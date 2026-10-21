@@ -98,13 +98,16 @@ If you want to run the project entirely inside your browser on **[wokwi.com](htt
 If you are setting up the environment for the first time or on a new PC, all tools and automated scripts are located in [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup):
 
 1. **Automated Dependency Setup**:
-   ```powershell
-   .\Project.MM\setup\install_dependencies.ps1
+   ```cmd
+   .\Project.MM\setup\install_dependencies.bat
    ```
+   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies.ps1`)*
+
 2. **Build the Firmware**:
-   ```powershell
-   .\Project.MM\setup\build_firmware.ps1
+   ```cmd
+   .\Project.MM\setup\build_firmware.bat
    ```
+   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1`)*
 3. **Claim Free Wokwi License**:
    In VS Code: Press `F1` $\rightarrow$ `Wokwi: Request a New License` $\rightarrow$ authorize in browser.
 

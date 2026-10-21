@@ -5,6 +5,11 @@
     Verifies Python, installs/updates PlatformIO CLI, and ensures toolchains are ready.
 #>
 
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+$projectDir = Split-Path -Parent $scriptDir
+$projectGwPath = Join-Path $projectDir "LocalConfig\wokwigw.exe"
+$gwPath = Join-Path $scriptDir "wokwigw.exe"
+
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host " ESP32 NAS Project - Dependency Verification " -ForegroundColor Cyan
 Write-Host "==================================================" -ForegroundColor Cyan
@@ -12,11 +17,12 @@ Write-Host "==================================================" -ForegroundColor
 # 1. Check Python
 Write-Host "`n[1/3] Checking Python installation..." -ForegroundColor Yellow
 try {
-    $pythonVersion = python --version 2>&1
-    Write-Host "Found: $pythonVersion" -ForegroundColor Green
+    $pythonCmd = Get-Command python -ErrorAction Stop
+    $pythonVersion = & $pythonCmd.Source --version 2>&1
+    Write-Host "Found: $pythonVersion ($($pythonCmd.Source))" -ForegroundColor Green
 } catch {
     Write-Host "[ERROR] Python is not installed or not in PATH!" -ForegroundColor Red
-    Write-Host "Please install Python 3.10+ from https://www.python.org/" -ForegroundColor Red
+    Write-Host "Please install Python 3.10+ from https://www.python.org/ and check 'Add Python to PATH'." -ForegroundColor Red
     exit 1
 }
 
@@ -30,11 +36,27 @@ if ($LASTEXITCODE -eq 0) {
     exit 1
 }
 
+# 2b. Ensure Python Scripts directory is on PATH for 'pio' command
+try {
+    $pyScriptsDir = python -c "import sys, pathlib; print(pathlib.Path(sys.executable).parent / 'Scripts')" 2>$null
+    if ($pyScriptsDir -and (Test-Path $pyScriptsDir)) {
+        if (-not (Get-Command pio -ErrorAction SilentlyContinue)) {
+            Write-Host "Configuring session PATH for PlatformIO CLI..." -ForegroundColor Cyan
+            $env:PATH = "$pyScriptsDir;$env:PATH"
+            $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+            if ($userPath -notlike "*$pyScriptsDir*") {
+                [Environment]::SetEnvironmentVariable("Path", "$userPath;$pyScriptsDir", "User")
+                Write-Host "Added $pyScriptsDir to CurrentUser PATH permanently." -ForegroundColor Green
+            }
+        }
+    }
+} catch {
+    # Non-fatal warning
+    Write-Warning "Could not automatically register Python Scripts to PATH."
+}
+
 # 3. Check wokwigw.exe
 Write-Host "`n[3/3] Verifying Wokwi IoT Gateway (wokwigw.exe)..." -ForegroundColor Yellow
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$gwPath = Join-Path $scriptDir "wokwigw.exe"
-$projectGwPath = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig\wokwigw.exe"
 
 if (Test-Path $gwPath) {
     Write-Host "wokwigw.exe is present in setup/ folder." -ForegroundColor Green
@@ -44,9 +66,13 @@ if (Test-Path $gwPath) {
     }
 } else {
     Write-Host "[WARNING] wokwigw.exe not found in setup/. Downloading latest release..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://github.com/wokwi/wokwigw/releases/latest/download/wokwigw.exe" -OutFile $gwPath
-    Copy-Item -Path $gwPath -Destination $projectGwPath -Force
-    Write-Host "Downloaded wokwigw.exe successfully." -ForegroundColor Green
+    try {
+        Invoke-WebRequest -Uri "https://github.com/wokwi/wokwigw/releases/latest/download/wokwigw.exe" -OutFile $gwPath
+        Copy-Item -Path $gwPath -Destination $projectGwPath -Force
+        Write-Host "Downloaded wokwigw.exe successfully." -ForegroundColor Green
+    } catch {
+        Write-Host "[ERROR] Failed to download wokwigw.exe: $_" -ForegroundColor Red
+    }
 }
 
 Write-Host "`n==================================================" -ForegroundColor Cyan

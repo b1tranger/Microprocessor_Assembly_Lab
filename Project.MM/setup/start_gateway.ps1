@@ -5,7 +5,7 @@
     Bridges localhost:9080 to the simulated ESP32 node at 10.13.37.2:80.
 #>
 
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 $gwPath = Join-Path $scriptDir "wokwigw.exe"
 
 if (-not (Test-Path $gwPath)) {

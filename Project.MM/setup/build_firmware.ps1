@@ -5,7 +5,7 @@
     Runs compilation inside LocalConfig/ and verifies output binaries.
 #>
 
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 $projectDir = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig"
 
 Write-Host "==================================================" -ForegroundColor Cyan

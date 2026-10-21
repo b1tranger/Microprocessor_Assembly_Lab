@@ -39,28 +39,44 @@ All simulation runs locally using:
 
 ## 3. Automated One-Click Setup
 
-Inside the `setup/` directory, three PowerShell scripts automate the entire environment:
+Inside the `setup/` directory, three automated script pairs (`.bat` and `.ps1`) manage the entire environment:
+
+> [!TIP]
+> **Windows PowerShell Execution Policy Note**: If Windows displays `running scripts is disabled on this system`, either double-click the companion `.bat` launcher or run with `-ExecutionPolicy Bypass`.
 
 ### Step 1: Verify & Install Dependencies
-Run in PowerShell:
+Run via **Batch Launcher** (Bypasses execution policy restrictions automatically):
+```cmd
+.\Project.MM\setup\install_dependencies.bat
+```
+*Or via PowerShell:*
 ```powershell
-.\Project.MM\setup\install_dependencies.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies.ps1
 ```
 *What this does:*
 1. Verifies Python availability.
 2. Installs/updates PlatformIO CLI via pip.
-3. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `LocalConfig/`.
+3. Automatically registers the Python `Scripts` directory to the User PATH if missing so the `pio` command is available everywhere.
+4. Checks for `wokwigw.exe` and ensures it is present in both `setup/` and `LocalConfig/`.
 
 ### Step 2: Compile the Project
+```cmd
+.\Project.MM\setup\build_firmware.bat
+```
+*Or via PowerShell:*
 ```powershell
-.\Project.MM\setup\build_firmware.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1
 ```
 *What this does:*
 Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin`.
 
 ### Step 3: Launch Network Gateway
+```cmd
+.\Project.MM\setup\start_gateway.bat
+```
+*Or via PowerShell:*
 ```powershell
-.\Project.MM\setup\start_gateway.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\start_gateway.ps1
 ```
 *What this does:*
 Starts the gateway forwarding `9080` $\rightarrow$ `10.13.37.2:80` and listening for simulation traffic on `ws://localhost:9011`.
@@ -182,3 +198,10 @@ With the simulation and `wokwigw` running, open any desktop browser:
 3. **`MicroSD card initialization failed!`**:
    - Cause: Incorrect pin names in `diagram.json`.
    - Fix: Ensure `esp:D5`, `esp:D18`, `esp:D19`, `esp:D23`, and `sd1:SCK` are used.
+4. **`File ... cannot be loaded because running scripts is disabled on this system (PSSecurityException)`**:
+   - Cause: Windows PowerShell default `ExecutionPolicy` is set to `Restricted`.
+   - Fix: Either run the `.bat` launcher (e.g. `install_dependencies.bat`), use `powershell -ExecutionPolicy Bypass -File <script.ps1>`, or configure your user account policy once:
+     ```powershell
+     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+     ```
+
