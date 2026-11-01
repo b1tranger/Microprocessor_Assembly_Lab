@@ -1,1 +1,7 @@
 *.ini
+Project.MM/setup/PlatformIO_Espressif_Offline_Installer/
+Project.MM/setup/PlatformIO_Espressif_Offline_Installer.zip
+Project.MM/setup/offline_bundle/
+*.whl
+platformio_cache.zip
+temp
