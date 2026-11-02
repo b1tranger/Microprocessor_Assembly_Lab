@@ -466,11 +466,28 @@ This feature is only available for paying users: https://wokwi.com/pricing
 ### 7.3 Multi-Device LAN Accessibility (Phones & External PCs)
 > **Evaluator Query**: *"Does this only work on localhost, or can other devices on the network connect to it?"*
 
-**Answer: Any device on the same local Wi-Fi or LAN can access the simulated file server!**
-- The network bridge `wokwigw.exe` binds to `0.0.0.0:9080` (all host interfaces), not just `127.0.0.1`.
-- If your host PC has LAN IP `192.168.1.105` and Windows Firewall permits port `9080`, any phone or tablet on the same Wi-Fi can navigate to:
-  - **Mobile NAS File Manager**: `http://192.168.1.105:9080/`
-  - **Static Webpage**: `http://192.168.1.105:9080/site`
+**Answer: Any device on the same local Wi-Fi, Windows Mobile Hotspot, or wired LAN switch can simultaneously access the simulated file server!**
+
+#### 1. Why Multi-Interface Routing Works (`0.0.0.0:9080` Binding)
+- The network bridge `wokwigw.exe` binds by default to socket address `0.0.0.0:9080` (`INADDR_ANY`), not just loopback `127.0.0.1`.
+- This means it listens on **all active network interfaces** on your Windows host machine at the same time.
+- **Firewall Rule Automation**: Windows Firewall blocks unprompted inbound connections by default. Running [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) automatically requests UAC elevation and opens TCP port 9080 across all profiles via:
+  ```powershell
+  New-NetFirewallRule -DisplayName "Wokwi Gateway NAS" -Direction Inbound -LocalPort 9080 -Protocol TCP -Profile Any -Action Allow
+  ```
+
+#### 2. Dual Deployment Configurations:
+* **Method A (Wireless Hotspot)**: Turn on **Windows Mobile Hotspot** (Settings > Network & internet > Mobile hotspot). Windows assigns the host PC virtual gateway IP **`192.168.137.1`**. Evaluators connect their smartphones/tablets to this hotspot and open `http://192.168.137.1:9080/`. No campus router or Wi-Fi login is required!
+* **Method B (Wired Ethernet LAN)**: Plug into the lab Ethernet switch. Find your host IP via `ipconfig` (e.g., `192.168.1.105`). Any lab desktop PC on the switch navigates to `http://<YOUR_LAN_IP>:9080/`.
+
+#### 3. Complete Host IP & Endpoint Mapping Table
+
+| Network Interface | Target Client Device | Host IP Reference | NAS Explorer URL | Static Website URL |
+| :--- | :--- | :--- | :--- | :--- |
+| **Localhost (Loopback)** | Host workstation running VS Code | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
+| **Windows Mobile Hotspot** | Evaluator smartphones, tablets, laptops | `192.168.137.1` | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
+| **Wired Ethernet LAN** | Lab workstation PCs on campus network | `<YOUR_LAN_IP>` *(from `ipconfig`)* | `http://<YOUR_LAN_IP>:9080/` | `http://<YOUR_LAN_IP>:9080/site` |
+
 - **Internal Web Server**: The HTTP server is **100% native to the ESP32 C++ firmware** (`WebServer server(80)`). There is **no Apache or Nginx** running on the PC; the microcontroller itself handles socket creation, routing, and FAT32 streaming.
 
 ---
@@ -604,14 +621,22 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
-### Step 8: Bonus Showcase — Multi-Device Mobile Phone Access
-1. Connect your smartphone to the same Wi-Fi router as your presentation laptop.
-2. Open Chrome/Safari on your phone and navigate to: `http://<YOUR_PC_IP>:9080/`.
-3. Show the evaluators that the responsive, glassmorphic NAS dashboard renders natively on a mobile screen.
-4. Take a photo using your phone camera, click **`Choose File`** $\rightarrow$ select the photo $\rightarrow$ tap **`Upload to NAS`**.
-5. Refresh your laptop browser and show that the phone's photo is now stored on the simulated ESP32 MicroSD card!
-6. **What to say**:
-   > *"This proves that our ESP32 NAS node is a true network device. Any authorized smartphone or computer on the local area network can autonomously upload, download, and manage storage without needing any dedicated client apps."*
+### Step 8: Bonus Showcase — Multi-Device Access (Hotspot & Ethernet LAN)
+1. **Prior to Presentation**: Double-click [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) on your laptop once to ensure inbound port 9080 is permitted.
+2. **Option A (Wireless Phone Demo via Windows Mobile Hotspot)**:
+   - Turn on **Windows Mobile Hotspot** in Windows Settings (Share over Wi-Fi).
+   - Connect your phone (or the evaluator's smartphone) to your laptop's Wi-Fi hotspot.
+   - Open mobile Chrome/Safari and visit **`http://192.168.137.1:9080/`**.
+3. **Option B (Wired Lab PC Demo via Campus Ethernet)**:
+   - Ensure your laptop is plugged into the lab Ethernet switch.
+   - Run `ipconfig` to check your IPv4 address (e.g. `192.168.1.105`).
+   - Open the browser on an adjacent lab desktop PC and navigate to **`http://<YOUR_LAN_IP>:9080/`**.
+4. **Interactive Action**:
+   - Show the evaluators that the responsive, glassmorphic NAS dashboard renders natively on the mobile screen.
+   - Take a photo using your phone camera, tap **`Choose File`** $\rightarrow$ select the photo $\rightarrow$ tap **`Upload to NAS`**.
+   - Refresh your laptop browser and show that the phone's photo is now stored on the simulated ESP32 MicroSD card!
+5. **What to say**:
+   > *"This proves that our ESP32 NAS node is a true multi-interface network device. Because our gateway binds to `0.0.0.0:9080`, any authorized smartphone connected to our wireless hotspot (`192.168.137.1`) or lab PC on the wired Ethernet LAN can autonomously upload, download, and manage storage without needing any dedicated client apps."*
 
 ---
 

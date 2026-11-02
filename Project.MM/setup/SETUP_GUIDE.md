@@ -4,6 +4,11 @@
 - [1. Overview](#1-overview)
 - [2. Prerequisites & Software](#2-prerequisites--software)
 - [3. Automated One-Click Setup](#3-automated-one-click-setup)
+  - [Step 0: Python Installation (For Fresh Devices)](#step-0-python-installation-for-new--fresh-devices)
+  - [Step 1: Verify & Install Dependencies](#step-1-verify--install-dependencies)
+  - [Step 2: Compile the Project](#step-2-compile-the-project)
+  - [Step 3: Configure Windows Firewall (One-Click)](#step-3-configure-windows-firewall-one-click)
+  - [Step 4: Launch Network Gateway](#step-4-launch-network-gateway)
 - [4. Manual Dependency Installation](#4-manual-dependency-installation)
   - [A. Python 3 & PlatformIO CLI](#a-python-3--platformio-cli)
   - [B. VS Code Extensions](#b-vs-code-extensions)
@@ -11,7 +16,11 @@
   - [D. Wokwi IoT Gateway (wokwigw)](#d-wokwi-iot-gateway-wokwigw)
 - [5. Hardware Wiring & Pin Mapping Reference](#5-hardware-wiring--pin-mapping-reference)
 - [6. How to Run the Project Outside `setup/`](#6-how-to-run-the-project-outside-setup)
-- [7. Verifying Project Endpoints](#7-verifying-project-endpoints)
+- [7. Verifying Endpoints & Multi-Interface Access](#7-verifying-endpoints--multi-interface-access)
+  - [Why Multi-Interface Works (0.0.0.0:9080 Binding)](#why-multi-interface-works-00009080-binding)
+  - [Method A: Wireless Mobile Hotspot Access](#method-a-wireless-mobile-hotspot-access)
+  - [Method B: Wired Ethernet LAN Access](#method-b-wired-ethernet-lan-access)
+  - [Complete Host IP & Endpoint Mapping Table](#complete-host-ip--endpoint-mapping-table)
 - [8. Troubleshooting & Common Traps](#8-troubleshooting--common-traps)
 
 ---
@@ -22,7 +31,7 @@ This setup guide provides all instructions, dependencies, and automated helper s
 All simulation runs locally using:
 - **PlatformIO**: C++ Espressif toolchain and Arduino framework compilation.
 - **Wokwi Simulator for VS Code**: QEMU/Wasm virtual ESP32 DevKit and MicroSD module emulation.
-- **Wokwi IoT Gateway (`wokwigw`)**: Local TCP bridge mapping `localhost:9080` to virtual Wi-Fi `10.13.37.2:80`.
+- **Wokwi IoT Gateway (`wokwigw`)**: Local TCP bridge mapping `0.0.0.0:9080` (all host network interfaces) to virtual Wi-Fi `10.13.37.2:80`.
 
 ---
 
@@ -87,7 +96,17 @@ powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1
 *What this does:*
 Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin` (with live progress bars if toolchain packages are not yet cached).
 
-### Step 3: Launch Network Gateway
+### Step 3: Configure Windows Firewall (One-Click)
+To ensure external clients (e.g. mobile phones, evaluator tablets, lab desktop PCs) can reach port 9080 across wired and wireless adapters:
+```cmd
+.\Project.MM\setup\setup_firewall.bat
+```
+*What this does:*
+1. Automatically verifies administrative privileges and requests UAC elevation if needed.
+2. Executes PowerShell `New-NetFirewallRule` for Inbound TCP Port 9080 across **all network profiles** (Domain, Private, Public).
+3. Confirms that both wired Ethernet and wireless Mobile Hotspot devices can connect without firewall timeouts.
+
+### Step 4: Launch Network Gateway
 ```cmd
 .\Project.MM\setup\start_gateway.bat
 ```
@@ -171,7 +190,6 @@ In a terminal window (PowerShell) inside `Project.MM/LocalConfig`:
 
 ### Step 3: Run the Simulation
 1. Open [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json).
-
 2. Press **`F1`** and run **`Wokwi: Start Simulator`** (or click the green Play button on the canvas).
 3. The Serial Monitor will output:
    ```text
@@ -190,17 +208,35 @@ In a terminal window (PowerShell) inside `Project.MM/LocalConfig`:
 
 ---
 
-## 7. Verifying Project Endpoints
+## 7. Verifying Endpoints & Multi-Interface Access
 
-With the simulation and `wokwigw` running, open any desktop browser:
+### Why Multi-Interface Works (0.0.0.0:9080 Binding)
+When you run `wokwigw.exe --forward 9080:10.13.37.2:80`, the gateway binds to socket address `0.0.0.0:9080` (`INADDR_ANY`). This means it listens simultaneously on **all active network interfaces** of your host PC.
 
-1. **NAS File Explorer**: [http://localhost:9080/](http://localhost:9080/)
-   - Displays real-time FAT32 capacity and used storage.
-   - Lists files with live download buttons.
-2. **Hosted Static Webpage**: [http://localhost:9080/site](http://localhost:9080/site)
-   - Streams `/www/index.html` stored on the virtual SD card.
-3. **Direct File Download**: [http://localhost:9080/get?file=lab_report.txt](http://localhost:9080/get?file=lab_report.txt)
-   - Downloads the pre-seeded academic report directly to your host PC.
+This allows simultaneous access from:
+1. **Host PC**: Loopback browser (`localhost:9080`).
+2. **Mobile Hotspot Devices**: Smartphones and tablets (`192.168.137.1:9080`).
+3. **Wired Ethernet Devices**: Lab desktop PCs on the same switch (`<YOUR_LAN_IP>:9080`).
+
+### Method A: Wireless Mobile Hotspot Access
+1. In Windows, go to **Settings > Network & internet > Mobile hotspot**.
+2. Turn **Mobile hotspot** to **ON** (Share from Ethernet or Wi-Fi over Wi-Fi).
+3. Connect evaluator smartphones or tablets to this hotspot network.
+4. Windows automatically assigns the host PC the virtual gateway IP **`192.168.137.1`**.
+5. On the phone's browser, open `http://192.168.137.1:9080/`.
+
+### Method B: Wired Ethernet LAN Access
+1. Connect your host PC to the lab Ethernet wall switch.
+2. Open PowerShell and run `ipconfig` to view your Ethernet `IPv4 Address` (e.g. `192.168.1.105`).
+3. On any other lab PC connected to the same switch/network, open the browser and navigate to `http://<YOUR_LAN_IP>:9080/`.
+
+### Complete Host IP & Endpoint Mapping Table
+
+| Network Interface | Target Client Device | Host IP Reference | NAS Explorer URL | Static Website URL |
+| :--- | :--- | :--- | :--- | :--- |
+| **Localhost (Loopback)** | Host workstation running VS Code | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
+| **Windows Mobile Hotspot** | Evaluator smartphones, tablets, laptops | `192.168.137.1` | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
+| **Wired Ethernet LAN** | Lab workstation PCs on campus network | `<YOUR_LAN_IP>` *(from `ipconfig`)* | `http://<YOUR_LAN_IP>:9080/` | `http://<YOUR_LAN_IP>:9080/site` |
 
 ---
 
@@ -215,10 +251,12 @@ With the simulation and `wokwigw` running, open any desktop browser:
 3. **`MicroSD card initialization failed!`**:
    - Cause: Incorrect pin names in `diagram.json`.
    - Fix: Ensure `esp:D5`, `esp:D18`, `esp:D19`, `esp:D23`, and `sd1:SCK` are used.
-4. **`File ... cannot be loaded because running scripts is disabled on this system (PSSecurityException)`**:
+4. **External Clients Cannot Connect (Connection Timed Out)**:
+   - Cause: Windows Firewall is blocking inbound connections on TCP port 9080.
+   - Fix: Run [`Project.MM/setup/setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/setup_firewall.bat) as Administrator to add the firewall rule across all profiles.
+5. **`File ... cannot be loaded because running scripts is disabled on this system (PSSecurityException)`**:
    - Cause: Windows PowerShell default `ExecutionPolicy` is set to `Restricted`.
    - Fix: Either run the `.bat` launcher (e.g. `install_dependencies.bat`), use `powershell -ExecutionPolicy Bypass -File <script.ps1>`, or configure your user account policy once:
      ```powershell
      Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
      ```
-

@@ -14,6 +14,11 @@
    - [2. Session Metadata Header](#2-session-metadata-header)
    - [3. Standard Archive Structure](#3-standard-archive-structure)
    - [4. Automatic Archiving Trigger](#4-automatic-archiving-trigger)
+5. [Embedded Systems & Project.MM (ESP32 NAS / Web Node) Guidelines](#5-embedded-systems--projectmm-esp32-nas--web-node-guidelines)
+   - [1. Role & Engineering Persona](#1-role--engineering-persona)
+   - [2. Hardware & Simulation Architecture](#2-hardware--simulation-architecture)
+   - [3. Firmware & Memory Management Constraints](#3-firmware--memory-management-constraints)
+   - [4. Dual-Network Local Gateway & Routing Standards](#4-dual-network-local-gateway--routing-standards)
 
 ---
 
@@ -126,3 +131,33 @@ Each entry must contain the following core sections:
 ### 4. Automatic Archiving Trigger
 * When a debugging sequence, major code improvement, or multi-turn conceptual explanation concludes, archive the interaction into `doc/prompts/` following the above structure.
 
+---
+
+## 5. Embedded Systems & Project.MM (ESP32 NAS / Web Node) Guidelines
+
+### 1. Role & Engineering Persona
+When collaborating on [`Project.MM`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM) and [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig), act as an expert embedded systems and full-stack IoT engineer for "Project.MM", an ESP32-based Embedded Network Attached Storage (NAS) and Static Web Hosting Node designed for microprocessor laboratory evaluations (`CSE0611324`).
+
+### 2. Hardware & Simulation Architecture
+* **Target Hardware**: Classic ESP32 DevKit V1 (Xtensa Dual-Core LX6 @ 240 MHz).
+* **Storage Interface**: Hardware VSPI bus mapped to a MicroSD card module formatted with FAT32:
+  - `GPIO 5`: Chip Select (`CS`)
+  - `GPIO 18`: Serial Clock (`SCK`)
+  - `GPIO 23`: Master Out Slave In (`MOSI` / `DI`)
+  - `GPIO 19`: Master In Slave Out (`MISO` / `DO`)
+* **Simulation Environment**: Local execution via PlatformIO and Wokwi extension in VS Code.
+
+### 3. Firmware & Memory Management Constraints
+* **Framework**: Native Arduino ESP32 core (`WebServer.h`, `SD.h`, `SPI.h`, `WiFi.h`).
+* **Modular Structure**: Split cleanly into [`include/html_templates.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h) (glassmorphic dark UI, CSS gradients, landing page templates stored in Flash ROM via `PROGMEM` and streamed via `FPSTR`) and [`src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp).
+* **Streaming Memory Budget**: Streaming multipart upload parser (`server.upload()`) and chunked file downloads (`server.streamFile()`) must ensure a fixed ~2 KB RAM overhead regardless of file size.
+* **Dual-Core FreeRTOS Separation**:
+  - `Core 0`: Dedicated to networking and lwIP protocol stack handling.
+  - `Core 1`: Dedicated to application loop, background tasks, and diagnostic tests via `xTaskCreatePinnedToCore`.
+
+### 4. Dual-Network Local Gateway & Routing Standards
+* **Gateway Binary**: Uses local open-source gateway `wokwigw.exe --forward 9080:10.13.37.2:80`.
+* **Multi-Interface Access**: The gateway binds to `0.0.0.0:9080`, simultaneously supporting:
+  - Wired Ethernet LAN devices (lab PCs on the campus network).
+  - Wireless Windows Mobile Hotspot devices (smartphones, tablets, external laptops).
+* **Engineering Principles**: Maintain strict adherence to modular C++ practices, low memory overhead, and robust embedded engineering principles.
