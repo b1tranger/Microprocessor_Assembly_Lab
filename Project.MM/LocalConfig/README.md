@@ -22,6 +22,10 @@
   - [Method A: Wireless Access via Windows Mobile Hotspot](#method-a-wireless-access-via-windows-mobile-hotspot)
   - [Method B: Wired Access via Physical Ethernet LAN Switch](#method-b-wired-access-via-physical-ethernet-lan-switch)
   - [Endpoint & Host IP Mapping Table](#endpoint--host-ip-mapping-table)
+- [Local Network File Sharing (LocalSend Web Model)](#local-network-file-sharing-localsend-web-model)
+  - [Workflow: Sharing Files Between Two Lab Computers](#workflow-sharing-files-between-two-lab-computers)
+  - [Architectural Comparison: Project.MM vs. LocalSend Web](#architectural-comparison-projectmm-vs-localsend-web)
+  - [Lab Demonstration Checklist](#lab-demonstration-checklist)
 - [Access Endpoints](#access-endpoints)
 - [Troubleshooting & Tips](#troubleshooting--tips)
 
@@ -233,6 +237,62 @@ Use this reference table to access the appropriate endpoints during your live la
 | **Localhost (Loopback)** | Host PC (Where VS Code is running) | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
 | **Windows Mobile Hotspot** | Evaluator smartphones, tablets, laptops | `192.168.137.1` *(Default Windows Hotspot Gateway)* | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
 | **Wired Ethernet LAN** | Lab workstation PCs on campus switch | `<YOUR_LAN_IP>` *(From `ipconfig`)* | `http://<YOUR_LAN_IP>:9080/` | `http://<YOUR_LAN_IP>:9080/site` |
+
+---
+
+## Local Network File Sharing (LocalSend Web Model)
+
+### Workflow: Sharing Files Between Two Lab Computers
+Just like the **"Share via Browser" (Web Share)** mode in **LocalSend**, `Project.MM` enables zero-installation local network file exchange between two lab computers or workstations via a standard web browser:
+
+```text
+ [Lab PC 1: Host Node]                                 [Lab PC 2: Peer Client]
+ +----------------------------------+                  +----------------------------------+
+ | Wokwi Simulator (ESP32 DevKit)   |                  | Standard Web Browser             |
+ |   ↕ (WS: ws://localhost:9011)    |                  | (Chrome / Edge / Firefox)        |
+ | wokwigw.exe (0.0.0.0:9080)       |                  |                                  |
+ | Windows Firewall Port 9080 OPEN  |                  | Navigates to:                    |
+ +-----------------+----------------+                  | http://<PC1_IP>:9080/            |
+                   |                                   +-----------------+----------------+
+                   |                                                     |
+                   +=================== LAN SWITCH =====================+
+                               (or Windows Mobile Hotspot)
+```
+
+1. **Host Setup (PC 1)**: Runs the Wokwi simulation with `wokwigw.exe` and opens `http://localhost:9080/` (or `http://<PC1_IP>:9080/`).
+2. **Peer Connection (PC 2)**: Without installing any desktop apps, PC 2 opens its browser and navigates to `http://<PC1_IP>:9080/`.
+3. **Bi-directional Sharing**:
+   - PC 1 uploads a file (e.g., `labtest2A.asm`) $\rightarrow$ Stored in the MicroSD FAT32 filesystem $\rightarrow$ PC 2 refreshes and clicks **Download**.
+   - PC 2 selects a file (e.g., `lab_report.txt`) in the upload box $\rightarrow$ Uploads directly to the ESP32 storage $\rightarrow$ PC 1 refreshes and downloads it.
+4. **Real-Time Storage Telemetry**: Both computers see the dynamic storage capacity progress bar update in real-time as files are written and deleted.
+
+---
+
+### Architectural Comparison: Project.MM vs. LocalSend Web
+
+While the front-end user experience mirrors LocalSend Web, the underlying embedded systems architecture fulfills the hardware requirements of `CSE0611324`:
+
+| Dimension | LocalSend Web ("Share via Browser") | Project.MM Embedded NAS (`LocalConfig`) |
+| :--- | :--- | :--- |
+| **Compute Engine** | Heavy OS desktop application (Flutter / Rust / Dart on PC with 16 GB RAM) | **Classic ESP32 MCU** (Xtensa 32-bit Dual-Core LX6 @ 240 MHz, 520 KB SRAM) |
+| **Storage Architecture** | Standard OS filesystem calls to PC NVMe/SSD drive | **Hardware VSPI Bus (SCK:18, MISO:19, MOSI:23, CS:5)** driving raw FAT32 SD block sectors |
+| **Memory Budget** | Megabytes to gigabytes allocated in OS heap buffers | **Strict ~2 KB Streaming Window**: multipart upload chunks and download streams never overload SRAM |
+| **Host Independence** | **Host-dependent**: If PC 1 closes the LocalSend window, sharing terminates immediately | **Independent Appliance**: The ESP32 is a standalone network node. Both PC 1 and PC 2 are equal clients connecting to external hardware |
+| **Additional Services** | File transfer only | **Dual Service**: Simultaneous NAS file server + hosted static web node (`/site` streaming `/www/index.html` from SD card) |
+
+---
+
+### Lab Demonstration Checklist
+
+1. **Firewall Rule**: On PC 1, execute [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) as Administrator.
+2. **Start Gateway**: In PowerShell, run:
+   ```powershell
+   .\wokwigw.exe --forward 9080:10.13.37.2:80
+   ```
+3. **Start Simulation**: Open [`diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json), press `F1`, and select **`Wokwi: Start Simulator`**.
+4. **Find Host IP**: Run `ipconfig` on PC 1 to get its IPv4 address (e.g., `192.168.1.105` on LAN or `192.168.137.1` on Hotspot).
+5. **Access from PC 2**: Open browser on PC 2 and navigate to `http://<PC1_IP>:9080/`.
+6. **Exchange Files**: Upload from PC 1 $\rightarrow$ download from PC 2; upload from PC 2 $\rightarrow$ download from PC 1.
 
 ---
 

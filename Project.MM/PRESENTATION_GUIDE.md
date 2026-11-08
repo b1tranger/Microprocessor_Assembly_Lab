@@ -1,6 +1,7 @@
 # Presentation Guide: ESP32 Embedded NAS & Static Web Node (Project.MM)
 
 > **Course**: CSE0611324 — Microprocessor & Microcontrollers Lab  
+> **Team Presentation Bridge (10-Minute Script & Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)  
 > **Local Workspace**: [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)  
 > **Cloud Workspace**: [`Project.MM/CloudConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)  
 > **Simulation Engine**: Wokwi Simulator & Wokwi IoT Gateway (`wokwigw`)  
@@ -38,6 +39,7 @@
   - [7.1 Tri-Platform Architectural Comparison Matrix](#71-tri-platform-architectural-comparison-matrix)
   - [7.2 The Wokwi Cloud Paywall & Free In-Simulation Loopback Solution](#72-the-wokwi-cloud-paywall--free-in-simulation-loopback-solution)
   - [7.3 Multi-Device LAN Accessibility (Phones & External PCs)](#73-multi-device-lan-accessibility-phones--external-pcs)
+    - [7.3.1 LocalSend Web Model: 2-Computer Lab File Sharing](#731-localsend-web-model-2-computer-lab-file-sharing)
   - [7.4 Physical Bill of Materials (BOM) & Local Sourcing](#74-physical-bill-of-materials-bom--local-sourcing)
   - [7.5 Classic ESP32 (SPI Module) vs. ESP32-S3 (USB Host) Trade-Off](#75-classic-esp32-spi-module-vs-esp32-s3-usb-host-trade-off)
   - [7.6 Autonomous Off-Grid Operation: SoftAP Mode (`192.168.4.1`)](#76-autonomous-off-grid-operation-softap-mode-19216841)
@@ -49,7 +51,7 @@
   - [Step 5: Live File Download](#step-5-live-file-download)
   - [Step 6: Static Web Server Showcase (`/site`)](#step-6-static-web-server-showcase-site)
   - [Step 7: File Deletion with Dynamic Storage Reclaim](#step-7-file-deletion-with-dynamic-storage-reclaim)
-  - [Step 8: Bonus Showcase — Multi-Device Mobile Phone Access](#step-8-bonus-showcase--multi-device-mobile-phone-access)
+  - [Step 8: Bonus Showcase — Multi-Device & 2-Computer LAN Access (LocalSend Web Model)](#step-8-bonus-showcase--multi-device--2-computer-lan-access-localsend-web-model)
 - [9. Evaluator Q&A Defense (Anticipated Questions & Rebuttals)](#9-evaluator-qa-defense-anticipated-questions--rebuttals)
   - [Q1: Why ESP32 instead of a Raspberry Pi?](#q1-why-esp32-instead-of-a-raspberry-pi)
   - [Q2: What happens if an uploaded file exceeds the ESP32 RAM?](#q2-what-happens-if-an-uploaded-file-exceeds-the-esp32-ram)
@@ -60,6 +62,8 @@
   - [Q7: Why did Wokwi Cloud show a paywall, and how does your project bypass it?](#q7-why-did-wokwi-cloud-show-a-paywall-and-how-does-your-project-bypass-it)
   - [Q8: Why choose Classic ESP32 with SPI over an ESP32-S3 with a USB flash drive?](#q8-why-choose-classic-esp32-with-spi-over-an-esp32-s3-with-a-usb-flash-drive)
   - [Q9: How would this system operate in a field environment without an internet router?](#q9-how-would-this-system-operate-in-a-field-environment-without-an-internet-router)
+  - [Q10: How does this system compare to LocalSend / LocalSend Web?](#q10-how-does-this-system-compare-to-localsend--localsend-web)
+  - [Q11: How do you handle campus Wi-Fi AP/Client Isolation during a lab demonstration?](#q11-how-do-you-handle-campus-wi-fi-apclient-isolation-during-a-lab-demonstration)
 - [10. Summary & Quick Links](#10-summary--quick-links)
 
 ---
@@ -490,6 +494,15 @@ This feature is only available for paying users: https://wokwi.com/pricing
 
 - **Internal Web Server**: The HTTP server is **100% native to the ESP32 C++ firmware** (`WebServer server(80)`). There is **no Apache or Nginx** running on the PC; the microcontroller itself handles socket creation, routing, and FAT32 streaming.
 
+#### 7.3.1 LocalSend Web Model: 2-Computer Lab File Sharing
+In popular file-transfer tools like **LocalSend**, the **"Share via Browser" (LocalSend Web)** feature enables zero-installation file sharing: one computer starts a temporary web server on the local network, and any other device on the LAN navigates to that IP in a browser to upload or download files without installing an app.
+
+`Project.MM` reproduces this exact user-friendly workflow for laboratory evaluations, but with key **microprocessor architecture advantages**:
+1. **Zero Client Setup**: Neither Computer 1 nor Computer 2 needs specialized software installed. A standard browser (Chrome, Edge, Firefox) is all that is required.
+2. **True Embedded Hardware Node**: Unlike LocalSend Web (which is a heavy software desktop program running on an OS with 16 GB RAM and storing files on an internal PC SSD), `Project.MM` executes on an **ESP32 microcontroller** interfacing a **FAT32 MicroSD card over the hardware VSPI bus**.
+3. **Decoupled Standalone Appliance**: Both computers are equal clients to the ESP32 storage pool. File exchanges do not depend on the sender's desktop OS remaining awake.
+4. **Strict ~2 KB Streaming Window**: File transfers never buffer entirely in memory, guaranteeing that the 520 KB SRAM limit is never breached.
+
 ---
 
 ### 7.4 Physical Bill of Materials (BOM) & Local Sourcing
@@ -621,22 +634,20 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
-### Step 8: Bonus Showcase — Multi-Device Access (Hotspot & Ethernet LAN)
-1. **Prior to Presentation**: Double-click [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) on your laptop once to ensure inbound port 9080 is permitted.
-2. **Option A (Wireless Phone Demo via Windows Mobile Hotspot)**:
-   - Turn on **Windows Mobile Hotspot** in Windows Settings (Share over Wi-Fi).
-   - Connect your phone (or the evaluator's smartphone) to your laptop's Wi-Fi hotspot.
+### Step 8: Bonus Showcase — Multi-Device & 2-Computer LAN Access (LocalSend Web Model)
+1. **Prior to Presentation**: Double-click [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) on your laptop once to ensure inbound port 9080 is permitted across all network profiles.
+2. **Demo Mode 1: 2-Computer Lab File Sharing (LocalSend Web Model)**:
+   - Connect your laptop to the lab Ethernet switch or turn on **Windows Mobile Hotspot**.
+   - Check your IP via `ipconfig` (e.g. `192.168.1.105` or `192.168.137.1`).
+   - Have a second lab computer open any browser to `http://<YOUR_IP>:9080/`.
+   - Upload `labtest2A.asm` from PC 1; refresh PC 2 and download it.
+   - Upload `lab_report.txt` from PC 2; refresh PC 1 and download it.
+3. **Demo Mode 2: Mobile Smartphone Demonstration**:
+   - Have the evaluator connect their phone to the Mobile Hotspot (`192.168.137.1`).
    - Open mobile Chrome/Safari and visit **`http://192.168.137.1:9080/`**.
-3. **Option B (Wired Lab PC Demo via Campus Ethernet)**:
-   - Ensure your laptop is plugged into the lab Ethernet switch.
-   - Run `ipconfig` to check your IPv4 address (e.g. `192.168.1.105`).
-   - Open the browser on an adjacent lab desktop PC and navigate to **`http://<YOUR_LAN_IP>:9080/`**.
-4. **Interactive Action**:
-   - Show the evaluators that the responsive, glassmorphic NAS dashboard renders natively on the mobile screen.
-   - Take a photo using your phone camera, tap **`Choose File`** $\rightarrow$ select the photo $\rightarrow$ tap **`Upload to NAS`**.
-   - Refresh your laptop browser and show that the phone's photo is now stored on the simulated ESP32 MicroSD card!
-5. **What to say**:
-   > *"This proves that our ESP32 NAS node is a true multi-interface network device. Because our gateway binds to `0.0.0.0:9080`, any authorized smartphone connected to our wireless hotspot (`192.168.137.1`) or lab PC on the wired Ethernet LAN can autonomously upload, download, and manage storage without needing any dedicated client apps."*
+   - Take a live photo with the phone camera, upload it via the browser, and watch it appear in the MicroSD storage table on the presentation screen!
+4. **What to say**:
+   > *"This proves that our ESP32 NAS node functions like a decentralized, embedded version of LocalSend Web. Because our gateway binds to `0.0.0.0:9080`, any smartphone or computer in this room can bi-directionally share files through a standard browser without installing any specialized client software."*
 
 ---
 
@@ -693,8 +704,19 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
+### Q10: How does this system compare to LocalSend / LocalSend Web?
+- **Rebuttal**: LocalSend's "Share via Browser" (Web Share) mode turns a desktop PC into a temporary web server on the local network so other machines can transfer files in a browser without installing the app. Our project provides that exact same zero-install browser experience for lab computers. However, from an embedded systems perspective, `Project.MM` is fundamentally distinct: it runs on a \$4 ESP32 microcontroller with 520 KB SRAM rather than a multi-gigabyte PC OS, writes files across hardware VSPI lines directly into FAT32 MicroSD card sectors with a strict ~2 KB RAM streaming overhead, and acts as an autonomous hardware appliance that does not depend on a host PC remaining online.
+
+---
+
+### Q11: How do you handle campus Wi-Fi AP/Client Isolation during a lab demonstration?
+- **Rebuttal**: University routers and enterprise switches often enforce AP/Client Isolation to prevent peer-to-peer communication between connected devices. To guarantee that our live demonstration is never blocked by institutional firewall policies, we activate **Windows Mobile Hotspot** on the host workstation. Windows configures a virtual NAT gateway at `192.168.137.1`. Any smartphone or lab computer connecting to this hotspot can reach `http://192.168.137.1:9080/` with zero router restrictions.
+
+---
+
 ## 10. Summary & Quick Links
 
+- **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
 - **Local Workspace**: [`Project.MM/LocalConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)
 - **Cloud Workspace**: [`Project.MM/CloudConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)
 - **Local Circuit Schematic**: [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json)

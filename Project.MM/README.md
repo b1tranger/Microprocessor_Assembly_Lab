@@ -3,7 +3,9 @@
 ## Table of Contents
 - [1. Project Overview](#1-project-overview)
 - [2. Repository Architecture](#2-repository-architecture)
-- [3. Quick Start (Running the Project)](#3-quick-start-running-the-project)
+- [3. Quick Start: Local VS Code Simulation (LocalConfig/)](#3-quick-start-local-vs-code-simulation-localconfig)
+  - [3.1 Quick Start: Wokwi Web Cloud Simulation (CloudConfig/)](#31-quick-start-wokwi-web-cloud-simulation-cloudconfig)
+  - [3.2 Multi-Device & 2-Computer LAN File Sharing (LocalSend Web Model)](#32-multi-device--2-computer-lan-file-sharing-localsend-web-model)
 - [4. First-Time Environment Setup](#4-first-time-environment-setup)
 - [5. Simulated Hardware & Web Endpoints](#5-simulated-hardware--web-endpoints)
 - [6. Documentation References](#6-documentation-references)
@@ -30,6 +32,8 @@ Project.MM/
 │   ├── wokwi.toml             # Wokwi simulation descriptor & network gateway target
 │   ├── diagram.json           # Circuit schematics & SPI pin wiring
 │   ├── wokwigw.exe            # Gateway binary for standalone execution
+│   ├── setup_firewall.bat     # One-click UAC auto-elevated Windows Firewall rule installer
+│   ├── presentationBridge.md  # Presenter's 10-minute speech script & team role division
 │   ├── README.md              # Project-level execution and operational guide
 │   ├── .gitignore             # Ignores .pio/ build artifacts & IDE cache
 │   ├── include/
@@ -93,6 +97,16 @@ If you want to run the project entirely inside your browser on **[wokwi.com](htt
 
 ---
 
+## 3.2 Multi-Device & 2-Computer LAN File Sharing (LocalSend Web Model)
+
+The local gateway (`wokwigw.exe`) binds to `0.0.0.0:9080`, allowing the simulated ESP32 NAS to act as a **zero-install local file-sharing hub** across the entire lab room (operating identically to the **LocalSend Web** "Share via Browser" model):
+
+1. **Firewall Rule**: Run [`Project.MM/LocalConfig/setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) as Administrator once to permit inbound TCP port 9080 across all network profiles.
+2. **Access from Other Lab Computers**: Connect the second computer to the same Ethernet switch or host Wi-Fi hotspot, and open `http://<HOST_IP>:9080/` in its browser.
+3. **Bi-directional Sharing**: Upload files from either computer $\rightarrow$ they are written directly to the ESP32 MicroSD FAT32 storage $\rightarrow$ download them from the other machine!
+
+---
+
 ## 4. First-Time Environment Setup
 
 If you are setting up the environment for the first time or on a new PC, all tools and automated scripts are located in [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup):
@@ -132,6 +146,7 @@ If you are setting up the environment for the first time or on a new PC, all too
 
 ## 6. Documentation References
 
+- **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
 - **Presentation & Oral Defense Guide**: [`Project.MM/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)
 - **Cloud vs. VS Code vs. Physical Hardware**: [`Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md)
 - **Local Simulation Workspace Guide**: [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md)
