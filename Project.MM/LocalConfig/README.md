@@ -135,7 +135,10 @@ Automated administrative script:
 ## Step-by-Step Simulation Execution
 
 ### Step 1: Open the Project in VS Code
-Open the directory `Project.MM/LocalConfig` directly in VS Code (`File` > `Open Folder...`). This ensures PlatformIO immediately detects `platformio.ini`.
+Open the directory `Project.MM/LocalConfig` directly in VS Code (`File` > `Open Folder...`). This ensures PlatformIO immediately detects `platformio.ini` and Wokwi automatically loads [`wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml).
+
+> [!NOTE]
+> **If VS Code was opened at the repo root (`Microprocessor_Assembly_Lab`)** instead of `Project.MM/LocalConfig`, make sure Wokwi uses [`Project.MM/LocalConfig/wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml) by pressing `F1` $\rightarrow$ **`Wokwi: Select Config File`** (or reopen `Project.MM/LocalConfig` directly as the workspace folder). Otherwise, Wokwi may fail to load the `[net]` gateway setting or the compiled firmware binary.
 
 ### Step 2: Compile the Firmware
 - Click the **PlatformIO Build checkmark (✓)** on the bottom blue status bar, or press `Ctrl + Alt + B`.

@@ -274,12 +274,21 @@ void setup() {
     return;
   }
 
-  // Connect to virtual Wi-Fi
-  Serial.printf("[NET] Connecting to Wi-Fi SSID: %s...", ssid);
-  WiFi.begin(ssid, password);
+  // Connect to virtual Wi-Fi (explicit STA mode + channel 6 skips slow multi-channel scan in Wokwi)
+  WiFi.mode(WIFI_STA);
+  Serial.printf("[NET] Connecting to Wi-Fi SSID: %s (ch 6)...", ssid);
+  WiFi.begin(ssid, password, 6);
+  int attempts = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(200);
     Serial.print(".");
+    attempts++;
+    if (attempts % 50 == 0) {
+      Serial.printf("\n[NET WARN] Still waiting for Wi-Fi (status=%d). Ensure wokwigw.exe is running on ws://localhost:9011 before starting Wokwi.\n",
+                    (int)WiFi.status());
+      WiFi.disconnect(false);
+      WiFi.begin(ssid, password, 6);
+    }
   }
   Serial.println("\n[NET] Wi-Fi Connected!");
   Serial.printf("[NET] Node IP Address: %s\n", WiFi.localIP().toString().c_str());
