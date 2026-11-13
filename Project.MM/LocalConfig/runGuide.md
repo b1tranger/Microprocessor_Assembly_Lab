@@ -38,6 +38,7 @@ An operational guide for compiling, running, and simulating the ESP32 Embedded N
   - [6.2 Connection Timed Out from External Devices](#62-connection-timed-out-from-external-devices)
   - [6.3 Wokwi Cannot Find Firmware Binary](#63-wokwi-cannot-find-firmware-binary)
   - [6.4 MicroSD Card Mount Failure](#64-microsd-card-mount-failure)
+  - [6.5 Browser Shows ERR_SSL_PROTOCOL_ERROR or Forces HTTPS](#65-browser-shows-err_ssl_protocol_error-or-forces-https)
 - [7. Quick-Reference Command Cheat Sheet](#7-quick-reference-command-cheat-sheet)
 
 ---
@@ -534,6 +535,20 @@ To maximize file transfer throughput and provide real-time user feedback:
   - `esp:D18` $\rightarrow$ `sd1:SCK`
   - `esp:D19` $\rightarrow$ `sd1:DO`
   - `esp:D23` $\rightarrow$ `sd1:DI`
+
+---
+
+### 6.5 Browser Shows ERR_SSL_PROTOCOL_ERROR or Forces HTTPS
+* **Root Cause**: Modern mobile and desktop browsers (such as Chrome 115+, Edge, or iOS Safari) have an "HTTPS-First" feature enabled by default. If you type an IP address without typing `http://` (e.g. typing `192.168.137.1:9080`), the browser automatically attempts an encrypted TLS handshake (`https://192.168.137.1:9080`). Because the ESP32 node runs a lightweight unencrypted HTTP server on port 80/9080, the browser fails with `ERR_SSL_PROTOCOL_ERROR`.
+* **Why HTTP is Used on Local Microcontrollers**:
+  - **No Public CA on Local IPs**: Certificate authorities (like Let's Encrypt) do not issue trusted SSL certificates for local private RFC-1918 subnets (`192.168.x.x` or `127.0.0.1`). Any self-signed certificate would cause browsers to throw severe full-screen red warning screens (`NET::ERR_CERT_AUTHORITY_INVALID`).
+  - **RAM & CPU Constraints**: Running full TLS/SSL encryption consumes ~45 KB of heap RAM on the 520 KB ESP32 and significantly throttles virtual simulation clock speeds.
+* **Solution**:
+  - Always explicitly type **`http://`** in the browser's address bar:
+    - ✅ `http://localhost:9080/`
+    - ✅ `http://192.168.137.1:9080/`
+    - ❌ `https://192.168.137.1:9080/`
+  - On mobile Chrome, if the browser keeps auto-redirecting to HTTPS, open **Settings $\rightarrow$ Privacy and security** and temporarily toggle off **"Always use secure connections"**.
 
 ---
 
