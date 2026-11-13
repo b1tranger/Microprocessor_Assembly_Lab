@@ -6,8 +6,9 @@
 #>
 
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-$projectDir = Split-Path -Parent $scriptDir
-$projectGwPath = Join-Path $projectDir "LocalConfig\wokwigw.exe"
+$parentDir = Split-Path -Parent $scriptDir
+$projectDir = if (Test-Path (Join-Path $parentDir "platformio.ini")) { $parentDir } else { Join-Path $parentDir "LocalConfig" }
+$projectGwPath = Join-Path $projectDir "wokwigw.exe"
 $gwPath = Join-Path $scriptDir "wokwigw.exe"
 
 Write-Host "==================================================" -ForegroundColor Cyan
@@ -116,12 +117,30 @@ Write-Host "`n[4/4] Verifying Espressif 32 toolchains & framework..." -Foregroun
 $pioPackagesDir = Join-Path $env:USERPROFILE ".platformio\packages"
 $xtensaTool = Join-Path $pioPackagesDir "toolchain-xtensa-esp-elf"
 $arduinoEsp32 = Join-Path $pioPackagesDir "framework-arduinoespressif32"
-$localConfigDir = Join-Path $projectDir "LocalConfig"
+$localConfigDir = $projectDir
+
+# Check for local offline bundle zip or localized toolchains
+$offlineInstallerDir = Join-Path $scriptDir "PlatformIO_Espressif_Offline_Installer"
+$offlineZip = Join-Path $offlineInstallerDir "platformio_cache.zip"
+$offlinePioDir = Join-Path $offlineInstallerDir ".platformio"
 
 if ((Test-Path $xtensaTool) -and (Test-Path $arduinoEsp32)) {
     Write-Host "Espressif 32 toolchain and Arduino core are cached and ready." -ForegroundColor Green
+} elseif (Test-Path $offlineZip) {
+    Write-Host "Found local offline cache: $offlineZip" -ForegroundColor Cyan
+    Write-Host "Unpacking localized toolchains into user profile ($env:USERPROFILE\.platformio)..." -ForegroundColor Yellow
+    Expand-Archive -Path $offlineZip -DestinationPath (Join-Path $env:USERPROFILE ".platformio") -Force
+    Write-Host "Toolchains extracted successfully from offline cache!" -ForegroundColor Green
+} elseif ((Test-Path (Join-Path $offlinePioDir "packages")) -and (Test-Path (Join-Path $offlinePioDir "platforms"))) {
+    Write-Host "Found local unzipped toolchains in $offlinePioDir." -ForegroundColor Cyan
+    Write-Host "Deploying to user profile ($env:USERPROFILE\.platformio)..." -ForegroundColor Yellow
+    robocopy (Join-Path $offlinePioDir "packages") (Join-Path $env:USERPROFILE ".platformio\packages") /E /MT:16 /NFL /NDL /NP | Out-Null
+    robocopy (Join-Path $offlinePioDir "platforms") (Join-Path $env:USERPROFILE ".platformio\platforms") /E /MT:16 /NFL /NDL /NP | Out-Null
+    Write-Host "Toolchains deployed successfully from local cache!" -ForegroundColor Green
 } else {
     Write-Host "Downloading Espressif 32 toolchains & framework packages (~600MB)..." -ForegroundColor Cyan
+    Write-Host "Tip: For offline setups, download platformio_cache.zip from GitHub Releases:" -ForegroundColor Gray
+    Write-Host "     https://github.com/b1tranger/wokwi_env_setup_script/releases/tag/platformio_cache.zip" -ForegroundColor Gray
     Write-Host "Live download progress will be shown below:" -ForegroundColor Gray
     python -u -m platformio pkg install -d $localConfigDir
     if ($LASTEXITCODE -eq 0) {

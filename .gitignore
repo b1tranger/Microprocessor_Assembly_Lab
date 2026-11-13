@@ -1,7 +1,26 @@
+# Global ignore patterns
 *.ini
-Project.MM/setup/PlatformIO_Espressif_Offline_Installer/
-Project.MM/setup/PlatformIO_Espressif_Offline_Installer.zip
-Project.MM/setup/offline_bundle/
+!platformio.ini
 *.whl
+temp/
+
+# PlatformIO Espressif Offline Installer Localized Dependencies (~600MB zip & extracted toolchains)
+# Kept localized for GitHub Releases offline download; excluded from repository commits
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/.platformio/
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/wheels/
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/offline_bundle/
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/*.zip
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/*.whl
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/wokwigw.exe
+Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer.zip
+
+# Local Wokwi Gateway duplicate in LocalConfig (standalone binary preserved in setup/)
+Project.MM/LocalConfig/wokwigw.exe
+
+# Standalone Wokwi Offline Environment Repo Staging Folder (for separate repository)
+wokwi-offline-environment/
+Wokwi-Offline-Environment/
+
+# PlatformIO local build cache & artifacts
+Project.MM/LocalConfig/.pio/
 platformio_cache.zip
-temp

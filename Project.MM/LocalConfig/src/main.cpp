@@ -4,7 +4,9 @@
 #include <HTTPClient.h>
 #include <SPI.h>
 #include <SD.h>
+#include <vector>
 #include "html_templates.h"
+#include "default_assets.h"
 
 // Hardware SPI Chip Select pin mapped to GPIO 5
 #define SD_CS_PIN 5
@@ -24,34 +26,73 @@ String formatBytes(size_t bytes) {
 }
 
 // ============================================================================
-// PHASE 1: STORAGE INITIALIZATION & DIRECTORY SEEDING
+// SECURITY & FILE PROTECTION SYSTEM
+// ============================================================================
+bool isProtectedPath(const String& rawPath) {
+  String p = rawPath;
+  if (!p.startsWith("/")) p = "/" + p;
+  
+  // Direct default root mirrors or folders
+  if (p == "/lab_report.txt") return true;
+  if (p.startsWith("/default/") || p == "/default") return true;
+  if (p.startsWith("/www/") || p == "/www") return true;
+
+  // Match against all registered embedded assets
+  for (size_t i = 0; i < EMBEDDED_ASSET_COUNT; i++) {
+    if (p == EMBEDDED_ASSETS[i].sdPath && EMBEDDED_ASSETS[i].isProtected) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void ensureParentDir(const String& path) {
+  int lastSlash = path.lastIndexOf('/');
+  if (lastSlash > 0) {
+    String dir = path.substring(0, lastSlash);
+    if (!SD.exists(dir)) {
+      SD.mkdir(dir);
+    }
+  }
+}
+
+// ============================================================================
+// PHASE 1: STORAGE INITIALIZATION & DYNAMIC ASSET SEEDING
 // ============================================================================
 void phase1_seedInitialFiles() {
-  if (!SD.exists("/www")) {
-    SD.mkdir("/www");
-  }
+  // Ensure primary folder structure exists
+  if (!SD.exists("/default")) SD.mkdir("/default");
+  if (!SD.exists("/www")) SD.mkdir("/www");
+  if (!SD.exists("/uploads")) SD.mkdir("/uploads");
 
-  // Seed modern static website to SD card if missing
-  if (!SD.exists("/www/index.html")) {
-    File html = SD.open("/www/index.html", FILE_WRITE);
-    if (html) {
-      html.print(FPSTR(SEED_INDEX_HTML));
-      html.close();
-      Serial.println("[STORAGE] Seeded modern /www/index.html to SD");
+  // Dynamically seed all embedded assets from data/ folder
+  for (size_t i = 0; i < EMBEDDED_ASSET_COUNT; i++) {
+    const EmbeddedAsset& asset = EMBEDDED_ASSETS[i];
+    ensureParentDir(asset.sdPath);
+
+    if (!SD.exists(asset.sdPath)) {
+      File f = SD.open(asset.sdPath, FILE_WRITE);
+      if (f) {
+        f.write(asset.data, asset.size);
+        f.close();
+        Serial.printf("[STORAGE] Seeded %s (%u bytes)\n", asset.sdPath, (unsigned int)asset.size);
+      }
     }
   }
 
-  // Seed default lab report file
-  if (!SD.exists("/lab_report.txt")) {
-    File report = SD.open("/lab_report.txt", FILE_WRITE);
-    if (report) {
-      report.println("Course: CSE0611324 Microprocessor & Microcontrollers Lab");
-      report.println("Project: ESP32 Embedded NAS & Static Web Node");
-      report.println("Architecture: Hardware VSPI (CS:5, MOSI:23, MISO:19, SCK:18)");
-      report.println("Filesystem: FAT32 Block Device Driver");
-      report.println("Features: File Upload, File Streaming, Delete, Static Web Hosting");
-      report.close();
-      Serial.println("[STORAGE] Seeded /lab_report.txt to SD");
+  // Backwards-compatible mirror for root /lab_report.txt if missing
+  if (!SD.exists("/lab_report.txt") && SD.exists("/default/lab_report.txt")) {
+    File src = SD.open("/default/lab_report.txt", FILE_READ);
+    File dst = SD.open("/lab_report.txt", FILE_WRITE);
+    if (src && dst) {
+      uint8_t buf[256];
+      while (src.available()) {
+        size_t len = src.read(buf, sizeof(buf));
+        dst.write(buf, len);
+      }
+      src.close();
+      dst.close();
+      Serial.println("[STORAGE] Mirrored /default/lab_report.txt to /lab_report.txt for compatibility");
     }
   }
 }
@@ -81,7 +122,11 @@ bool phase1_initStorage() {
   File root = SD.open("/");
   File file = root.openNextFile();
   while (file) {
-    Serial.printf("  |- %s (%s)\n", file.name(), formatBytes(file.size()).c_str());
+    if (file.isDirectory()) {
+      Serial.printf("  [DIR]  /%s\n", file.name());
+    } else {
+      Serial.printf("  [FILE] /%s (%s)\n", file.name(), formatBytes(file.size()).c_str());
+    }
     file = root.openNextFile();
   }
   root.close();
@@ -94,7 +139,40 @@ bool phase1_initStorage() {
 // PHASE 2: HTTP ROUTE HANDLERS
 // ============================================================================
 
-// Route: NAS Dashboard (Renders storage meter, upload form, and file table)
+struct StorageItem {
+  String path;
+  size_t size;
+  bool isProtected;
+};
+
+void collectFilesRecursively(File dir, std::vector<StorageItem>& items, int depth = 0) {
+  if (!dir || !dir.isDirectory() || depth > 3) return;
+
+  File file = dir.openNextFile();
+  while (file) {
+    if (file.isDirectory()) {
+      collectFilesRecursively(file, items, depth + 1);
+    } else {
+      String fullPath = String(file.name());
+      if (!fullPath.startsWith("/")) fullPath = "/" + fullPath;
+
+      // Skip root /lab_report.txt if /default/lab_report.txt exists to avoid duplicate rows
+      if (fullPath == "/lab_report.txt" && SD.exists("/default/lab_report.txt")) {
+        file = dir.openNextFile();
+        continue;
+      }
+
+      StorageItem item;
+      item.path = fullPath;
+      item.size = file.size();
+      item.isProtected = isProtectedPath(fullPath);
+      items.push_back(item);
+    }
+    file = dir.openNextFile();
+  }
+}
+
+// Route: NAS Dashboard (Renders storage meter, upload form, and protected file table)
 void handleRoot() {
   uint64_t total = SD.totalBytes();
   uint64_t used = SD.usedBytes();
@@ -115,41 +193,46 @@ void handleRoot() {
   meter += "</div>";
   server.sendContent(meter);
 
-  // Upload Form section
+  // Upload Form section (routes uploads directly to /uploads/)
   String uploadBox = "<div class='upload-box'>";
   uploadBox += "<form class='upload-form' method='POST' action='/upload' enctype='multipart/form-data'>";
   uploadBox += "<input type='file' name='upload_file' required>";
-  uploadBox += "<button type='submit' class='btn-upload'>⬆ Upload to NAS</button>";
+  uploadBox += "<button type='submit' class='btn-upload'>⬆ Upload to /uploads/</button>";
   uploadBox += "</form></div>";
   server.sendContent(uploadBox);
 
   // File Table section
   String tableStart = "<div class='table-card'><table>";
-  tableStart += "<tr><th>File Name</th><th>Size</th><th style='text-align: right;'>Actions</th></tr>";
+  tableStart += "<tr><th>File Name & Location</th><th>Size</th><th style='text-align: right;'>Actions</th></tr>";
   server.sendContent(tableStart);
 
+  std::vector<StorageItem> items;
   File root = SD.open("/");
-  File file = root.openNextFile();
-  int fileCount = 0;
-  while (file) {
-    if (!file.isDirectory()) {
-      fileCount++;
-      String fname = String(file.name());
-      if (fname.startsWith("/")) fname = fname.substring(1);
+  collectFilesRecursively(root, items);
+  root.close();
 
-      String row = "<tr>";
-      row += "<td><strong>📄 " + fname + "</strong></td>";
-      row += "<td>" + formatBytes(file.size()) + "</td>";
-      row += "<td style='text-align: right;'>";
-      row += "<a href='/get?file=" + fname + "' class='btn-action btn-dl'>Download</a>";
-      row += "<a href='/delete?file=" + fname + "' class='btn-action btn-del' onclick=\"return confirm('Delete " + fname + "?');\">Delete</a>";
-      row += "</td></tr>";
-      server.sendContent(row);
+  for (const auto& item : items) {
+    int lastSlash = item.path.lastIndexOf('/');
+    String dirName = (lastSlash > 0) ? item.path.substring(0, lastSlash) : "/";
+    String baseName = (lastSlash >= 0) ? item.path.substring(lastSlash + 1) : item.path;
+
+    String row = "<tr>";
+    row += "<td><strong>📄 " + baseName + "</strong> <span class='tag-folder'>" + dirName + "</span></td>";
+    row += "<td>" + formatBytes(item.size) + "</td>";
+    row += "<td style='text-align: right;'>";
+    row += "<a href='/get?file=" + item.path + "' class='btn-action btn-dl'>Download</a>";
+
+    if (item.isProtected) {
+      row += "<span class='badge-protected'>🔒 Protected</span>";
+    } else {
+      row += "<a href='/delete?file=" + item.path + "' class='btn-action btn-del' onclick=\"return confirm('Delete " + baseName + "?');\">Delete</a>";
     }
-    file = root.openNextFile();
+
+    row += "</td></tr>";
+    server.sendContent(row);
   }
 
-  if (fileCount == 0) {
+  if (items.empty()) {
     server.sendContent("<tr><td colspan='3' style='text-align: center; color: #64748b; padding: 24px;'>No files found on storage. Upload one above!</td></tr>");
   }
 
@@ -157,17 +240,23 @@ void handleRoot() {
   server.sendContent(FPSTR(NAS_PAGE_FOOTER));
 }
 
-// Route: File Upload Handler (Streaming Multipart Parser)
+// Route: File Upload Handler (Streaming Multipart Parser saving to /uploads/)
 void handleFileUpload() {
   HTTPUpload& upload = server.upload();
 
   if (upload.status == UPLOAD_FILE_START) {
     String filename = upload.filename;
-    if (!filename.startsWith("/")) {
-      filename = "/" + filename;
+    int slashIdx = filename.lastIndexOf('/');
+    if (slashIdx >= 0) filename = filename.substring(slashIdx + 1);
+    int bslashIdx = filename.lastIndexOf('\\');
+    if (bslashIdx >= 0) filename = filename.substring(bslashIdx + 1);
+
+    if (!SD.exists("/uploads")) {
+      SD.mkdir("/uploads");
     }
-    Serial.printf("[UPLOAD START] Target: %s\n", filename.c_str());
-    uploadFile = SD.open(filename, FILE_WRITE);
+    String targetPath = "/uploads/" + filename;
+    Serial.printf("[UPLOAD START] Destination: %s\n", targetPath.c_str());
+    uploadFile = SD.open(targetPath, FILE_WRITE);
   } else if (upload.status == UPLOAD_FILE_WRITE) {
     if (uploadFile) {
       uploadFile.write(upload.buf, upload.currentSize);
@@ -185,17 +274,39 @@ void handleFileUpload() {
   }
 }
 
-// Route: File Deletion Handler
+// Route: File Deletion Handler (Rejects protected default files)
 void handleDelete() {
   if (!server.hasArg("file")) {
     server.send(400, "text/plain", "Missing file parameter");
     return;
   }
 
-  String filename = "/" + server.arg("file");
-  if (SD.exists(filename)) {
-    SD.remove(filename);
-    Serial.printf("[STORAGE] Deleted: %s\n", filename.c_str());
+  String target = server.arg("file");
+  if (!target.startsWith("/")) target = "/" + target;
+
+  // Block attempts to delete protected system files
+  if (isProtectedPath(target)) {
+    Serial.printf("[SECURITY BLOCKED] Deletion rejected for protected file: %s\n", target.c_str());
+    server.send(403, "text/plain", "Forbidden: Default system files are write-protected and cannot be deleted.");
+    return;
+  }
+
+  bool removed = false;
+  if (SD.exists(target)) {
+    SD.remove(target);
+    removed = true;
+    Serial.printf("[STORAGE] Deleted: %s\n", target.c_str());
+  } else {
+    String uploadPath = "/uploads" + target;
+    if (SD.exists(uploadPath)) {
+      SD.remove(uploadPath);
+      removed = true;
+      Serial.printf("[STORAGE] Deleted: %s\n", uploadPath.c_str());
+    }
+  }
+
+  if (!removed) {
+    Serial.printf("[STORAGE WARN] File not found for deletion: %s\n", target.c_str());
   }
 
   // Redirect back to dashboard
@@ -221,14 +332,29 @@ void handleDownload() {
     return;
   }
 
-  String filename = "/" + server.arg("file");
-  if (!SD.exists(filename)) {
+  String req = server.arg("file");
+  if (!req.startsWith("/")) req = "/" + req;
+
+  String resolvedPath = "";
+  if (SD.exists(req)) {
+    resolvedPath = req;
+  } else if (SD.exists("/default" + req)) {
+    resolvedPath = "/default" + req;
+  } else if (SD.exists("/www" + req)) {
+    resolvedPath = "/www" + req;
+  } else if (SD.exists("/uploads" + req)) {
+    resolvedPath = "/uploads" + req;
+  }
+
+  if (resolvedPath.length() == 0) {
     server.send(404, "text/plain", "File Not Found on Storage");
     return;
   }
 
-  File downloadFile = SD.open(filename, FILE_READ);
-  server.sendHeader("Content-Disposition", "attachment; filename=\"" + server.arg("file") + "\"");
+  File downloadFile = SD.open(resolvedPath, FILE_READ);
+  int lastSlash = resolvedPath.lastIndexOf('/');
+  String dlName = (lastSlash >= 0) ? resolvedPath.substring(lastSlash + 1) : resolvedPath;
+  server.sendHeader("Content-Disposition", "attachment; filename=\"" + dlName + "\"");
   server.streamFile(downloadFile, "application/octet-stream");
   downloadFile.close();
 }
@@ -242,19 +368,28 @@ void runClientTests(void * parameter) {
   Serial.println("  [PHASE 2 AUTO-TEST] Running Network Diagnostics ");
   Serial.println("==================================================");
 
+  // Test 1: Dashboard explorer
   http.begin("http://127.0.0.1/");
   int code = http.GET();
   Serial.printf("[TEST 1: Root Explorer] Response: %d\n", code);
   http.end();
 
+  // Test 2: Static site stream
   http.begin("http://127.0.0.1/site");
   code = http.GET();
   Serial.printf("[TEST 2: Static Host /site] Response: %d\n", code);
   http.end();
 
+  // Test 3: Download default asset
   http.begin("http://127.0.0.1/get?file=lab_report.txt");
   code = http.GET();
   Serial.printf("[TEST 3: Download /get] Response: %d\n", code);
+  http.end();
+
+  // Test 4: Verify default files are protected against deletion
+  http.begin("http://127.0.0.1/delete?file=/default/lab_report.txt");
+  code = http.GET();
+  Serial.printf("[TEST 4: Delete Protection] Response: %d (Expected: 403 Forbidden)\n", code);
   http.end();
 
   Serial.println("==================================================\n");
@@ -308,7 +443,7 @@ void setup() {
   server.begin();
   Serial.println("[HTTP] Server listening on port 80 with File Upload enabled.");
 
-  // Launch background diagnostics
+  // Launch background diagnostics on Core 1
   xTaskCreatePinnedToCore(runClientTests, "ClientTest", 6144, NULL, 1, NULL, 1);
 }
 

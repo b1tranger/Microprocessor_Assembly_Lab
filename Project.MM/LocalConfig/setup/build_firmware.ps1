@@ -12,7 +12,8 @@ $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUNBUFFERED = "1"
 
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-$projectDir = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig"
+$parentDir = Split-Path -Parent $scriptDir
+$projectDir = if (Test-Path (Join-Path $parentDir "platformio.ini")) { $parentDir } else { Join-Path $parentDir "LocalConfig" }
 
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host " Building ESP32 NAS Firmware with PlatformIO " -ForegroundColor Cyan
@@ -27,6 +28,13 @@ $toolchainsReady = (Test-Path $xtensaTool) -and (Test-Path $arduinoEsp32)
 
 Push-Location $projectDir
 try {
+    # Step 0: Ensure default assets are generated from data/ (default/ and www/)
+    $genScriptPs = Join-Path $projectDir "scripts\generate_assets.ps1"
+    if (Test-Path $genScriptPs) {
+        Write-Host "`n[ASSETS] Syncing embedded assets from data/ folder..." -ForegroundColor Cyan
+        & powershell -ExecutionPolicy Bypass -File $genScriptPs
+    }
+
     if (-not $toolchainsReady) {
         Write-Host "`n[1/2] Initializing Espressif 32 toolchains and framework..." -ForegroundColor Yellow
         Write-Host "      (First-time setup: downloading ~600MB with live progress bars)`n" -ForegroundColor Gray

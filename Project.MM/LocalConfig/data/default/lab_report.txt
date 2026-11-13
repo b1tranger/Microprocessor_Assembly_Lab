@@ -1,0 +1,15 @@
+Course: CSE0611324 Microprocessor & Microcontrollers Lab
+Project: ESP32 Embedded Network Attached Storage (NAS) & Static Web Node
+Architecture: Classic ESP32 DevKit V1 (Xtensa Dual-Core LX6 @ 240 MHz)
+Storage Interface: Hardware VSPI (CS: GPIO 5, SCK: GPIO 18, MOSI: GPIO 23, MISO: GPIO 19)
+Filesystem: FAT32 Block Device Driver (SD.h)
+Web Server: Native Arduino WebServer on Port 80
+Memory Model: Fixed ~2 KB Streaming RAM Overhead (server.streamFile / server.upload)
+Features:
+  - Local Multi-Client File Sharing & Storage
+  - Fast Static Web Hosting from SD (/www/index.html)
+  - Dedicated Protected Storage (/default/ and /www/)
+  - Streaming File Uploads to /uploads/
+  - Multi-Interface Access (LAN Ethernet & Mobile Hotspot)
+Status: Verified in VS Code Wokwi Simulation
+

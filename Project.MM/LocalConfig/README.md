@@ -8,26 +8,12 @@
   - [1. platformio.ini](#1-platformioini)
   - [2. wokwi.toml](#2-wokwitoml)
   - [3. diagram.json](#3-diagramjson)
-  - [4. include/html_templates.h](#4-includehtml_templatesh)
-  - [5. src/main.cpp](#5-srcmaincpp)
-  - [6. setup_firewall.bat](#6-setup_firewallbat)
-- [Step-by-Step Simulation Execution](#step-by-step-simulation-execution)
-  - [Step 1: Open the Project in VS Code](#step-1-open-the-project-in-vs-code)
-  - [Step 2: Compile the Firmware](#step-2-compile-the-firmware)
-  - [Step 3: Configure Windows Firewall (One-Click)](#step-3-configure-windows-firewall-one-click)
-  - [Step 4: Launch Network Gateway (wokwigw)](#step-4-launch-network-gateway-wokwigw)
-  - [Step 5: Launch Wokwi Simulation](#step-5-launch-wokwi-simulation)
-- [Simultaneous Multi-Interface Access (Ethernet LAN + Wi-Fi Hotspot)](#simultaneous-multi-interface-access-ethernet-lan--wi-fi-hotspot)
-  - [Why Multi-Interface Works (0.0.0.0:9080 Binding)](#why-multi-interface-works-00009080-binding)
-  - [Method A: Wireless Access via Windows Mobile Hotspot](#method-a-wireless-access-via-windows-mobile-hotspot)
-  - [Method B: Wired Access via Physical Ethernet LAN Switch](#method-b-wired-access-via-physical-ethernet-lan-switch)
-  - [Endpoint & Host IP Mapping Table](#endpoint--host-ip-mapping-table)
-- [Local Network File Sharing (LocalSend Web Model)](#local-network-file-sharing-localsend-web-model)
-  - [Workflow: Sharing Files Between Two Lab Computers](#workflow-sharing-files-between-two-lab-computers)
-  - [Architectural Comparison: Project.MM vs. LocalSend Web](#architectural-comparison-projectmm-vs-localsend-web)
-  - [Lab Demonstration Checklist](#lab-demonstration-checklist)
-- [Access Endpoints](#access-endpoints)
-- [Troubleshooting & Tips](#troubleshooting--tips)
+  - [4. Dedicated Data & Assets (data/ and include/default_assets.h)](#4-dedicated-data--assets-data-and-includedefault_assetsh)
+  - [5. include/html_templates.h](#5-includehtml_templatesh)
+  - [6. src/main.cpp](#6-srcmaincpp)
+  - [7. setup_firewall.bat](#7-setup_firewallbat)
+  - [8. setup/ Directory](#8-setup-directory)
+- [Simulation Execution & Multi-Device Access Guide](#simulation-execution--multi-device-access-guide)
 
 ---
 
@@ -44,16 +30,32 @@ By running simulation locally, the ESP32 code executes via your local compiler t
 Project.MM/LocalConfig/
 │
 ├── .gitignore             # Ignores .pio/ build artifacts and local IDE files
-├── platformio.ini         # Toolchain & dependency configuration
+├── platformio.ini         # Toolchain & dependency configuration (with pre-build asset script)
 ├── wokwi.toml             # Wokwi simulation descriptor
 ├── diagram.json           # Circuit schematics and SPI pin mappings
 ├── wokwigw.exe            # Local network gateway binary
 ├── setup_firewall.bat     # One-click UAC auto-elevated Windows Firewall rule installer
-├── README.md              # Project documentation and execution instructions
+├── runGuide.md            # Comprehensive execution, networking, and setup guide
+├── README.md              # Project technical overview and architecture
+├── data/                  # Dedicated host folders for initial assets
+│   ├── default/           # Default protected files (lab_report.txt, etc.)
+│   └── www/               # Static website files (index.html, etc.)
+├── scripts/               # Asset embedding scripts
+│   ├── generate_assets.bat  # One-click asset generator for Windows CMD
+│   ├── generate_assets.ps1  # PowerShell asset generator
+│   └── generate_assets.py   # PlatformIO pre-build asset generator
 ├── include/
-│   └── html_templates.h   # Modular glassmorphic HTML/CSS templates & PROGMEM strings
-└── src/
-    └── main.cpp           # ESP32 C++ firmware code
+│   ├── default_assets.h   # Auto-generated PROGMEM byte arrays from data/
+│   └── html_templates.h   # Modular glassmorphic HTML/CSS templates & UI components
+├── src/
+│   └── main.cpp           # ESP32 C++ firmware code & protected storage engine
+└── setup/                 # One-click automated setup & offline toolchain scripts
+    ├── install_dependencies.bat / .ps1
+    ├── build_firmware.bat / .ps1
+    ├── setup_firewall.bat
+    ├── start_gateway.bat / .ps1
+    ├── uninstall_dependencies.bat / .ps1
+    └── SETUP_GUIDE.md
 ```
 
 ---
@@ -110,228 +112,56 @@ Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed sil
   - `esp:D19` $\rightarrow$ `sd1:DO` (MISO)
   - `esp:D18` $\rightarrow$ `sd1:SCK` (Serial Clock)
 
-### 4. `include/html_templates.h`
+### 4. Dedicated Data & Assets (`data/` and `include/default_assets.h`)
+- **`data/default/`**: Host folder for default documentation and files (e.g. [`data/default/lab_report.txt`](data/default/lab_report.txt)). Automatically seeded to `/default/` on the SD card.
+- **`data/www/`**: Host folder for static website files (e.g. [`data/www/index.html`](data/www/index.html)). Automatically seeded to `/www/` on the SD card.
+- **`scripts/generate_assets.bat` / `.ps1` / `.py`**: Scans `data/` and compiles files into Flash ROM as `PROGMEM` byte arrays inside `include/default_assets.h`.
+- **Write Protection**: Any file in `default/` or `www/` is write-protected (`isProtected = true`) and cannot be deleted from the web interface.
+
+### 5. `include/html_templates.h`
 Modular UI templates:
-- Contains glassmorphic dark UI CSS styles, responsive layouts, storage bar templates, and the static website template (`SEED_INDEX_HTML`).
+- Contains glassmorphic dark UI CSS styles, responsive layouts, storage bar templates, and badge styles for write-protected files (`.badge-protected`).
 - Stored directly in Flash ROM using `PROGMEM` and C++ raw string literals `R"rawliteral(...)rawliteral"`, keeping internal SRAM free.
 
-### 5. `src/main.cpp`
+### 6. `src/main.cpp`
 Firmware architecture:
-- **Phase 1 Storage**: Explicitly initializes `SPI.begin(18, 19, 23, 5)` and mounts FAT32 SD filesystem via `SD.begin(5, SPI)`. Automatically seeds `/www/index.html` and `/lab_report.txt` and enumerates files.
-- **Phase 2 Networking**: Connects to `Wokwi-GUEST` Wi-Fi, hosts web endpoints on port 80 (`/`, `/site`, `/get`, `/upload`, `/delete`), and executes automated internal self-diagnostics on FreeRTOS Core 1.
+- **Phase 1 Storage**: Initializes hardware VSPI (`SPI.begin(18, 19, 23, 5)`), mounts FAT32 SD card (`SD.begin(5, SPI)`), creates dedicated directories (`/default`, `/www`, `/uploads`), and dynamically seeds embedded assets from `default_assets.h`.
+- **Protected File Security**: Intercepts delete requests targeting `/default/*`, `/www/*`, or `/lab_report.txt` and returns `HTTP 403 Forbidden`.
+- **Phase 2 Networking**: Connects to `Wokwi-GUEST` Wi-Fi, hosts web endpoints on port 80 (`/`, `/site`, `/get`, `/upload`, `/delete`), routes incoming uploads into `/uploads/`, and executes automated self-diagnostics on FreeRTOS Core 1.
 
-### 6. `setup_firewall.bat`
+### 7. `setup_firewall.bat`
 Automated administrative script:
 - Automatically requests UAC elevation if not launched as Administrator.
 - Executes `New-NetFirewallRule -DisplayName "Wokwi Gateway NAS" -Direction Inbound -LocalPort 9080 -Protocol TCP -Profile Any -Action Allow` to permit inbound traffic on port 9080 across all network profiles (Domain, Private, Public).
 - Guarantees wired Ethernet LAN peers and wireless Mobile Hotspot devices can access the server without connection timeouts.
 
+### 8. `setup/` Directory
+Automated setup and offline installation scripts:
+- **[`setup/install_dependencies.bat`](setup/install_dependencies.bat) / [`.ps1`](setup/install_dependencies.ps1)**: Automatically installs Python, PlatformIO CLI, packages, and extracts toolchains.
+- **[`setup/build_firmware.bat`](setup/build_firmware.bat) / [`.ps1`](setup/build_firmware.ps1)**: One-click CLI firmware compilation to `.pio/build/esp32dev/firmware.bin`.
+- **[`setup/setup_firewall.bat`](setup/setup_firewall.bat)**: Automated Windows Firewall rule installer for port 9080.
+- **[`setup/start_gateway.bat`](setup/start_gateway.bat) / [`.ps1`](setup/start_gateway.ps1)**: One-click launcher for `wokwigw.exe` forwarding `0.0.0.0:9080` $\rightarrow$ `10.13.37.2:80`.
+- **[`setup/uninstall_dependencies.bat`](setup/uninstall_dependencies.bat) / [`.ps1`](setup/uninstall_dependencies.ps1)**: Reverts all environment changes, uninstalls packages, and cleans registry/PATH entries.
+- **[`setup/SETUP_GUIDE.md`](setup/SETUP_GUIDE.md)**: In-depth offline installation and troubleshooting documentation.
+
 > [!TIP]
-> - For a complete project show walkthrough, oral defense script, and architectural Q&A, refer to the **[Presentation Guide](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)**.
-> - For automated one-click dependency installation, automated build scripts, and offline tools, check out [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup) and [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md).
+> For a complete project show walkthrough, oral defense script, and architectural Q&A, refer to the **[Presentation Guide](../PRESENTATION_GUIDE.md)**.
 
 ---
 
-## Step-by-Step Simulation Execution
+## Simulation Execution & Multi-Device Access Guide
 
-### Step 1: Open the Project in VS Code
-Open the directory `Project.MM/LocalConfig` directly in VS Code (`File` > `Open Folder...`). This ensures PlatformIO immediately detects `platformio.ini` and Wokwi automatically loads [`wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml).
-
-> [!NOTE]
-> **If VS Code was opened at the repo root (`Microprocessor_Assembly_Lab`)** instead of `Project.MM/LocalConfig`, make sure Wokwi uses [`Project.MM/LocalConfig/wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml) by pressing `F1` $\rightarrow$ **`Wokwi: Select Config File`** (or reopen `Project.MM/LocalConfig` directly as the workspace folder). Otherwise, Wokwi may fail to load the `[net]` gateway setting or the compiled firmware binary.
-
-### Step 2: Compile the Firmware
-- Click the **PlatformIO Build checkmark (✓)** on the bottom blue status bar, or press `Ctrl + Alt + B`.
-- PlatformIO will download toolchains and libraries on first run, compiling to `.pio/build/esp32dev/firmware.bin`.
-
-### Step 3: Configure Windows Firewall (One-Click)
-To ensure client devices (such as smartphones and lab desktop PCs) can reach port 9080:
-- Double-click [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) (or run from terminal).
-- Accept the Windows UAC elevation prompt. The script configures inbound TCP port 9080 across all network profiles automatically.
-
-### Step 4: Launch Network Gateway (wokwigw)
-In a terminal window (PowerShell) inside `Project.MM/LocalConfig`:
-```powershell
-.\wokwigw.exe --forward 9080:10.13.37.2:80
-```
-*(Leave this running in the background. It forwards host port 9080 into the simulated ESP32 port 80).*
-
-### Step 5: Launch Wokwi Simulation
-1. Open `diagram.json` in the VS Code editor.
-2. Press `F1` (or `Ctrl + Shift + P`) to open the Command Palette.
-3. Run: **`Wokwi: Start Simulator`** (or click the green Play button).
-4. Watch the integrated Serial Monitor output:
-   ```text
-   --------------------------------------------------
-     [PHASE 1 EXECUTION] Mounting MicroSD via VSPI   
-   --------------------------------------------------
-   [PHASE 1 SUCCESS] FAT32 Storage Mounted.
-   [PHASE 1 CAPACITY] Total: 8 MB | Used: ...
-   [PHASE 1 STORAGE] Seeded /www/index.html
-   [PHASE 1 STORAGE] Seeded /lab_report.txt
-   [PHASE 2 NET] Wi-Fi Connected!
-   [PHASE 2 NET] Node IP Address: 10.13.37.2
-   [PHASE 2 HTTP] Server active and listening on port 80.
-   ```
-
----
-
-## Simultaneous Multi-Interface Access (Ethernet LAN + Wi-Fi Hotspot)
-
-### Why Multi-Interface Works (0.0.0.0:9080 Binding)
-When you start the gateway using:
-```powershell
-.\wokwigw.exe --forward 9080:10.13.37.2:80
-```
-The gateway binary does **not** bind strictly to `127.0.0.1`. Instead, it binds to socket `0.0.0.0:9080` (INADDR_ANY), meaning it actively listens on **every network interface enabled on your Windows host PC**.
-
-This allows you to serve the simulated ESP32 NAS simultaneously across both wired and wireless networks!
-
-```
-                       +---------------------------------------+
-                       |   Host Workstation (0.0.0.0:9080)    |
-                       |       wokwigw.exe TCP Forwarder       |
-                       +-------------------+-------------------+
-                                           |
-                    +----------------------+----------------------+
-                    |                                             |
-                    ▼                                             ▼
-       [Wired Ethernet Interface]                    [Windows Mobile Hotspot]
-        IP: e.g. 192.168.1.105                         Virtual IP: 192.168.137.1
-                    |                                             |
-                    ▼                                             ▼
-          Lab Desktop PCs on LAN                       Smartphones & Tablets
-    http://192.168.1.105:9080/                      http://192.168.137.1:9080/
-```
-
-### Method A: Wireless Access via Windows Mobile Hotspot
-To allow smartphones, tablets, and external laptops to connect wirelessly without lab router credentials:
-1. Open Windows **Settings > Network & internet > Mobile hotspot**.
-2. Select **Share my internet connection from**: `Ethernet` (or `Wi-Fi`).
-3. Set **Share over**: `Wi-Fi`.
-4. Turn **Mobile hotspot** to **ON**.
-5. Note your hotspot Network Name (SSID) and Password.
-6. Connect external smartphones or tablets to this hotspot.
-7. Windows automatically assigns the host PC an IP of **`192.168.137.1`** on the virtual hotspot adapter.
-8. On the connected phone/tablet, open any mobile browser and navigate to:
-   - **`http://192.168.137.1:9080/`** (NAS Dashboard)
-   - **`http://192.168.137.1:9080/site`** (Static Webpage)
-
-### Method B: Wired Access via Physical Ethernet LAN Switch
-To allow lab PCs on the local campus network switch to access the node:
-1. Ensure your host machine is connected to the lab Ethernet switch/wall port.
-2. Open PowerShell and find your local Ethernet IPv4 address:
-   ```powershell
-   ipconfig
-   ```
-   *(Look for `IPv4 Address` under Ethernet adapter, e.g., `192.168.1.105` or `10.100.x.x`).*
-3. From any other lab desktop PC connected to the same switch/subnet, open the browser and navigate to:
-   - **`http://<YOUR_ETHERNET_IP>:9080/`** (e.g. `http://192.168.1.105:9080/`)
-   - **`http://<YOUR_ETHERNET_IP>:9080/site`**
-
----
-
-### Endpoint & Host IP Mapping Table
-
-Use this reference table to access the appropriate endpoints during your live lab evaluation:
-
-| Interface Type | Connected Client Device | Host IP Reference | NAS Explorer URL | Hosted Static Site URL |
-| :--- | :--- | :--- | :--- | :--- |
-| **Localhost (Loopback)** | Host PC (Where VS Code is running) | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
-| **Windows Mobile Hotspot** | Evaluator smartphones, tablets, laptops | `192.168.137.1` *(Default Windows Hotspot Gateway)* | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
-| **Wired Ethernet LAN** | Lab workstation PCs on campus switch | `<YOUR_LAN_IP>` *(From `ipconfig`)* | `http://<YOUR_LAN_IP>:9080/` | `http://<YOUR_LAN_IP>:9080/site` |
-
----
-
-## Local Network File Sharing (LocalSend Web Model)
-
-### Workflow: Sharing Files Between Two Lab Computers
-Just like the **"Share via Browser" (Web Share)** mode in **LocalSend**, `Project.MM` enables zero-installation local network file exchange between two lab computers or workstations via a standard web browser:
-
-```text
- [Lab PC 1: Host Node]                                 [Lab PC 2: Peer Client]
- +----------------------------------+                  +----------------------------------+
- | Wokwi Simulator (ESP32 DevKit)   |                  | Standard Web Browser             |
- |   ↕ (WS: ws://localhost:9011)    |                  | (Chrome / Edge / Firefox)        |
- | wokwigw.exe (0.0.0.0:9080)       |                  |                                  |
- | Windows Firewall Port 9080 OPEN  |                  | Navigates to:                    |
- +-----------------+----------------+                  | http://<PC1_IP>:9080/            |
-                   |                                   +-----------------+----------------+
-                   |                                                     |
-                   +=================== LAN SWITCH =====================+
-                               (or Windows Mobile Hotspot)
-```
-
-1. **Host Setup (PC 1)**: Runs the Wokwi simulation with `wokwigw.exe` and opens `http://localhost:9080/` (or `http://<PC1_IP>:9080/`).
-2. **Peer Connection (PC 2)**: Without installing any desktop apps, PC 2 opens its browser and navigates to `http://<PC1_IP>:9080/`.
-3. **Bi-directional Sharing**:
-   - PC 1 uploads a file (e.g., `labtest2A.asm`) $\rightarrow$ Stored in the MicroSD FAT32 filesystem $\rightarrow$ PC 2 refreshes and clicks **Download**.
-   - PC 2 selects a file (e.g., `lab_report.txt`) in the upload box $\rightarrow$ Uploads directly to the ESP32 storage $\rightarrow$ PC 1 refreshes and downloads it.
-4. **Real-Time Storage Telemetry**: Both computers see the dynamic storage capacity progress bar update in real-time as files are written and deleted.
-
----
-
-### Architectural Comparison: Project.MM vs. LocalSend Web
-
-While the front-end user experience mirrors LocalSend Web, the underlying embedded systems architecture fulfills the hardware requirements of `CSE0611324`:
-
-| Dimension | LocalSend Web ("Share via Browser") | Project.MM Embedded NAS (`LocalConfig`) |
-| :--- | :--- | :--- |
-| **Compute Engine** | Heavy OS desktop application (Flutter / Rust / Dart on PC with 16 GB RAM) | **Classic ESP32 MCU** (Xtensa 32-bit Dual-Core LX6 @ 240 MHz, 520 KB SRAM) |
-| **Storage Architecture** | Standard OS filesystem calls to PC NVMe/SSD drive | **Hardware VSPI Bus (SCK:18, MISO:19, MOSI:23, CS:5)** driving raw FAT32 SD block sectors |
-| **Memory Budget** | Megabytes to gigabytes allocated in OS heap buffers | **Strict ~2 KB Streaming Window**: multipart upload chunks and download streams never overload SRAM |
-| **Host Independence** | **Host-dependent**: If PC 1 closes the LocalSend window, sharing terminates immediately | **Independent Appliance**: The ESP32 is a standalone network node. Both PC 1 and PC 2 are equal clients connecting to external hardware |
-| **Additional Services** | File transfer only | **Dual Service**: Simultaneous NAS file server + hosted static web node (`/site` streaming `/www/index.html` from SD card) |
-
----
-
-### Lab Demonstration Checklist
-
-1. **Firewall Rule**: On PC 1, execute [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) as Administrator.
-2. **Start Gateway**: In PowerShell, run:
-   ```powershell
-   .\wokwigw.exe --forward 9080:10.13.37.2:80
-   ```
-3. **Start Simulation**: Open [`diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json), press `F1`, and select **`Wokwi: Start Simulator`**.
-4. **Find Host IP**: Run `ipconfig` on PC 1 to get its IPv4 address (e.g., `192.168.1.105` on LAN or `192.168.137.1` on Hotspot).
-5. **Access from PC 2**: Open browser on PC 2 and navigate to `http://<PC1_IP>:9080/`.
-6. **Exchange Files**: Upload from PC 1 $\rightarrow$ download from PC 2; upload from PC 2 $\rightarrow$ download from PC 1.
-
----
-
-## Access Endpoints
-
-Once `wokwigw` and the simulation are active, the web endpoints provide:
-- **NAS File Manager Dashboard (`/`)**: Displays real-time FAT32 storage capacity meter, file list, file upload form, and file delete buttons.
-- **Hosted Static Webpage (`/site`)**: Streams `/www/index.html` stored on the virtual MicroSD card.
-- **Direct File Download (`/get?file=<name>`)**: Streams requested files in binary octet-stream mode directly to the client device.
-- **Multipart Upload (`/upload`)**: Streams client files chunk-by-chunk into MicroSD FAT32 storage with ~2 KB RAM overhead.
-
----
-
-## Troubleshooting & Tips
-
-- **`connect tcp 10.13.37.2:80: no route to host` Error**:
-  - **Cause**: The Wokwi simulator did not connect to `wokwigw`'s internal WebSocket server (`ws://localhost:9011`), meaning the virtual ESP32 is not registered in the gateway's network table.
-  - **Fix**:
-    1. Ensure `wokwi.toml` includes:
-       ```toml
-       [net]
-       gateway = "ws://localhost:9011"
-       ```
-    2. **Start `wokwigw.exe` FIRST** in a separate terminal:
-       ```powershell
-       .\wokwigw.exe --forward 9080:10.13.37.2:80
-       ```
-    3. **Then Restart the Wokwi Simulation**: In VS Code, open `diagram.json`, press `F1`, and run `Wokwi: Restart Simulator` (or `Start Simulator`).
-    4. In the `wokwigw` terminal, you should see confirmation of a connected client / DHCP lease.
-    5. Wait until the Serial Monitor displays:
-       ```text
-       [WIFI] Connected!
-       [NET] Node IP Address: 10.13.37.2
-       ```
-    6. Only now open `http://localhost:9080/` in your browser.
-
-- **External Clients Cannot Connect (Connection Timed Out)**:
-  - Run [`setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat) as Administrator to verify Windows Firewall permits TCP port 9080 on Private and Public network profiles.
-- **IP Mismatch**: The standard Wokwi gateway subnet is `10.13.37.2`. If your Serial Monitor displays a different node IP address, adjust the forwarding argument: `--forward 9080:<node-ip>:80`.
+> [!IMPORTANT]
+> The full, step-by-step operational run guide for compiling, running, and accessing the server from external client devices (smartphones, tablets, and peer lab PCs) is documented in:
+>
+> 📖 **[Comprehensive Run Guide (`runGuide.md`)](runGuide.md)**
+>
+> Please refer directly to [`runGuide.md`](runGuide.md) for:
+> 1. **Complete Setup & Automated Toolchain Scripts**: Running dependency installers and offline tools inside [`setup/`](setup/).
+> 2. **Step-by-Step Simulation Launch**: Compiling firmware, running Windows Firewall configuration via [`setup_firewall.bat`](setup_firewall.bat), launching `wokwigw.exe`, and starting the Wokwi simulation in VS Code.
+> 3. **Three Real-World Deployment Scenarios**:
+>    - **Scenario 1: Home Hybrid Testing** (Host PC on router Ethernet $\leftrightarrow$ Phone/Laptop on router Wi-Fi accessing `http://<HOST_ETHERNET_IP>:9080/`).
+>    - **Scenario 2: Lab Workstation Testing** (Both host and peer PCs plugged into campus Ethernet switch accessing `http://<PC1_ETHERNET_IP>:9080/`).
+>    - **Scenario 3: Portable Showcase Hotspot** (Host laptop running Windows Mobile Hotspot accessing `http://192.168.137.1:9080/`).
+> 4. **Zero-Install Local Network File Transfer (LocalSend Web Model)**: Peer-to-peer file sharing between two lab computers.
+> 5. **Comprehensive Troubleshooting & Diagnostic Traps**: Resolving `no route to host`, firewall timeouts, missing binaries, and SD mount failures.

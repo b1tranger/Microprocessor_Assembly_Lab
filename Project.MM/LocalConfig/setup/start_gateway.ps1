@@ -6,11 +6,13 @@
 #>
 
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-$gwPath = Join-Path $scriptDir "wokwigw.exe"
-
-if (-not (Test-Path $gwPath)) {
-    # Check parent project folder
-    $gwPath = Join-Path (Split-Path -Parent $scriptDir) "LocalConfig\wokwigw.exe"
+$parentDir = Split-Path -Parent $scriptDir
+$gwPath = if (Test-Path (Join-Path $scriptDir "wokwigw.exe")) {
+    Join-Path $scriptDir "wokwigw.exe"
+} elseif (Test-Path (Join-Path $parentDir "wokwigw.exe")) {
+    Join-Path $parentDir "wokwigw.exe"
+} else {
+    Join-Path $parentDir "LocalConfig\wokwigw.exe"
 }
 
 if (-not (Test-Path $gwPath)) {

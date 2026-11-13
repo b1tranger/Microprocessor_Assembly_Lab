@@ -138,7 +138,7 @@ Project.MM/
 
 ### 2.2 The Standalone Workspace Philosophy
 One of the most critical structural decisions made in this repository is **workspace decoupling**:
-- All installation scripts and dependency managers live in [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup).
+- All installation scripts and dependency managers live in [`Project.MM/LocalConfig/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup).
 - The active simulation project [`Project.MM/LocalConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig) is completely self-contained. It contains its own `wokwigw.exe`, `diagram.json`, and `wokwi.toml`.
 - **Why this matters for your presentation**: If an evaluator asks you to clone the repo or open the project on another laptop, you do **not** have to run everything from the root. You simply open `LocalConfig` in VS Code, start the gateway, press `F1`, and run.
 
@@ -722,6 +722,6 @@ Follow this script during your final project show for a confident, seamless pres
 - **Local Circuit Schematic**: [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json)
 - **Firmware Source**: [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp)
 - **HTML/CSS Templates**: [`Project.MM/LocalConfig/include/html_templates.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h)
-- **Automated Setup Scripts**: [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup)
+- **Automated Setup Scripts**: [`Project.MM/LocalConfig/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup)
 - **Cloud vs. VS Code vs. Physical Hardware**: [`Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md)
 - **Root Repository Overview**: [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md)

@@ -1,0 +1,11 @@
+# Binary packages and toolchain bundles
+.platformio/
+wheels/
+offline_bundle/
+wokwigw.exe
+*.whl
+*.zip
+*.tar.gz
+_stage/
+__pycache__/
+

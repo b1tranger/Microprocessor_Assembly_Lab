@@ -64,7 +64,7 @@ Project.MM/
 
 ## 3. Quick Start: Local VS Code Simulation (`LocalConfig/`)
 
-Once initial dependencies are installed, you run the simulation entirely inside [`Project.MM/LocalConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig) without needing the `Project.MM/setup/` folder:
+Once initial dependencies are installed, you run the simulation entirely inside [`Project.MM/LocalConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig) following [`Project.MM/LocalConfig/runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md):
 
 ### Step 1: Open the Project in VS Code
 Open the directory `Project.MM/LocalConfig` in VS Code (`File` > `Open Folder...`).
@@ -109,23 +109,23 @@ The local gateway (`wokwigw.exe`) binds to `0.0.0.0:9080`, allowing the simulate
 
 ## 4. First-Time Environment Setup
 
-If you are setting up the environment for the first time or on a new PC, all tools and automated scripts are located in [`Project.MM/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup):
+If you are setting up the environment for the first time or on a new PC, all tools and automated scripts are located in [`Project.MM/LocalConfig/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup):
 
 1. **Automated Dependency Setup**:
    ```cmd
-   .\Project.MM\setup\install_dependencies.bat
+   .\Project.MM\LocalConfig\setup\install_dependencies.bat
    ```
-   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies.ps1`)*
+   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\install_dependencies.ps1`)*
 
 2. **Build the Firmware**:
    ```cmd
-   .\Project.MM\setup\build_firmware.bat
+   .\Project.MM\LocalConfig\setup\build_firmware.bat
    ```
-   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1`)*
+   *(Or in PowerShell: `powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\build_firmware.ps1`)*
 3. **Claim Free Wokwi License**:
    In VS Code: Press `F1` $\rightarrow$ `Wokwi: Request a New License` $\rightarrow$ authorize in browser.
 
-*(For detailed manual installation instructions, refer to the [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md)).*
+*(For detailed manual installation instructions, refer to the [`Project.MM/LocalConfig/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup/SETUP_GUIDE.md)).*
 
 ---
 
@@ -146,11 +146,12 @@ If you are setting up the environment for the first time or on a new PC, all too
 
 ## 6. Documentation References
 
+- **Comprehensive Run & Network Access Guide**: [`Project.MM/LocalConfig/runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md)
+- **Local Simulation Workspace Guide**: [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md)
 - **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
 - **Presentation & Oral Defense Guide**: [`Project.MM/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)
 - **Cloud vs. VS Code vs. Physical Hardware**: [`Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md)
-- **Local Simulation Workspace Guide**: [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md)
 - **Cloud Simulation Workspace Guide**: [`Project.MM/CloudConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig/README.md)
-- **Setup & Dependencies**: [`Project.MM/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/SETUP_GUIDE.md)
+- **Setup & Dependencies**: [`Project.MM/LocalConfig/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup/SETUP_GUIDE.md)
 - **Theory & Archiving Notes**: [`doc/prompts/12.Wokwi VS Code Extension and ESP32 NAS Setup.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/prompts/12.Wokwi%20VS%20Code%20Extension%20and%20ESP32%20NAS%20Setup.md)
 

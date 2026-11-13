@@ -9,6 +9,7 @@
   - [Step 2: Compile the Project](#step-2-compile-the-project)
   - [Step 3: Configure Windows Firewall (One-Click)](#step-3-configure-windows-firewall-one-click)
   - [Step 4: Launch Network Gateway](#step-4-launch-network-gateway)
+  - [Step 5: Clean Revert & Environment Uninstallation](#step-5-clean-revert--environment-uninstallation)
 - [4. Manual Dependency Installation](#4-manual-dependency-installation)
   - [A. Python 3 & PlatformIO CLI](#a-python-3--platformio-cli)
   - [B. VS Code Extensions](#b-vs-code-extensions)
@@ -56,11 +57,11 @@ Inside the `setup/` directory, automated script pairs (`.bat` and `.ps1`) manage
 ### Step 0: Python Installation (For New / Fresh Devices)
 If a device has not installed Python yet, run the automated Python installer:
 ```cmd
-.\Project.MM\setup\setup_python.bat
+.\Project.MM\LocalConfig\setup\setup_python.bat
 ```
 *Or via PowerShell:*
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\setup_python.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\setup_python.ps1
 ```
 *What this does:*
 1. Checks if Python 3 is already installed and in PATH.
@@ -72,11 +73,11 @@ powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\setup_python.ps1
 ### Step 1: Verify & Install Dependencies
 Run via **Batch Launcher** (Bypasses execution policy restrictions automatically):
 ```cmd
-.\Project.MM\setup\install_dependencies.bat
+.\Project.MM\LocalConfig\setup\install_dependencies.bat
 ```
 *Or via PowerShell:*
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\install_dependencies.ps1
 ```
 *What this does:*
 1. Verifies Python availability (and triggers automated setup if missing).
@@ -87,19 +88,21 @@ powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\install_dependencies
 
 ### Step 2: Compile the Project
 ```cmd
-.\Project.MM\setup\build_firmware.bat
+.\Project.MM\LocalConfig\setup\build_firmware.bat
 ```
 *Or via PowerShell:*
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\build_firmware.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\build_firmware.ps1
 ```
 *What this does:*
-Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin` (with live progress bars if toolchain packages are not yet cached).
+1. Automatically synchronizes initial files from [`data/default/`](../data/default/) and static website assets from [`data/www/`](../data/www/) into [`include/default_assets.h`](../include/default_assets.h).
+2. Builds `Project.MM/LocalConfig/src/main.cpp` into `.pio/build/esp32dev/firmware.bin` (with live progress bars if toolchain packages are not yet cached).
+3. Ensures all default system files are write-protected and cannot be deleted via the web server interface.
 
 ### Step 3: Configure Windows Firewall (One-Click)
 To ensure external clients (e.g. mobile phones, evaluator tablets, lab desktop PCs) can reach port 9080 across wired and wireless adapters:
 ```cmd
-.\Project.MM\setup\setup_firewall.bat
+.\Project.MM\LocalConfig\setup\setup_firewall.bat
 ```
 *What this does:*
 1. Automatically verifies administrative privileges and requests UAC elevation if needed.
@@ -108,14 +111,38 @@ To ensure external clients (e.g. mobile phones, evaluator tablets, lab desktop P
 
 ### Step 4: Launch Network Gateway
 ```cmd
-.\Project.MM\setup\start_gateway.bat
+.\Project.MM\LocalConfig\setup\start_gateway.bat
 ```
 *Or via PowerShell:*
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Project.MM\setup\start_gateway.ps1
+powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\start_gateway.ps1
 ```
 *What this does:*
 Starts the gateway forwarding `9080` $\rightarrow$ `10.13.37.2:80` and listening for simulation traffic on `ws://localhost:9011`.
+
+### Step 5: Clean Revert & Environment Uninstallation
+If you wish to revert all changes made by the setup scripts:
+```cmd
+.\Project.MM\LocalConfig\setup\uninstall_dependencies.bat
+```
+*Or via PowerShell:*
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Project.MM\LocalConfig\setup\uninstall_dependencies.ps1
+```
+*What this does:*
+1. Terminates any running `wokwigw.exe` gateway processes.
+2. Removes the Windows Firewall inbound rule `"Wokwi Gateway NAS"` (Port 9080).
+3. Cleans up environment variables (`PLATFORMIO_CORE_DIR`).
+4. Cleans generated compilation artifacts (`.pio/`) and duplicate gateway binaries in `LocalConfig/`.
+5. *(Optional full cleanup)*: Pass `-FullCleanup` to also uninstall the PlatformIO CLI pip package and delete extracted toolchains.
+
+> [!TIP]
+> **GitHub Releases Offline Toolchain Bundle**:
+> To compile and simulate offline without downloading heavy toolchains during setup:
+> 1. Download `platformio_cache.zip` from **[GitHub Releases: wokwi_env_setup_script](https://github.com/b1tranger/wokwi_env_setup_script/releases/tag/platformio_cache.zip)** ([Direct Download Link](https://github.com/b1tranger/wokwi_env_setup_script/releases/download/platformio_cache.zip/platformio_cache.zip)).
+> 2. Place `platformio_cache.zip` into `Project.MM/LocalConfig/setup/PlatformIO_Espressif_Offline_Installer/platformio_cache.zip`.
+> 3. Run `install_dependencies.bat` (or `PlatformIO_Espressif_Offline_Installer/install_offline.bat`) — the script automatically detects the archive, unpacks the Espressif 32 toolchains, and completes setup with zero internet required.
+> 4. The local `.gitignore` automatically keeps the zip archive untracked so your git working tree stays clean.
 
 ---
 
@@ -147,15 +174,15 @@ If you prefer installing dependencies manually:
 
 ### D. Wokwi IoT Gateway (`wokwigw`)
 The gateway binary `wokwigw.exe` is already pre-packaged in this folder:
-- Path: [`Project.MM/setup/wokwigw.exe`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/wokwigw.exe)
-- Copy: [`Project.MM/LocalConfig/wokwigw.exe`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwigw.exe)
+- Path: [`wokwigw.exe`](wokwigw.exe)
+- Copy: [`../wokwigw.exe`](../wokwigw.exe)
 *(Latest releases are also available at [https://github.com/wokwi/wokwigw/releases](https://github.com/wokwi/wokwigw/releases)).*
 
 ---
 
 ## 5. Hardware Wiring & Pin Mapping Reference
 
-In [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json), ensure the correct silkscreen identifiers are used:
+In [`../diagram.json`](../diagram.json), ensure the correct silkscreen identifiers are used:
 
 | ESP32 Pin Identifier | MicroSD (`sd1`) Pin | Function / SPI Bus |
 | :--- | :--- | :--- |
@@ -173,7 +200,7 @@ In [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Micropro
 
 ## 6. How to Run the Project Outside `setup/`
 
-Once the one-time setup above is finished, you do **NOT** need the `setup/` folder during day-to-day work. You run the project entirely inside [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig):
+Once the one-time setup above is finished, you do **NOT** need the `setup/` folder during day-to-day work. You run the project entirely inside [`LocalConfig`](..):
 
 ### Step 1: Open `LocalConfig` in VS Code
 In VS Code, select **File > Open Folder...** and choose:
@@ -189,7 +216,7 @@ In a terminal window (PowerShell) inside `Project.MM/LocalConfig`:
 *(Leave this running in the background).*
 
 ### Step 3: Run the Simulation
-1. Open [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json).
+1. Open [`../diagram.json`](../diagram.json).
 2. Press **`F1`** and run **`Wokwi: Start Simulator`** (or click the green Play button on the canvas).
 3. The Serial Monitor will output:
    ```text
@@ -253,7 +280,7 @@ This allows simultaneous access from:
    - Fix: Ensure `esp:D5`, `esp:D18`, `esp:D19`, `esp:D23`, and `sd1:SCK` are used.
 4. **External Clients Cannot Connect (Connection Timed Out)**:
    - Cause: Windows Firewall is blocking inbound connections on TCP port 9080.
-   - Fix: Run [`Project.MM/setup/setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/setup/setup_firewall.bat) as Administrator to add the firewall rule across all profiles.
+   - Fix: Run [`setup_firewall.bat`](setup_firewall.bat) (or [`../setup_firewall.bat`](../setup_firewall.bat)) as Administrator to add the firewall rule across all profiles.
 5. **`File ... cannot be loaded because running scripts is disabled on this system (PSSecurityException)`**:
    - Cause: Windows PowerShell default `ExecutionPolicy` is set to `Restricted`.
    - Fix: Either run the `.bat` launcher (e.g. `install_dependencies.bat`), use `powershell -ExecutionPolicy Bypass -File <script.ps1>`, or configure your user account policy once:

@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 :: ============================================================================
 :: Automated Windows Firewall Configurator for Wokwi Gateway NAS (Port 9080)
 :: Allows simultaneous access via Localhost, Ethernet LAN, & Mobile Hotspot
@@ -7,21 +8,14 @@
 TITLE Wokwi Gateway NAS - Windows Firewall Setup
 
 :: 1. Check for Administrator Privileges
->nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
-if '%errorlevel%' NEQ '0' (
+net session >nul 2>&1
+if %errorlevel% neq 0 (
     echo [INFO] Administrative privileges required to configure Windows Firewall.
     echo [INFO] Requesting UAC elevation...
-    goto UACPrompt
-) else ( goto gotAdmin )
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath cmd.exe -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
+    exit /B
+)
 
-:UACPrompt
-echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin_wokwigw.vbs"
-echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin_wokwigw.vbs"
-"%temp%\getadmin_wokwigw.vbs"
-exit /B
-
-:gotAdmin
-if exist "%temp%\getadmin_wokwigw.vbs" ( del "%temp%\getadmin_wokwigw.vbs" )
 pushd "%CD%"
 CD /D "%~dp0"
 
@@ -67,5 +61,5 @@ if %ERRORLEVEL% EQU 0 (
 )
 
 echo.
-pause
-
+echo Press any key to exit...
+pause >nul

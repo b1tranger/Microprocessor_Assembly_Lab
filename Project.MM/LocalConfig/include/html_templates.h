@@ -236,6 +236,30 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
       background: var(--danger-gradient);
       color: #fff;
     }
+    .badge-protected {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      user-select: none;
+    }
+    .tag-folder {
+      display: inline-block;
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      font-family: monospace;
+    }
   </style>
 </head>
 <body>
@@ -257,133 +281,5 @@ const char NAS_PAGE_FOOTER[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
-
-// ============================================================================
-// Modern Responsive Landing Page for Static Web Host (/www/index.html)
-// ============================================================================
-const char SEED_INDEX_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32 Static Edge Host</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #10121a, #08090d 90%);
-      color: #e2e8f0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .card {
-      max-width: 680px;
-      width: 100%;
-      background: rgba(20, 24, 38, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      padding: 40px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(0, 210, 255, 0.12);
-      border: 1px solid rgba(0, 210, 255, 0.3);
-      color: #00d2ff;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
-    }
-    p.lead {
-      color: #94a3b8;
-      font-size: 1rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-    .specs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-      text-align: left;
-    }
-    .spec-item {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .spec-label {
-      font-size: 0.75rem;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-    .spec-val {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #f1f5f9;
-    }
-    .btn {
-      display: inline-block;
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      color: #fff;
-      text-decoration: none;
-      padding: 12px 28px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: transform 0.1s, opacity 0.2s;
-    }
-    .btn:hover { opacity: 0.9; }
-    .btn:active { transform: scale(0.98); }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <span class="badge">ESP32 Static Edge Host</span>
-    <h1>Hosted on MicroSD Storage</h1>
-    <p class="lead">
-      This static web document is stored as raw blocks on the virtual FAT32 MicroSD card and streamed directly to your browser over hardware SPI.
-    </p>
-    <div class="specs-grid">
-      <div class="spec-item">
-        <div class="spec-label">Microcontroller</div>
-        <div class="spec-val">ESP32 DevKit V1</div>
-      </div>
-      <div class="spec-item">
-        <div class="spec-label">Storage Bus</div>
-        <div class="spec-val">Hardware VSPI</div>
-      </div>
-      <div class="spec-item">
-        <div class="spec-label">File Protocol</div>
-        <div class="spec-val">FAT32 Block I/O</div>
-      </div>
-      <div class="spec-item">
-        <div class="spec-label">Web Engine</div>
-        <div class="spec-val">ESP32 WebServer:80</div>
-      </div>
-    </div>
-    <a href="/" class="btn">📂 Go to NAS File Browser</a>
-  </div>
-</body>
-</html>)rawliteral";
 
 #endif // HTML_TEMPLATES_H
