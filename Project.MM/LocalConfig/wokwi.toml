@@ -5,3 +5,9 @@ elf = ".pio/build/esp32dev/firmware.elf"
 
 [net]
 gateway = "ws://localhost:9011"
+
+[[sdcard]]
+part = "sd1"
+folder = "data/network"
+size = "1G"
+writeback = true

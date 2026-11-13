@@ -34,20 +34,34 @@ def generate_header():
     assets = []
     asset_index = 0
 
-    for root, _, files in os.walk(data_dir):
-        for file in sorted(files):
-            file_path = os.path.join(root, file)
-            rel_path = os.path.relpath(file_path, data_dir).replace("\\", "/")
-            sd_path = "/" + rel_path
-            
-            # Protected status: anything inside default/ or www/ is write-protected
-            is_protected = rel_path.startswith("default/") or rel_path.startswith("www/")
-            
-            with open(file_path, "rb") as f:
-                content = f.read()
+    # Only scan default/ and www/; exclude network/ (which is host storage)
+    for sub in ["default", "www"]:
+        sub_dir = os.path.join(data_dir, sub)
+        if not os.path.exists(sub_dir):
+            continue
+        for root, _, files in os.walk(sub_dir):
+            for file in sorted(files):
+                if file.startswith("."):
+                    continue
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, data_dir).replace("\\", "/")
+                sd_path = "/" + rel_path
+                
+                # Protected status: anything inside default/ or www/ is write-protected
+                is_protected = rel_path.startswith("default/") or rel_path.startswith("www/")
+                
+                with open(file_path, "rb") as f:
+                    content = f.read()
 
-            var_name = f"ASSET_DATA_{asset_index}"
-            assets.append({
+                var_name = f"ASSET_DATA_{asset_index}"
+                assets.append({
+                    "var_name": var_name,
+                    "sd_path": sd_path,
+                    "is_protected": is_protected,
+                    "size": len(content),
+                    "data": content
+                })
+                asset_index += 1
                 "var_name": var_name,
                 "sd_path": sd_path,
                 "is_protected": is_protected,

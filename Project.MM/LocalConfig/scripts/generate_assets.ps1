@@ -16,7 +16,18 @@ if (-not (Test-Path $dataDir)) {
     exit 0
 }
 
-$files = Get-ChildItem -Path $dataDir -Recurse -File | Sort-Object FullName
+$targetDirs = @(
+    (Join-Path $dataDir "default"),
+    (Join-Path $dataDir "www")
+)
+
+$files = @()
+foreach ($td in $targetDirs) {
+    if (Test-Path $td) {
+        $files += Get-ChildItem -Path $td -Recurse -File | Where-Object { $_.Name -notlike ".*" }
+    }
+}
+$files = $files | Sort-Object FullName
 $assets = @()
 $idx = 0
 

@@ -31,7 +31,8 @@ An operational guide for compiling, running, and simulating the ESP32 Embedded N
 - [5. Zero-Install Local Network File Sharing (LocalSend Web Model)](#5-zero-install-local-network-file-sharing-localsend-web-model)
   - [5.1 Bi-Directional File Transfer Workflow](#51-bi-directional-file-transfer-workflow)
   - [5.2 Web Endpoints & Service Breakdown](#52-web-endpoints--service-breakdown)
-  - [5.3 Dedicated Folders & Write-Protected System Files](#53-dedicated-folders--write-protected-system-files)
+  - [5.3 Host SSD Storage Integration (data/network & 1GB Expansion)](#53-host-ssd-storage-integration-datanetwork--1gb-expansion)
+  - [5.4 Transfer Speed Optimization & Live Progress Indicators](#54-transfer-speed-optimization--live-progress-indicators)
 - [6. Troubleshooting & Common Pitfalls](#6-troubleshooting--common-pitfalls)
   - [6.1 Error: connect tcp 10.13.37.2:80: no route to host](#61-error-connect-tcp-101337280-no-route-to-host)
   - [6.2 Connection Timed Out from External Devices](#62-connection-timed-out-from-external-devices)
@@ -444,49 +445,47 @@ The ESP32 firmware in [`src/main.cpp`](src/main.cpp) serves five dedicated REST/
 
 ---
 
-### 5.3 Dedicated Folders & Write-Protected System Files
+### 5.3 Host SSD Storage Integration (`data/network` & 1GB Expansion)
 
-To keep project source files clean and prevent accidental data loss, the filesystem separates static web assets, default lab documents, and dynamic client uploads into dedicated folders:
+By default, Wokwi creates an ephemeral in-memory FAT16 virtual card capped at 8 MB. To lift this limitation and map storage directly to your workstation's physical HDD/SSD:
 
-#### Dedicated Directory Structure on Host & Storage
-```text
-Project.MM/LocalConfig/
-├── data/
-│   ├── default/                 <-- Host folder for default system files
-│   │   └── lab_report.txt       <-- Embedded into firmware & seeded to /default/ on SD
-│   └── www/                     <-- Host folder for static website assets
-│       └── index.html           <-- Embedded into firmware & seeded to /www/ on SD
-├── scripts/
-│   ├── generate_assets.bat      <-- One-click asset generator for Windows CMD
-│   ├── generate_assets.ps1      <-- PowerShell asset generator
-│   └── generate_assets.py       <-- PlatformIO pre-build asset generator
-├── include/
-│   ├── default_assets.h         <-- Auto-generated PROGMEM byte arrays
-│   └── html_templates.h         <-- Glassmorphic dark UI dashboard template
-└── src/
-    └── main.cpp                 <-- Storage engine, security checks, and routing
-```
+1. **`wokwi.toml` Hardware Storage Mapping**:
+   The simulator configuration in [`wokwi.toml`](wokwi.toml) binds the virtual SD card directly to the host directory [`data/network/`](data/network/):
+   ```toml
+   [[sdcard]]
+   part = "sd1"
+   folder = "data/network"
+   size = "1G"
+   writeback = true
+   ```
+2. **Key Capabilities Enabled**:
+   * **1,024 MB (1 GB) Real Capacity**: The storage limit is expanded from 8 MB to 1 GB, removing capacity constraints for documents, PDFs, and laboratory archives.
+   * **Live Bi-Directional Host Sync (`writeback = true`)**:
+     - Files uploaded by clients through the web interface are saved into `/uploads/` and written directly back to [`data/network/uploads/`](data/network/) on your host computer's SSD.
+     - Files deleted via the web interface are deleted from [`data/network/`](data/network/) on the host PC.
+     - Any file placed directly into [`data/network/`](data/network/) on your host PC is automatically mounted and served by the ESP32 file server upon simulation start.
+3. **Write Protection on System Files**:
+   - Default system assets ([`data/default/lab_report.txt`](data/default/lab_report.txt) and [`data/www/index.html`](data/www/index.html)) are write-protected.
+   - In the web table, protected items display a `🔒 Protected` badge.
+   - Any manual `GET /delete` request targeting protected system files is rejected with **`HTTP 403 Forbidden`**.
 
-#### How Dedicated Storage Works:
-1. **Adding or Removing Files on Host**:
-   - Place any required initial documentation or default assignment files inside [`data/default/`](data/default/).
-   - Place custom static web files (HTML, CSS, JS, images) inside [`data/www/`](data/www/).
-   - Run `scripts\generate_assets.bat` (or compile via `setup\build_firmware.bat`), which scans `data/` and automatically updates [`include/default_assets.h`](include/default_assets.h).
-2. **Dynamic Boot Seeding**:
-   - During boot (`phase1_seedInitialFiles()`), the ESP32 ensures `/default/`, `/www/`, and `/uploads/` exist on the FAT32 SD card.
-   - All embedded assets from `data/` are automatically seeded into `/default/` and `/www/` on the virtual MicroSD card if missing.
-3. **Uploads Stored in `/uploads/`**:
-   - All files uploaded by users through the web dashboard (`POST /upload`) are automatically saved into the dedicated `/uploads/` directory on the SD card.
-4. **Write Protection (Cannot Be Deleted from Web Interface)**:
-   - Default files (any file located in `/default/` or `/www/`, as well as `/lab_report.txt`) are write-protected.
-   - **Frontend UI**: In the dashboard file table, protected files display a `🔒 Protected` badge instead of a `Delete` action button.
-   - **Backend Security Check**: Any manual HTTP `GET /delete?file=...` attempt targeting a protected file is intercepted by `isProtectedPath()` and rejected with **`HTTP 403 Forbidden`**:
-     ```text
-     HTTP/1.1 403 Forbidden
-     Content-Type: text/plain
+---
 
-     Forbidden: Default system files are write-protected and cannot be deleted.
-     ```
+### 5.4 Transfer Speed Optimization & Live Progress Indicators
+
+To maximize file transfer throughput and provide real-time user feedback:
+
+1. **Hardware SPI Bus Clock Boost (25 MHz)**:
+   In [`src/main.cpp`](src/main.cpp), storage initialization is upgraded from the standard 4 MHz clock to **25 MHz** (`SD.begin(SD_CS_PIN, SPI, 25000000)`), maximizing hardware bus bandwidth on the ESP32 VSPI controller.
+2. **Sector-Aligned 4 KB Write Buffering**:
+   Instead of writing unaligned 1436-byte TCP segments directly to the SD card, `handleFileUpload()` buffers incoming stream chunks into a 4,096-byte memory block (`uploadWriteBuffer`) and writes in sector-aligned units. This minimizes FAT cluster allocation latency and virtual SPI transaction stalls.
+3. **Real-Time Client Upload Progress & Speedometer**:
+   The dashboard UI uses asynchronous XMLHttpRequest streaming with live telemetry:
+   * **Real-Time Progress Bar**: Smooth glowing progress bar tracking `0%` to `100%`.
+   * **Transfer Speed Meter**: Instantaneous smoothed transfer rate displayed in real time (e.g., `⚡ 124.5 KB/s` or `⚡ 1.2 MB/s`).
+   * **Transferred Bytes**: Exact byte counts (e.g., `4.2 MB / 10.0 MB`).
+   * **Dynamic ETA**: Estimated completion time remaining (e.g., `⏱ 45s left`).
+   * **Zero Page Freezing**: Files upload asynchronously in the background and trigger an automatic table refresh upon completion.
 
 ---
 

@@ -38,6 +38,7 @@ Project.MM/LocalConfig/
 ├── runGuide.md            # Comprehensive execution, networking, and setup guide
 ├── README.md              # Project technical overview and architecture
 ├── data/                  # Dedicated host folders for initial assets
+│   ├── network/           # Host SSD storage folder synced to simulated SD (1 GB)
 │   ├── default/           # Default protected files (lab_report.txt, etc.)
 │   └── www/               # Static website files (index.html, etc.)
 ├── scripts/               # Asset embedding scripts
@@ -87,7 +88,7 @@ lib_deps =
 ```
 
 ### 2. `wokwi.toml`
-Tells Wokwi where PlatformIO places the compiled binary and ELF debug symbols, and routes simulation network traffic through the local `wokwigw` gateway:
+Tells Wokwi where PlatformIO places the compiled binary, routes simulation network traffic through `wokwigw`, and maps the MicroSD storage to host SSD/HDD storage:
 ```toml
 [wokwi]
 version = 1
@@ -96,9 +97,14 @@ elf = ".pio/build/esp32dev/firmware.elf"
 
 [net]
 gateway = "ws://localhost:9011"
-```
-*(The `[net]` block is required for `wokwigw` so that virtual Wi-Fi packets are forwarded through the local gateway at `localhost:9011`).*
 
+[[sdcard]]
+part = "sd1"
+folder = "data/network"
+size = "1G"
+writeback = true
+```
+*(The `[[sdcard]]` block expands card capacity to **1 GB** and synchronizes all file operations directly with [`data/network/`](data/network/) on your host PC's SSD/HDD).*
 
 ### 3. `diagram.json`
 Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed silkscreen pin names):
@@ -113,6 +119,7 @@ Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed sil
   - `esp:D18` $\rightarrow$ `sd1:SCK` (Serial Clock)
 
 ### 4. Dedicated Data & Assets (`data/` and `include/default_assets.h`)
+- **`data/network/`**: Host SSD/HDD storage folder synchronized directly with the simulated MicroSD card (1 GB volume).
 - **`data/default/`**: Host folder for default documentation and files (e.g. [`data/default/lab_report.txt`](data/default/lab_report.txt)). Automatically seeded to `/default/` on the SD card.
 - **`data/www/`**: Host folder for static website files (e.g. [`data/www/index.html`](data/www/index.html)). Automatically seeded to `/www/` on the SD card.
 - **`scripts/generate_assets.bat` / `.ps1` / `.py`**: Scans `data/` and compiles files into Flash ROM as `PROGMEM` byte arrays inside `include/default_assets.h`.

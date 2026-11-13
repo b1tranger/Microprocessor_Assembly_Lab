@@ -1,0 +1,5 @@
+# Ignore all dynamic files and uploads synced to host storage
+*
+!.gitignore
+!.gitkeep
+

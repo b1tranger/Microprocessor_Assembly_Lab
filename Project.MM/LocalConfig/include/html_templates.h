@@ -260,6 +260,35 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
       margin-left: 6px;
       font-family: monospace;
     }
+    .progress-box {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(14, 16, 23, 0.6);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: 12px;
+      text-align: left;
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+    }
+    .speed-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      font-family: monospace;
+    }
+    .eta-badge {
+      color: #fbbf24;
+      font-weight: 500;
+      font-size: 0.82rem;
+    }
   </style>
 </head>
 <body>
@@ -278,6 +307,90 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
 
 const char NAS_PAGE_FOOTER[] PROGMEM = R"rawliteral(
   </div>
+  <script>
+    function fmtBytes(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
+    }
+    function submitUpload() {
+      var inp = document.getElementById('fileSelect');
+      if (!inp.files.length) return;
+      var f = inp.files[0];
+
+      var box = document.getElementById('progressBox');
+      var bar = document.getElementById('progressBarFill');
+      var pct = document.getElementById('percentDisplay');
+      var name = document.getElementById('fileNameDisplay');
+      var bytes = document.getElementById('bytesDisplay');
+      var speed = document.getElementById('speedDisplay');
+      var eta = document.getElementById('etaDisplay');
+      var btn = document.getElementById('uploadBtn');
+
+      box.style.display = 'block';
+      name.innerHTML = '<strong>Uploading:</strong> ' + f.name;
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+
+      var fd = new FormData();
+      fd.append('upload_file', f);
+
+      var xhr = new XMLHttpRequest();
+      var t0 = Date.now();
+      var lastT = t0;
+      var lastL = 0;
+      var smoothedSpeed = 0;
+
+      xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+          var now = Date.now();
+          var p = Math.round((e.loaded / e.total) * 100);
+          bar.style.width = p + '%';
+          pct.textContent = p + '%';
+          bytes.textContent = fmtBytes(e.loaded) + ' / ' + fmtBytes(e.total);
+
+          var dt = (now - lastT) / 1000;
+          if (dt >= 0.2 || e.loaded === e.total) {
+            var inst = (e.loaded - lastL) / (dt || 0.001);
+            smoothedSpeed = (smoothedSpeed === 0) ? inst : (0.65 * smoothedSpeed + 0.35 * inst);
+            speed.innerHTML = '⚡ ' + fmtBytes(smoothedSpeed) + '/s';
+
+            var rem = e.total - e.loaded;
+            if (smoothedSpeed > 0) {
+              var s = Math.round(rem / smoothedSpeed);
+              eta.textContent = '⏱ ' + (s >= 60 ? Math.floor(s / 60) + 'm ' + (s % 60) + 's' : s + 's left');
+            }
+            lastT = now;
+            lastL = e.loaded;
+          }
+        }
+      };
+
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 400) {
+          bar.style.width = '100%';
+          pct.textContent = '100%';
+          name.innerHTML = '<strong style="color: #00e676;">✅ Upload Complete!</strong> Stored on host SSD/HDD.';
+          speed.innerHTML = '⚡ Complete';
+          eta.textContent = '⏱ Done';
+          setTimeout(function() { window.location.reload(); }, 1000);
+        } else {
+          name.innerHTML = '<strong style="color: #ff5252;">❌ Upload Error (' + xhr.status + ')</strong>';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      };
+
+      xhr.onerror = function() {
+        name.innerHTML = '<strong style="color: #ff5252;">❌ Network Transmission Failed</strong>';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      };
+
+      xhr.open('POST', '/upload', true);
+      xhr.send(fd);
+    }
+  </script>
 </body>
 </html>
 )rawliteral";

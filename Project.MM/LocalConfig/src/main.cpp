@@ -105,9 +105,13 @@ bool phase1_initStorage() {
   // Explicitly initialize hardware VSPI bus
   SPI.begin(18, 19, 23, SD_CS_PIN);
 
-  if (!SD.begin(SD_CS_PIN, SPI)) {
-    Serial.println("[PHASE 1 ERROR] SD Card initialization failed! Check SPI pins.");
-    return false;
+  // Initialize SD with high-speed 25 MHz SPI clock (with 4 MHz fallback)
+  if (!SD.begin(SD_CS_PIN, SPI, 25000000)) {
+    Serial.println("[PHASE 1 WARN] 25 MHz SPI mode failed, attempting standard 4 MHz...");
+    if (!SD.begin(SD_CS_PIN, SPI, 4000000)) {
+      Serial.println("[PHASE 1 ERROR] SD Card initialization failed! Check SPI pins.");
+      return false;
+    }
   }
 
   uint64_t totalBytes = SD.totalBytes();
@@ -193,12 +197,25 @@ void handleRoot() {
   meter += "</div>";
   server.sendContent(meter);
 
-  // Upload Form section (routes uploads directly to /uploads/)
+  // Upload Form section with real-time transfer speed & progress indicators
   String uploadBox = "<div class='upload-box'>";
-  uploadBox += "<form class='upload-form' method='POST' action='/upload' enctype='multipart/form-data'>";
-  uploadBox += "<input type='file' name='upload_file' required>";
-  uploadBox += "<button type='submit' class='btn-upload'>⬆ Upload to /uploads/</button>";
-  uploadBox += "</form></div>";
+  uploadBox += "<form id='uploadForm' class='upload-form' onsubmit='event.preventDefault(); submitUpload();'>";
+  uploadBox += "<input type='file' id='fileSelect' name='upload_file' required>";
+  uploadBox += "<button type='submit' id='uploadBtn' class='btn-upload'>⬆ Upload to Storage</button>";
+  uploadBox += "</form>";
+  uploadBox += "<div id='progressBox' class='progress-box'>";
+  uploadBox += "<div class='progress-info'>";
+  uploadBox += "<span id='fileNameDisplay'><strong>Uploading:</strong> </span>";
+  uploadBox += "<span id='percentDisplay' style='color: var(--accent-cyan); font-weight: 700;'>0%</span>";
+  uploadBox += "</div>";
+  uploadBox += "<div class='progress-bar-bg'><div id='progressBarFill' class='progress-bar-fill' style='width: 0%;'></div></div>";
+  uploadBox += "<div class='progress-info' style='margin-top: 10px; margin-bottom: 0;'>";
+  uploadBox += "<span id='bytesDisplay' style='color: var(--text-muted);'>0 B / 0 B</span>";
+  uploadBox += "<span id='speedDisplay' class='speed-badge'>⚡ 0 KB/s</span>";
+  uploadBox += "<span id='etaDisplay' class='eta-badge'>⏱ Calculating...</span>";
+  uploadBox += "</div>";
+  uploadBox += "</div>";
+  uploadBox += "</div>";
   server.sendContent(uploadBox);
 
   // File Table section
@@ -240,11 +257,17 @@ void handleRoot() {
   server.sendContent(FPSTR(NAS_PAGE_FOOTER));
 }
 
-// Route: File Upload Handler (Streaming Multipart Parser saving to /uploads/)
+// High-Throughput 4KB Sector-Aligned SD Write Buffer
+#define UPLOAD_SECTOR_BUFFER_SIZE 4096
+static uint8_t uploadWriteBuffer[UPLOAD_SECTOR_BUFFER_SIZE];
+static size_t uploadWriteBufferIndex = 0;
+
+// Route: File Upload Handler (Streaming Multipart Parser with Sector-Aligned Buffering)
 void handleFileUpload() {
   HTTPUpload& upload = server.upload();
 
   if (upload.status == UPLOAD_FILE_START) {
+    uploadWriteBufferIndex = 0;
     String filename = upload.filename;
     int slashIdx = filename.lastIndexOf('/');
     if (slashIdx >= 0) filename = filename.substring(slashIdx + 1);
@@ -259,15 +282,38 @@ void handleFileUpload() {
     uploadFile = SD.open(targetPath, FILE_WRITE);
   } else if (upload.status == UPLOAD_FILE_WRITE) {
     if (uploadFile) {
-      uploadFile.write(upload.buf, upload.currentSize);
+      size_t bytesLeft = upload.currentSize;
+      size_t srcOffset = 0;
+
+      while (bytesLeft > 0) {
+        size_t spaceInBuffer = UPLOAD_SECTOR_BUFFER_SIZE - uploadWriteBufferIndex;
+        size_t toCopy = (bytesLeft < spaceInBuffer) ? bytesLeft : spaceInBuffer;
+
+        memcpy(uploadWriteBuffer + uploadWriteBufferIndex, upload.buf + srcOffset, toCopy);
+        uploadWriteBufferIndex += toCopy;
+        srcOffset += toCopy;
+        bytesLeft -= toCopy;
+
+        // Flush in full 4096-byte blocks to minimize FAT sector allocation overhead
+        if (uploadWriteBufferIndex == UPLOAD_SECTOR_BUFFER_SIZE) {
+          uploadFile.write(uploadWriteBuffer, UPLOAD_SECTOR_BUFFER_SIZE);
+          uploadWriteBufferIndex = 0;
+        }
+      }
     }
   } else if (upload.status == UPLOAD_FILE_END) {
     if (uploadFile) {
+      if (uploadWriteBufferIndex > 0) {
+        uploadFile.write(uploadWriteBuffer, uploadWriteBufferIndex);
+        uploadWriteBufferIndex = 0;
+      }
+      uploadFile.flush();
       uploadFile.close();
       Serial.printf("[UPLOAD SUCCESS] Wrote %u bytes.\n", upload.totalSize);
     }
   } else if (upload.status == UPLOAD_FILE_ABORTED) {
     if (uploadFile) {
+      uploadWriteBufferIndex = 0;
       uploadFile.close();
       Serial.println("[UPLOAD ABORTED]");
     }
@@ -436,8 +482,8 @@ void setup() {
 
   // Bind Upload handler: completion callback + streaming upload callback
   server.on("/upload", HTTP_POST, []() {
-    server.sendHeader("Location", "/");
-    server.send(303);
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/html", "<script>window.location.href='/';</script>OK");
   }, handleFileUpload);
 
   server.begin();
