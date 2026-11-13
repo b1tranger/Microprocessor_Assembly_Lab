@@ -10,10 +10,10 @@
    - [5. GitHub Repository Link Prefix for File References](#5-github-repository-link-prefix-for-file-references)
 3. [Content & Formatting Standards](#content--formatting-standards)
 4. [Conversation & Prompt Archiving Guidelines (`doc/prompts/`)](#4-conversation--prompt-archiving-guidelines-docprompts)
-   - [1. Destination & Naming](#1-destination--naming)
-   - [2. Session Metadata Header](#2-session-metadata-header)
-   - [3. Standard Archive Structure](#3-standard-archive-structure)
-   - [4. Automatic Archiving Trigger](#4-automatic-archiving-trigger)
+   - [1. Destination & Serial Folder Naming](#1-destination--serial-folder-naming)
+   - [2. Required Files Inside Each Session Folder](#2-required-files-inside-each-session-folder)
+   - [3. Summary Markdown Format (`summary.md`)](#3-summary-markdown-format-summarymd)
+   - [4. Update Cadence (Keeping the Archive Current)](#4-update-cadence-keeping-the-archive-current)
 5. [Embedded Systems & Project.MM (ESP32 NAS / Web Node) Guidelines](#5-embedded-systems--projectmm-esp32-nas--web-node-guidelines)
    - [1. Role & Engineering Persona](#1-role--engineering-persona)
    - [2. Hardware & Simulation Architecture](#2-hardware--simulation-architecture)
@@ -94,42 +94,42 @@ Follow the format, depth, and presentation demonstrated in `doc/note/0.mustKnows
 
 ## 4. Conversation & Prompt Archiving Guidelines (`doc/prompts/`)
 
-To preserve context, prompts, debugging transcripts, and reasoning paths across sessions, follow these archiving procedures:
+To preserve context, prompts, debugging transcripts, and internal reasoning verbatim across sessions, follow these archiving procedures:
 
-### 1. Destination & Naming
+### 1. Destination & Serial Folder Naming
 * **Directory**: `doc/prompts/`
-* **Naming Convention**: Numbered, topic-based markdown files (e.g., `1.Debugging Assembly Nibble Conversion.md`, `2.Control Flow and Character Classification.md`).
-* Sequential conversations regarding related problems or files should be compiled under the same topic file as sequential `# Part N:` entries.
+* **Serial Session Folder Convention**: `doc/prompts/<N>. <Session Title>/`
+  - Example: `doc/prompts/14. Debugging Assembly Nibble Conversion/`
+* **Determining `<N>`**: Inspect `doc/prompts/` to find the highest existing major integer prefix across both existing session folders and legacy flat `<N>. ...md` files, and assign `N = N_max + 1` for a new conversation session.
+* **Session Continuity**: Always update **the same session folder** across turns or when resuming an existing conversation; do NOT create a new major folder per turn.
 
-### 2. Session Metadata Header
-Each archived session entry must begin with structured metadata:
+### 2. Required Files Inside Each Session Folder
+Inside `doc/prompts/<N>. <Session Title>/`:
+1. **`transcript_full.jsonl`**: An exact, unmodified UTF-8 copy of `<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript_full.jsonl`. Never truncate, edit, or reformat lines in `transcript_full.jsonl`.
+2. **`conversation.md`**: A verbatim Markdown rendering generated directly from `transcript_full.jsonl`, including **every step exactly** without summarizing or omitting content: metadata (`Conversation ID`, `Session Folder`, `Continued From` if applicable), all `USER_INPUT.content`, all `PLANNER_RESPONSE.thinking` verbatim, all `PLANNER_RESPONSE.tool_calls` and tool/system outputs (`GENERIC` / `SYSTEM_MESSAGE`), and all `PLANNER_RESPONSE.content` verbatim.
+3. **`summary.md` (Conversation Summary Markdown)**: Maintained alongside `transcript_full.jsonl` and `conversation.md` in the same folder (including a clickable Table of Contents at the top and GitHub repository blob links per Section 5 above).
+4. **Companion Plans & Walkthroughs (Optional, Fractional Suffixes)**: Stored in the same folder as `<N>.1 Implementation Plan - <Plan Title>.md` and `<N>.2 Walkthrough - <Title>.md` if generated.
+
+### 3. Summary Markdown Format (`summary.md`)
+Include a clickable Table of Contents, session metadata, and concise structured sections:
 ```markdown
-# Part N: <Topic Description> (<Target File>)
+# <N>. <Session Title>
 
 - **Conversation ID**: `<conversation-id>`
 - **Timestamp**: `<YYYY-MM-DDTHH:MM:SS+Offset>`
 - **Model**: `<Model Name>`
 - **Target File**: [`<filename>`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/path/to/file)
+
+## 1. User Request Summary
+## 2. Code Inspected / Modified
+## 3. Analysis & Key Insights
+## 4. Final Solution & Outcomes
 ```
 
-### 3. Standard Archive Structure
-Each entry must contain the following core sections:
-
-1. **`## 1. User Request`**:
-   - Exact user prompt quoted in a code block.
-   - Metadata snippet (active document, cursor line).
-2. **`## 2. Code Inspected / Modified`**:
-   - The relevant code snippets or diff blocks from the assembly/source file under review.
-3. **`## 3. Agent's Internal Thoughts & Reasoning Trail`**:
-   - The agent's step-by-step thinking process, internal reasoning (`<thought>` / Chain of Thought), hypotheses explored, troubleshooting sequence, and bug elimination decisions.
-4. **`## 4. Analysis & Key Insights`**:
-   - Core explanation, register/flag/hardware mechanics, bug root cause discovery, or theoretical breakdown.
-5. **`## 5. Final Solution & Output`**: Include the final AI response verbatim exactly as delivered in the chat (never use placeholders like `*(Refer to output in main chat)*` or truncated summaries).
-   - Resulting assembly code, procedure updates, or verification notes.
-
-
-### 4. Automatic Archiving Trigger
-* When a debugging sequence, major code improvement, or multi-turn conceptual explanation concludes, archive the interaction into `doc/prompts/` following the above structure.
+### 4. Update Cadence (Keeping the Archive Current)
+Because the runtime writes a turn's final `PLANNER_RESPONSE` (final `thinking` and `content`) to `transcript_full.jsonl` after the turn finishes:
+1. **At the start of each turn (or when continuing from a prior `<conversation-id>`):** Copy `<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript_full.jsonl` to `doc/prompts/<N>. <Session Title>/transcript_full.jsonl` and regenerate `conversation.md` so the previous turn's finalized `thinking` and `content` are captured verbatim (and sync the prior conversation's folder if continuing).
+2. **Before sending each new final response:** Re-copy `transcript_full.jsonl`, regenerate `conversation.md` to capture all completed steps of the current turn, append the exact final response under `## Pending Final Response (Pre-Commit)` (noting it will be replaced verbatim from `transcript_full.jsonl` on the next sync), and create or update `summary.md` in the same folder.
 
 ---
 
