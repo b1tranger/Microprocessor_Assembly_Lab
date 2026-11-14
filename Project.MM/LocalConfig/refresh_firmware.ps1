@@ -50,16 +50,29 @@ try {
         $pioCmd = "platformio"
     }
 
+    $pythonExe = "python"
+    if (-not $pioCmd) {
+        $pyCmd = Get-Command "python" -ErrorAction SilentlyContinue
+        if (-not $pyCmd -or $pyCmd.Source -like "*WindowsApps*") {
+            $candidatePy = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\Python", "$env:LOCALAPPDATA\Python", "C:\Python*", "C:\Program Files\Python*" -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($candidatePy) {
+                $pythonExe = $candidatePy.FullName
+            }
+        }
+    }
+
     if ($pioCmd) {
         & $pioCmd run
     } else {
         python -u -m platformio run
+        & $pythonExe -u -m platformio run
     }
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "`n[RETRY] Build encountered a lock or error. Retrying build in 2s..." -ForegroundColor Yellow
         Start-Sleep -Seconds 2
         if ($pioCmd) { & $pioCmd run } else { python -u -m platformio run }
+        if ($pioCmd) { & $pioCmd run } else { & $pythonExe -u -m platformio run }
     }
 
     $binPath = Join-Path $projectDir ".pio\build\esp32dev\firmware.bin"

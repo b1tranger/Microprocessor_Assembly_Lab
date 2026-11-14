@@ -201,6 +201,93 @@
       cursor: not-allowed;
     }
 
+    /* Selected File Details Preview Card */
+    .file-detail-card {
+      width: 100%;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      margin-top: 4px;
+      transition: border-color 0.15s ease;
+    }
+
+    .file-detail-card:hover {
+      border-color: var(--accent);
+    }
+
+    .file-detail-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-detail-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .file-detail-meta {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-detail-name {
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .file-detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .file-detail-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--accent);
+      padding: 2px 6px;
+      font-size: 0.72rem;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .file-detail-status {
+      color: var(--success);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .btn-clear-file {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .btn-clear-file:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
     .table-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -515,6 +602,20 @@
     <div class="upload-box">
       <form id="uploadForm" class="upload-form" onsubmit="event.preventDefault(); submitUpload();">
         <input type="file" id="fileSelect" name="upload_file" required>
+        <div id="fileDetailCard" class="file-detail-card" style="display: none;">
+          <div class="file-detail-main">
+            <span class="file-detail-icon">📄</span>
+            <div class="file-detail-meta">
+              <div class="file-detail-name" id="chosenFileName">No file selected</div>
+              <div class="file-detail-tags">
+                <span class="file-detail-badge" id="chosenFileSize">0 B</span>
+                <span class="file-detail-badge" id="chosenFileType">Unknown</span>
+                <span class="file-detail-status">Ready to Upload</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-clear-file" id="clearFileBtn" title="Clear selection" onclick="clearFileSelection();">✕</button>
+        </div>
         <button type="submit" id="uploadBtn" class="btn-upload">⬆ Upload to Storage</button>
       </form>
       <div id="progressBox" class="progress-box">
@@ -694,6 +795,31 @@
       };
     }
 
+    // Dynamic File Details Display on Selection (Mobile & Desktop)
+    var fileSelectInput = document.getElementById('fileSelect');
+    if (fileSelectInput) {
+      fileSelectInput.addEventListener('change', function () {
+        var card = document.getElementById('fileDetailCard');
+        if (this.files && this.files.length > 0) {
+          var f = this.files[0];
+          document.getElementById('chosenFileName').textContent = f.name;
+          document.getElementById('chosenFileSize').textContent = fmtBytes(f.size);
+          var ext = f.name.indexOf('.') !== -1 ? f.name.split('.').pop().toUpperCase() : 'FILE';
+          document.getElementById('chosenFileType').textContent = f.type ? f.type : (ext + ' Document');
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function clearFileSelection() {
+      var inp = document.getElementById('fileSelect');
+      if (inp) inp.value = '';
+      var card = document.getElementById('fileDetailCard');
+      if (card) card.style.display = 'none';
+    }
+
     function submitUpload() {
       var inp = document.getElementById('fileSelect');
       if (!inp.files.length) return;
@@ -764,6 +890,7 @@
           btn.disabled = false;
           btn.style.opacity = '1';
           inp.value = '';
+          clearFileSelection();
           loadFiles();
           setTimeout(function () {
             box.style.display = 'none';

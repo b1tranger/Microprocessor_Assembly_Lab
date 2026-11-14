@@ -24,10 +24,12 @@ An operational guide for compiling, running, and simulating the ESP32 Embedded N
   - [Step 5: Verify Boot Telemetry in Serial Monitor](#step-5-verify-boot-telemetry-in-serial-monitor)
 - [4. Accessing the Server from External Devices](#4-accessing-the-server-from-external-devices)
   - [4.1 Why Multi-Interface Access Works (0.0.0.0:9080 Binding)](#41-why-multi-interface-access-works-00009080-binding)
-  - [4.2 Scenario 1: Home Hybrid Testing (Host on Wired Ethernet, Client Phone/Laptop on Router Wi-Fi)](#42-scenario-1-home-hybrid-testing-host-on-wired-ethernet-client-phonelaptop-on-router-wi-fi)
-  - [4.3 Scenario 2: Lab Workstation Testing (Both Devices on Wired Ethernet LAN Switch)](#43-scenario-2-lab-workstation-testing-both-devices-on-wired-ethernet-lan-switch)
-  - [4.4 Scenario 3: Portable Showcase Hotspot (Host Laptop Hotspot with Mobile Clients)](#44-scenario-3-portable-showcase-hotspot-host-laptop-hotspot-with-mobile-clients)
-  - [4.5 Master Endpoint & Host IP Mapping Table](#45-master-endpoint--host-ip-mapping-table)
+  - [4.2 Scenario Comparison & Quick Decision Matrix (Scenario 1 vs 4)](#42-scenario-comparison--quick-decision-matrix-scenario-1-vs-4)
+  - [4.3 Scenario 1: Home Hybrid Testing (Host on Wired Ethernet, Client Phone/Laptop on Router Wi-Fi)](#43-scenario-1-home-hybrid-testing-host-on-wired-ethernet-client-phonelaptop-on-router-wi-fi)
+  - [4.4 Scenario 2: Lab Workstation Testing (Both Devices on Wired Ethernet LAN Switch)](#44-scenario-2-lab-workstation-testing-both-devices-on-wired-ethernet-lan-switch)
+  - [4.5 Scenario 3: Portable Showcase Hotspot (Host Laptop Hotspot with Mobile Clients)](#45-scenario-3-portable-showcase-hotspot-host-laptop-hotspot-with-mobile-clients)
+  - [4.6 Scenario 4: All-Wireless Testing (Both Host Laptop/PC & Client Devices on Same Wi-Fi Network)](#46-scenario-4-all-wireless-testing-both-host-laptoppc--client-devices-on-same-wi-fi-network)
+  - [4.7 Master Endpoint & Host IP Mapping Table](#47-master-endpoint--host-ip-mapping-table)
 - [5. Zero-Install Local Network File Sharing (LocalSend Web Model)](#5-zero-install-local-network-file-sharing-localsend-web-model)
   - [5.1 Bi-Directional File Transfer Workflow](#51-bi-directional-file-transfer-workflow)
   - [5.2 Web Endpoints & Service Breakdown](#52-web-endpoints--service-breakdown)
@@ -266,7 +268,41 @@ Any device that can ping or route to an IP address belonging to your host PC can
 
 ---
 
-### 4.2 Scenario 1: Home Hybrid Testing (Host on Wired Ethernet, Client Phone/Laptop on Router Wi-Fi)
+### 4.2 Scenario Comparison & Quick Decision Matrix (Scenario 1 vs 4)
+
+> **Evaluator & User Clarification**: *"Why do Scenario 1 and Scenario 4 look similar on the surface, and how do they differ?"*
+
+At first glance, both Scenario 1 and Scenario 4 involve an external client (such as your smartphone or a secondary laptop) typing `http://<HOST_IP>:9080/` into a browser to access the ESP32 file server. 
+
+However, they are designed for **two physically distinct machine configurations**, require **different network adapter selections in `ipconfig`**, and have **fundamentally different vulnerability to campus network security policies**:
+
+| Evaluation Criterion | Scenario 1: Home Hybrid LAN | Scenario 4: All-Wireless LAN |
+| :--- | :--- | :--- |
+| **Host Workstation Setup** | **Desktop PC / Docked Laptop** plugged in via **Physical Ethernet (RJ-45) cable** to router | **Laptop / Wireless PC** operating on **100% Wi-Fi (No Ethernet cable plugged in)** |
+| **Client Device Setup** | Smartphone, tablet, or laptop on Router Wi-Fi | Smartphone, tablet, or laptop on the exact same Wi-Fi SSID |
+| **Adapter to Select in `ipconfig`** | **`Ethernet adapter Ethernet`** (or `vEthernet`) | **`Wireless LAN adapter Wi-Fi`** (or `Wi-Fi 2`) |
+| **Status of Other Adapter** | Wi-Fi is often disconnected or absent | `Ethernet adapter Ethernet` will explicitly display **`Media disconnected`** |
+| **Physical Packet Path** | Phone $\rightarrow$ Wi-Fi Radio $\rightarrow$ **Router Switch ASIC** $\rightarrow$ Host Ethernet Port | Phone $\rightarrow$ Wi-Fi Radio $\rightarrow$ **Access Point BSSID** $\rightarrow$ Host Wi-Fi Radio |
+| **Campus / Enterprise AP Isolation** | **Immune**: Routers bridge wired Ethernet ports directly to the LAN broadcast domain | **Vulnerable**: Campus / dorm / hotel Wi-Fi often enforces **Client Isolation** (blocks peer stations) |
+| **What Happens if Blocked** | Almost never blocked on home or lab networks | Connection times out (`ERR_CONNECTION_TIMED_OUT`) $\rightarrow$ **Must switch to Scenario 3 (Hotspot)** |
+| **Target URL Typed on Client** | `http://<HOST_ETHERNET_IP>:9080/` (e.g. `http://192.168.0.105:9080/`) | `http://<HOST_WIFI_IP>:9080/` (e.g. `http://192.168.1.150:9080/`) |
+
+#### Quick Decision Tree: Which Scenario Should You Use?
+```
+Are you testing from the same PC running VS Code?
+ ├── YES ──> Use Localhost: http://localhost:9080/
+ └── NO (Testing from Phone, Tablet, or Peer PC)
+      ├── Is your Host PC plugged into the router with an Ethernet cable?
+      │    ├── Client is also plugged in via Ethernet? ──> Scenario 2 (Lab Wired Switch)
+      │    └── Client is connected via Wi-Fi? ─────────> Scenario 1 (Home Hybrid)
+      └── Is your Host PC on Wi-Fi (No Ethernet cables plugged in)?
+           ├── On personal/home Wi-Fi without AP isolation? ──> Scenario 4 (All-Wireless LAN)
+           └── On campus/dorm/cafe Wi-Fi OR doing a live defense? ──> Scenario 3 (Windows Hotspot - Recommended!)
+```
+
+---
+
+### 4.3 Scenario 1: Home Hybrid Testing (Host on Wired Ethernet, Client Phone/Laptop on Router Wi-Fi)
 In this home setup, your host workstation running the simulation is plugged into the Wi-Fi router via physical Ethernet cable, while your smartphone, tablet, or secondary laptop connects wirelessly to the same router:
 
 ```
@@ -292,7 +328,15 @@ In this home setup, your host workstation running the simulation is plugged into
      ```powershell
      ipconfig
      ```
-   - Locate the section titled **`Ethernet adapter Ethernet`** (or `Ethernet adapter vEthernet` / your main wired NIC).
+   - Locate the section titled **`Ethernet adapter Ethernet`** (or `Ethernet adapter vEthernet` / your main wired NIC):
+     ```text
+     Ethernet adapter Ethernet:
+        Connection-specific DNS Suffix  . :
+        Link-local IPv6 Address . . . . . : fe80::...
+        IPv4 Address. . . . . . . . . . . : 192.168.0.105  <--- COPY THIS IP
+        Subnet Mask . . . . . . . . . . . : 255.255.255.0
+        Default Gateway . . . . . . . . . : 192.168.0.1
+     ```
    - Note the **`IPv4 Address`** (for example: `192.168.0.105` or `192.168.1.50`).
    > [!IMPORTANT]
    > Do **not** look for "Wireless LAN adapter Wi-Fi" on the host PC if it is plugged in via Ethernet! The host PC is communicating through its wired NIC, so client devices must target the host's **Ethernet IPv4 address**.
@@ -309,7 +353,7 @@ In this home setup, your host workstation running the simulation is plugged into
 
 ---
 
-### 4.3 Scenario 2: Lab Workstation Testing (Both Devices on Wired Ethernet LAN Switch)
+### 4.4 Scenario 2: Lab Workstation Testing (Both Devices on Wired Ethernet LAN Switch)
 In the microprocessor laboratory, both the host workstation running the simulation (PC 1) and peer student workstations (PC 2) are connected via physical RJ45 Ethernet patch cables to the same campus lab switch:
 
 ```
@@ -346,7 +390,7 @@ In the microprocessor laboratory, both the host workstation running the simulati
 
 ---
 
-### 4.4 Scenario 3: Portable Showcase Hotspot (Host Laptop Hotspot with Mobile Clients)
+### 4.5 Scenario 3: Portable Showcase Hotspot (Host Laptop Hotspot with Mobile Clients)
 During project defense or when network access in the lab is restricted (e.g. campus Wi-Fi has strict Client/AP Isolation blocking inter-device communication), turn your host laptop into a Wi-Fi Access Point using Windows Mobile Hotspot:
 
 ```
@@ -386,14 +430,81 @@ During project defense or when network access in the lab is restricted (e.g. cam
 
 ---
 
-### 4.5 Master Endpoint & Host IP Mapping Table
+### 4.6 Scenario 4: All-Wireless Testing (Both Host Laptop/PC & Client Devices on Same Wi-Fi Network)
+In typical student dorms, homes, or modern labs without physical Ethernet cabling, **both the host workstation (running the simulation) and the client devices (phones, tablets, secondary laptops) connect 100% wirelessly to the same Wi-Fi router / Access Point**:
 
-| Deployment Scenario | Connected Client Device | Host IP to Type into Client Browser | NAS Dashboard URL | Static Hosted Web URL |
-| :--- | :--- | :--- | :--- | :--- |
-| **Local Testing** | Host PC (Where VS Code runs) | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
-| **Scenario 1: Home Hybrid** | Phone / laptop on Home Wi-Fi (Host on Ethernet) | `<HOST_ETHERNET_IP>` *(from `ipconfig`)* | `http://<HOST_ETHERNET_IP>:9080/` | `http://<HOST_ETHERNET_IP>:9080/site` |
-| **Scenario 2: Lab Wired** | Peer student PC on campus switch (Both on Ethernet) | `<PC1_ETHERNET_IP>` *(from `ipconfig`)* | `http://<PC1_ETHERNET_IP>:9080/` | `http://<PC1_ETHERNET_IP>:9080/site` |
-| **Scenario 3: Laptop Hotspot** | Evaluator smartphones, tablets, or laptops on hotspot | `192.168.137.1` *(Deterministic Gateway)* | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
+```
+                      +------------------------------------------+
+                      |         Local Wi-Fi Router / AP          |
+                      |        (Local Subnet: e.g. 192.168.1.1)  |
+                      +--------------------+---------------------+
+                                           |
+                    +----------------------+----------------------+
+                    | (Wi-Fi 2.4/5 GHz)                           | (Wi-Fi 2.4/5 GHz)
+                    ▼                                             ▼
++---------------------------------------+     +---------------------------------------+
+|  Host PC (Running Simulation)         |     |  Mobile Device / Secondary Laptop     |
+|  Wi-Fi IP: e.g., 192.168.1.150        |     |  Wi-Fi IP: e.g., 192.168.1.175        |
+|  wokwigw.exe listening: 0.0.0.0:9080  |     |  Opens Browser to Host Wi-Fi IP:      |
+|  setup_firewall.bat PORT 9080 ALLOWED |     |  http://192.168.1.150:9080/          |
++---------------------------------------+     +---------------------------------------+
+```
+
+#### Step-by-Step Instructions:
+1. **Find the Host Wireless IP**:
+   - On the host laptop running VS Code on battery or Wi-Fi, open PowerShell and run:
+     ```powershell
+     ipconfig
+     ```
+   - Notice that your wired Ethernet adapter is **disconnected**:
+     ```text
+     Ethernet adapter Ethernet:
+        Media State . . . . . . . . . . . : Media disconnected   <-- NORMAL! DO NOT PANIC!
+
+     Wireless LAN adapter Wi-Fi:
+        Connection-specific DNS Suffix  . :
+        Link-local IPv6 Address . . . . . : fe80::...
+        IPv4 Address. . . . . . . . . . . : 192.168.1.150       <-- COPY THIS WI-FI IP
+        Subnet Mask . . . . . . . . . . . : 255.255.255.0
+        Default Gateway . . . . . . . . . : 192.168.1.1
+     ```
+   - Note the **`IPv4 Address`** under `Wireless LAN adapter Wi-Fi` (for example: `192.168.1.150`).
+   > [!TIP]
+   > Because the host is on Wi-Fi (no Ethernet cable plugged in), the active IP address listening on `0.0.0.0:9080` is your **Wireless LAN adapter IPv4 address**.
+
+2. **Verify Windows Firewall**:
+   - Run [`setup_firewall.bat`](setup_firewall.bat) once with Admin privileges so Windows Firewall permits incoming TCP traffic on port 9080 from the local Wi-Fi subnet.
+
+3. **Critical Trap: The Campus Wi-Fi AP Isolation Filter**:
+   > [!WARNING]
+   > **Why Scenario 4 Fails on University / Campus Wi-Fi (The AP Isolation Trap)**:
+   > On standard home Wi-Fi routers, wireless devices can freely talk to each other.
+   >
+   > However, **university campus networks (including UITS campus Wi-Fi, dorms, and public cafes) enforce Access Point (AP) Isolation / Client Isolation (Station Separation)**. The wireless access point intentionally drops all direct packets between two wireless stations to prevent peer hacking and ARP spoofing.
+   >
+   > If navigating to `http://<HOST_WIFI_IP>:9080/` from your phone results in **`ERR_CONNECTION_TIMED_OUT`**:
+   > - Your code, gateway, and firewall are **not broken**.
+   > - The campus Wi-Fi access point is dropping the wireless-to-wireless packets!
+   > - **Immediate Remedy**: Switch to **[Scenario 3: Portable Showcase Hotspot](#45-scenario-3-portable-showcase-hotspot-host-laptop-hotspot-with-mobile-clients)**. Windows Mobile Hotspot runs its own local virtual Wi-Fi router on your laptop, 100% immune to campus isolation policies.
+
+4. **Access Endpoints from Client Device (Home / Private Wi-Fi)**:
+   - Ensure the mobile phone or secondary laptop is connected to the exact same Wi-Fi SSID.
+   - Open any browser (Chrome, Safari, Edge, Firefox) on the client device and navigate to:
+     - **NAS Dashboard**: `http://<HOST_WIFI_IP>:9080/` (e.g. `http://192.168.1.150:9080/`)
+     - **Static Hosted Webpage**: `http://<HOST_WIFI_IP>:9080/site`
+     - **REST File Telemetry API**: `http://<HOST_WIFI_IP>:9080/api/files`
+
+---
+
+### 4.7 Master Endpoint & Host IP Mapping Table
+
+| Deployment Scenario | Host Physical Connection | Connected Client Device | Host IP to Type into Client Browser | NAS Dashboard URL | Static Hosted Web URL |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Local Testing** | Any / Offline | Host PC (Where VS Code runs) | `localhost` or `127.0.0.1` | [http://localhost:9080/](http://localhost:9080/) | [http://localhost:9080/site](http://localhost:9080/site) |
+| **Scenario 1: Home Hybrid** | **Physical RJ45 Ethernet Cable** | Phone / laptop on Home Wi-Fi (Host on Ethernet) | `<HOST_ETHERNET_IP>` *(from `ipconfig`)* | `http://<HOST_ETHERNET_IP>:9080/` | `http://<HOST_ETHERNET_IP>:9080/site` |
+| **Scenario 2: Lab Wired** | **Physical RJ45 Ethernet Cable** | Peer student PC on campus switch (Both on Ethernet) | `<PC1_ETHERNET_IP>` *(from `ipconfig`)* | `http://<PC1_ETHERNET_IP>:9080/` | `http://<PC1_ETHERNET_IP>:9080/site` |
+| **Scenario 3: Laptop Hotspot** | **Wi-Fi Hotspot SoftAP (No router)** | Evaluator smartphones, tablets, or laptops on hotspot | `192.168.137.1` *(Deterministic Gateway)* | `http://192.168.137.1:9080/` | `http://192.168.137.1:9080/site` |
+| **Scenario 4: All-Wireless LAN** | **100% Wireless Wi-Fi (No cables)** | Both host PC and client devices on same Wi-Fi router | `<HOST_WIFI_IP>` *(from `ipconfig` Wi-Fi)* | `http://<HOST_WIFI_IP>:9080/` | `http://<HOST_WIFI_IP>:9080/site` |
 
 ---
 
@@ -478,8 +589,8 @@ To maximize file transfer throughput and provide real-time user feedback:
 
 1. **Hardware SPI Bus Clock Boost (25 MHz)**:
    In [`src/main.cpp`](src/main.cpp), storage initialization is upgraded from the standard 4 MHz clock to **25 MHz** (`SD.begin(SD_CS_PIN, SPI, 25000000)`), maximizing hardware bus bandwidth on the ESP32 VSPI controller.
-2. **Sector-Aligned 4 KB Write Buffering**:
-   Instead of writing unaligned 1436-byte TCP segments directly to the SD card, `handleFileUpload()` buffers incoming stream chunks into a 4,096-byte memory block (`uploadWriteBuffer`) and writes in sector-aligned units. This minimizes FAT cluster allocation latency and virtual SPI transaction stalls.
+2. **Universal 512-Byte Sector-Aligned Write Buffering (CMD24)**:
+   Instead of writing unaligned 1436-byte TCP segments directly to the SD card, `handleFileUpload()` buffers incoming stream chunks into a 512-byte memory block (`uploadWriteBuffer`) and commits strictly in physical 512-byte FAT32 sector units. Flushes of exactly 512 bytes force the underlying driver to use standard `CMD24` (`WRITE_BLOCK_SINGLE`), completely bypassing multi-block `CMD25` and `ACMD23` commands that trigger sector write failures (`0 / 4096 bytes written`) in simulation environments and clone SPI adapters.
 3. **Real-Time Client Upload Progress & Speedometer**:
    The dashboard UI uses asynchronous XMLHttpRequest streaming with live telemetry:
    * **Real-Time Progress Bar**: Smooth glowing progress bar tracking `0%` to `100%`.
@@ -583,6 +694,10 @@ http://<PC1_ETHERNET_IP>:9080/site
 # Scenario 3 - Laptop Mobile Hotspot (Phones & Tablets):
 http://192.168.137.1:9080/
 http://192.168.137.1:9080/site
+
+# Scenario 4 - All-Wireless LAN (Both Host & Client on Same Wi-Fi Router):
+http://<HOST_WIFI_IP>:9080/
+http://<HOST_WIFI_IP>:9080/site
 
 # 6. Revert All Setup & Simulation Changes (Run as Admin)
 .\setup\uninstall_dependencies.bat

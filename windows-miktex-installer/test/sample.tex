@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{MiKTeX Automated Installation Test}
+\author{Antigravity LaTeX Environment}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Verification Overview}
+This document verifies that the LaTeX engine (LuaLaTeX / pdfLaTeX) and the automatic on-the-fly CTAN package installer (\texttt{mpm} / \texttt{initexmf}) are operating properly.
+
+\subsection{Mathematics Test}
+Testing equation rendering with \texttt{amsmath}:
+\begin{equation}
+    f(x) = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \, dx = 1
+\end{equation}
+
+\subsection{Table Test}
+Testing booktabs publication quality formatting:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{llr}
+\toprule
+\textbf{Component} & \textbf{Role} & \textbf{Status} \\
+\midrule
+LuaLaTeX & Modern Unicode \& Lua engine & Verified \\
+pdfLaTeX & Standard legacy compilation & Verified \\
+MiKTeX AutoInstall & On-demand package fetcher & Active \\
+\bottomrule
+\end{tabular}
+\caption{System Component Health}
+\end{table}
+
+\subsection{Code Listing Test}
+\begin{lstlisting}[language=C++]
+// Microcontroller VSPI initialization
+void setup() {
+    SPI.begin(18, 19, 23, 5);
+    Serial.println("MiKTeX verification passed!");
+}
+\end{lstlisting}
+
+\end{document}

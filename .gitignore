@@ -25,3 +25,5 @@ Wokwi-Offline-Environment/
 Project.MM/LocalConfig/.pio/
 platformio_cache.zip
 /Project.MM/setup/PlatformIO_Espressif_Offline_Installer/.platformio
+*.aux
+*.log

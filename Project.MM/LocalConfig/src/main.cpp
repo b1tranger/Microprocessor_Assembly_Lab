@@ -83,7 +83,7 @@ void phase1_seedInitialFiles() {
     if (!needsSeed) {
       File checkF = SD.open(asset.sdPath, FILE_READ);
       if (checkF) {
-        if (checkF.size() == 0)
+        if (checkF.size() == 0 || checkF.size() != asset.size)
           needsSeed = true;
         checkF.close();
       }
@@ -95,7 +95,16 @@ void phase1_seedInitialFiles() {
       }
       File f = SD.open(asset.sdPath, FILE_WRITE);
       if (f) {
-        f.write(asset.data, asset.size);
+        // Chunk writes into 512-byte blocks to ensure single-sector CMD24
+        // execution
+        size_t writtenTotal = 0;
+        while (writtenTotal < asset.size) {
+          size_t chunk = asset.size - writtenTotal;
+          if (chunk > 512)
+            chunk = 512;
+          f.write(asset.data + writtenTotal, chunk);
+          writtenTotal += chunk;
+        }
         f.flush();
         f.close();
         Serial.printf("[STORAGE] Seeded %s (%u bytes)\n", asset.sdPath,
@@ -130,7 +139,8 @@ bool phase1_initStorage() {
   // Explicitly initialize hardware VSPI bus
   SPI.begin(18, 19, 23, SD_CS_PIN);
 
-  // Initialize SD with reliable 4 MHz SPI clock (standard for VSPI & Wokwi simulation)
+  // Initialize SD with reliable 4 MHz SPI clock (standard for VSPI & Wokwi
+  // simulation)
   if (!SD.begin(SD_CS_PIN, SPI, 4000000)) {
     Serial.println(
         "\r\n[PHASE 1 ERROR] SD Card initialization failed! Check SPI pins.");
@@ -205,14 +215,67 @@ void collectFilesRecursively(File dir, std::vector<StorageItem> &items,
   }
 }
 
+// High-performance streaming of SD card files to client in 1024-byte block chunks.
+// Eliminates WebServer::streamFile() CPU byte-by-byte bottlenecks and socket deadlocks.
+static void streamSDFile(File &file, const String &contentType,
+                         bool isAttachment = false,
+                         const String &downloadFilename = "") {
+  if (!file || file.isDirectory()) {
+    if (file)
+      file.close();
+    server.sendHeader("Connection", "close");
+    server.send(404, "text/plain", "File Not Found");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
+    return;
+  }
+
+  size_t totalSize = file.size();
+  file.setBufferSize(1024);
+
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+  if (isAttachment && downloadFilename.length() > 0) {
+    server.sendHeader("Content-Disposition",
+                      "attachment; filename=\"" + downloadFilename + "\"");
+  }
+  server.sendHeader("Content-Length", String(totalSize));
+  server.sendHeader("Connection", "close");
+  server.setContentLength(totalSize);
+  server.send(200, contentType, "");
+
+  WiFiClient client = server.client();
+  uint8_t buffer[1024];
+  size_t remaining = totalSize;
+
+  while (client.connected() && remaining > 0) {
+    size_t toRead = (remaining > sizeof(buffer)) ? sizeof(buffer) : remaining;
+    size_t nRead = file.read(buffer, toRead);
+    if (nRead == 0) {
+      break;
+    }
+    size_t nWritten = client.write(buffer, nRead);
+    if (nWritten == 0) {
+      break;
+    }
+    remaining -= nWritten;
+    vTaskDelay(1);
+  }
+
+  file.close();
+  client.flush();
+  client.stop();
+}
+
 // Route: NAS Dashboard (Streams /www/fileserver.html directly from MicroSD
 // storage)
 void handleRoot() {
   if (SD.exists("/www/fileserver.html")) {
     File htmlFile = SD.open("/www/fileserver.html", FILE_READ);
     if (htmlFile && htmlFile.size() > 0) {
-      server.streamFile(htmlFile, "text/html");
-      htmlFile.close();
+      streamSDFile(htmlFile, "text/html");
       return;
     }
     if (htmlFile)
@@ -228,28 +291,42 @@ void handleRoot() {
       }
       File f = SD.open("/www/fileserver.html", FILE_WRITE);
       if (f) {
-        f.write(EMBEDDED_ASSETS[i].data, EMBEDDED_ASSETS[i].size);
+        size_t writtenTotal = 0;
+        while (writtenTotal < EMBEDDED_ASSETS[i].size) {
+          size_t chunk = EMBEDDED_ASSETS[i].size - writtenTotal;
+          if (chunk > 512)
+            chunk = 512;
+          f.write(EMBEDDED_ASSETS[i].data + writtenTotal, chunk);
+          writtenTotal += chunk;
+        }
         f.flush();
         f.close();
         File htmlFile = SD.open("/www/fileserver.html", FILE_READ);
         if (htmlFile && htmlFile.size() > 0) {
-          server.streamFile(htmlFile, "text/html");
-          htmlFile.close();
+          streamSDFile(htmlFile, "text/html");
           return;
         }
         if (htmlFile)
           htmlFile.close();
       }
       // Direct Flash ROM fallback if SD write failed
+      server.sendHeader("Connection", "close");
       server.send_P(200, "text/html", (PGM_P)EMBEDDED_ASSETS[i].data,
                     EMBEDDED_ASSETS[i].size);
+      WiFiClient client = server.client();
+      client.flush();
+      client.stop();
       return;
     }
   }
 
+  server.sendHeader("Connection", "close");
   server.send(
       404, "text/plain",
       "File Server Interface Not Found on MicroSD (/www/fileserver.html)");
+  WiFiClient client = server.client();
+  client.flush();
+  client.stop();
 }
 
 // Route: API Endpoint to return live storage stats and file directory in JSON
@@ -293,26 +370,24 @@ void handleApiFiles() {
   }
   json += "]}";
 
+  server.sendHeader("Connection", "close");
   server.send(200, "application/json", json);
+  WiFiClient client = server.client();
+  client.flush();
+  client.stop();
 }
-
-// High-Throughput 4KB Sector-Aligned SD Write Buffer
-#define UPLOAD_SECTOR_BUFFER_SIZE 4096
-static uint8_t uploadWriteBuffer[UPLOAD_SECTOR_BUFFER_SIZE];
-static size_t uploadWriteBufferIndex = 0;
-static bool uploadWriteError = false;
 
 // Static Upload State Tracker
 static String currentUploadTarget = "";
+static size_t uploadFileWrittenBytes = 0;
 
-// Route: File Upload Handler (Streaming Multipart Parser with Sector-Aligned Buffering)
+// Route: File Upload Handler (Direct Streaming Multipart Parser restored from
+// cf175466)
 void handleFileUpload() {
   HTTPUpload &upload = server.upload();
 
   if (upload.status == UPLOAD_FILE_START) {
-    uploadWriteBufferIndex = 0;
-    uploadWriteError = false;
-
+    uploadFileWrittenBytes = 0;
     String filename = upload.filename;
     int slashIdx = filename.lastIndexOf('/');
     if (slashIdx >= 0)
@@ -338,83 +413,50 @@ void handleFileUpload() {
       SD.mkdir("/uploads");
     }
     currentUploadTarget = "/uploads/" + filename;
+    Serial.printf("[UPLOAD START] Destination: %s\r\n",
+                  currentUploadTarget.c_str());
 
-    // Purge any stale existing file to ensure clean cluster allocation
+    // Purge any stale existing file
     if (SD.exists(currentUploadTarget)) {
       SD.remove(currentUploadTarget);
     }
 
     uploadFile = SD.open(currentUploadTarget, FILE_WRITE);
     if (!uploadFile) {
-      uploadWriteError = true;
-      Serial.printf("[UPLOAD ERROR] Failed to create destination file: %s\r\n",
+      Serial.printf("[UPLOAD ERROR] Failed to create: %s\r\n",
                     currentUploadTarget.c_str());
     } else {
-      Serial.printf("[UPLOAD START] Destination: %s\r\n", currentUploadTarget.c_str());
+      uploadFile.setBufferSize(512);
     }
   } else if (upload.status == UPLOAD_FILE_WRITE) {
-    if (uploadFile && !uploadWriteError && upload.currentSize > 0) {
-      size_t bytesLeft = upload.currentSize;
-      size_t srcOffset = 0;
-
-      while (bytesLeft > 0 && !uploadWriteError) {
-        size_t spaceInBuffer = UPLOAD_SECTOR_BUFFER_SIZE - uploadWriteBufferIndex;
-        size_t toCopy = (bytesLeft < spaceInBuffer) ? bytesLeft : spaceInBuffer;
-
-        memcpy(uploadWriteBuffer + uploadWriteBufferIndex, upload.buf + srcOffset, toCopy);
-        uploadWriteBufferIndex += toCopy;
-        srcOffset += toCopy;
-        bytesLeft -= toCopy;
-
-        // Flush in full 4096-byte blocks to match FAT32 sector alignment
-        if (uploadWriteBufferIndex == UPLOAD_SECTOR_BUFFER_SIZE) {
-          size_t written = uploadFile.write(uploadWriteBuffer, UPLOAD_SECTOR_BUFFER_SIZE);
-          if (written != UPLOAD_SECTOR_BUFFER_SIZE) {
-            uploadWriteError = true;
-            Serial.printf("[UPLOAD ERROR] Sector write failed: %u / %u bytes written. Aborting.\r\n",
-                          (unsigned int)written, (unsigned int)UPLOAD_SECTOR_BUFFER_SIZE);
-            break;
-          }
-          uploadWriteBufferIndex = 0;
-        }
+    if (uploadFile && upload.currentSize > 0) {
+      size_t written = uploadFile.write(upload.buf, upload.currentSize);
+      uploadFileWrittenBytes += written;
+      if (written != upload.currentSize) {
+        Serial.printf("[UPLOAD WRITE MISMATCH] Buffer: %u, Wrote: %u\r\n",
+                      (unsigned int)upload.currentSize, (unsigned int)written);
       }
     }
   } else if (upload.status == UPLOAD_FILE_END) {
     if (uploadFile) {
-      if (!uploadWriteError && uploadWriteBufferIndex > 0) {
-        size_t written = uploadFile.write(uploadWriteBuffer, uploadWriteBufferIndex);
-        if (written != uploadWriteBufferIndex) {
-          uploadWriteError = true;
-          Serial.printf("[UPLOAD ERROR] Final sector flush failed: %u / %u bytes written.\r\n",
-                        (unsigned int)written, (unsigned int)uploadWriteBufferIndex);
-        }
-        uploadWriteBufferIndex = 0;
-      }
       uploadFile.flush();
+      size_t finalFileSize = uploadFile.size();
       uploadFile.close();
-
-      if (!uploadWriteError) {
-        Serial.printf("[UPLOAD SUCCESS] Path: %s | Wrote: %u bytes\r\n",
-                      currentUploadTarget.c_str(), (unsigned int)upload.totalSize);
-      } else {
-        Serial.printf("[UPLOAD FAILED] Write error encountered during transmission.\r\n");
-        if (currentUploadTarget.length() > 0 && SD.exists(currentUploadTarget)) {
-          SD.remove(currentUploadTarget);
-          Serial.printf("[UPLOAD PURGED] Removed incomplete file: %s\r\n", currentUploadTarget.c_str());
-        }
-      }
+      Serial.printf("[UPLOAD SUCCESS] Path: %s | Network: %u bytes | SD Committed: %u bytes | File Size: %u bytes\r\n",
+                    currentUploadTarget.c_str(),
+                    (unsigned int)upload.totalSize,
+                    (unsigned int)uploadFileWrittenBytes,
+                    (unsigned int)finalFileSize);
     }
-    uploadWriteBufferIndex = 0;
     currentUploadTarget = "";
   } else if (upload.status == UPLOAD_FILE_ABORTED) {
-    uploadWriteBufferIndex = 0;
     if (uploadFile) {
       uploadFile.close();
       Serial.println("[UPLOAD ABORTED]\r\n");
     }
     if (currentUploadTarget.length() > 0 && SD.exists(currentUploadTarget)) {
       SD.remove(currentUploadTarget);
-      Serial.printf("[UPLOAD ABORTED] Purged incomplete corrupted file: %s\r\n",
+      Serial.printf("[UPLOAD ABORTED] Purged incomplete file: %s\r\n",
                     currentUploadTarget.c_str());
     }
     currentUploadTarget = "";
@@ -424,7 +466,11 @@ void handleFileUpload() {
 // Route: File Deletion Handler (Rejects protected default files)
 void handleDelete() {
   if (!server.hasArg("file")) {
+    server.sendHeader("Connection", "close");
     server.send(400, "text/plain", "Missing file parameter");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
     return;
   }
 
@@ -437,9 +483,13 @@ void handleDelete() {
     Serial.printf(
         "[SECURITY BLOCKED] Deletion rejected for protected file: %s\n",
         target.c_str());
+    server.sendHeader("Connection", "close");
     server.send(403, "text/plain",
                 "Forbidden: Default system files are write-protected and "
                 "cannot be deleted.");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
     return;
   }
 
@@ -464,7 +514,11 @@ void handleDelete() {
 
   // Redirect back to dashboard
   server.sendHeader("Location", "/");
+  server.sendHeader("Connection", "close");
   server.send(303);
+  WiFiClient client = server.client();
+  client.flush();
+  client.stop();
 }
 
 // Route: Static Web Host (Streams /www/index.html from SD card)
@@ -472,8 +526,7 @@ void handleSite() {
   if (SD.exists("/www/index.html")) {
     File htmlFile = SD.open("/www/index.html", FILE_READ);
     if (htmlFile && htmlFile.size() > 0) {
-      server.streamFile(htmlFile, "text/html");
-      htmlFile.close();
+      streamSDFile(htmlFile, "text/html");
       return;
     }
     if (htmlFile)
@@ -489,33 +542,51 @@ void handleSite() {
       }
       File f = SD.open("/www/index.html", FILE_WRITE);
       if (f) {
-        f.write(EMBEDDED_ASSETS[i].data, EMBEDDED_ASSETS[i].size);
+        size_t writtenTotal = 0;
+        while (writtenTotal < EMBEDDED_ASSETS[i].size) {
+          size_t chunk = EMBEDDED_ASSETS[i].size - writtenTotal;
+          if (chunk > 512)
+            chunk = 512;
+          f.write(EMBEDDED_ASSETS[i].data + writtenTotal, chunk);
+          writtenTotal += chunk;
+        }
         f.flush();
         f.close();
         File htmlFile = SD.open("/www/index.html", FILE_READ);
         if (htmlFile && htmlFile.size() > 0) {
-          server.streamFile(htmlFile, "text/html");
-          htmlFile.close();
+          streamSDFile(htmlFile, "text/html");
           return;
         }
         if (htmlFile)
           htmlFile.close();
       }
       // Direct Flash ROM fallback if SD write failed
+      server.sendHeader("Connection", "close");
       server.send_P(200, "text/html", (PGM_P)EMBEDDED_ASSETS[i].data,
                     EMBEDDED_ASSETS[i].size);
+      WiFiClient client = server.client();
+      client.flush();
+      client.stop();
       return;
     }
   }
 
+  server.sendHeader("Connection", "close");
   server.send(404, "text/plain",
               "Static Site Not Found on MicroSD (/www/index.html)");
+  WiFiClient client = server.client();
+  client.flush();
+  client.stop();
 }
 
-// Route: File Download Stream
+// Route: File Download Stream (High-throughput chunked streaming)
 void handleDownload() {
   if (!server.hasArg("file")) {
+    server.sendHeader("Connection", "close");
     server.send(400, "text/plain", "Missing file parameter");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
     return;
   }
 
@@ -535,18 +606,34 @@ void handleDownload() {
   }
 
   if (resolvedPath.length() == 0) {
+    server.sendHeader("Connection", "close");
     server.send(404, "text/plain", "File Not Found on Storage");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
     return;
   }
 
   File downloadFile = SD.open(resolvedPath, FILE_READ);
+  if (!downloadFile || downloadFile.isDirectory()) {
+    if (downloadFile)
+      downloadFile.close();
+    server.sendHeader("Connection", "close");
+    server.send(404, "text/plain", "File Not Found on Storage");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
+    return;
+  }
+
   int lastSlash = resolvedPath.lastIndexOf('/');
   String dlName =
       (lastSlash >= 0) ? resolvedPath.substring(lastSlash + 1) : resolvedPath;
-  server.sendHeader("Content-Disposition",
-                    "attachment; filename=\"" + dlName + "\"");
-  server.streamFile(downloadFile, "application/octet-stream");
-  downloadFile.close();
+
+  Serial.printf("[DOWNLOAD] Streaming: %s (%u bytes)\r\n",
+                resolvedPath.c_str(), (unsigned int)downloadFile.size());
+
+  streamSDFile(downloadFile, "application/octet-stream", true, dlName);
 }
 
 // Helper function for reliable diagnostic requests in virtual simulation
@@ -567,7 +654,8 @@ static int performTestRequest(const String &url) {
     }
   }
   http.end();
-  // Yield to loopTask on Core 1 to allow WebServer to complete TCP close & rearm
+  // Yield to loopTask on Core 1 to allow WebServer to complete TCP close &
+  // rearm
   vTaskDelay(800 / portTICK_PERIOD_MS);
   return code;
 }
@@ -593,7 +681,8 @@ void runClientTests(void *parameter) {
   Serial.printf("[TEST 3: Download /get] Response: %d\r\n", code);
 
   // Test 4: Verify default files are protected against deletion
-  code = performTestRequest("http://127.0.0.1/delete?file=/default/lab_report.txt");
+  code = performTestRequest(
+      "http://127.0.0.1/delete?file=/default/lab_report.txt");
   Serial.printf(
       "[TEST 4: Delete Protection] Response: %d (Expected: 403 Forbidden)\r\n",
       code);
@@ -601,6 +690,50 @@ void runClientTests(void *parameter) {
   // Test 5: Verify JSON files API
   code = performTestRequest("http://127.0.0.1/api/files");
   Serial.printf("[TEST 5: API /api/files] Response: %d\r\n", code);
+
+  // Test 6: Verify SD Card file writing (Single 512-byte Sector)
+  if (!SD.exists("/uploads")) {
+    SD.mkdir("/uploads");
+  }
+  File testF = SD.open("/uploads/diag_test512.tmp", FILE_WRITE);
+  if (testF) {
+    testF.setBufferSize(512);
+    alignas(4) uint8_t dummy[512];
+    memset(dummy, 'A', sizeof(dummy));
+    errno = 0;
+    size_t w = testF.write(dummy, 512);
+    testF.flush();
+    testF.close();
+    Serial.printf("[TEST 6: SD 512B Block Write] Wrote: %u / 512 bytes (errno: "
+                  "%d, %s)\r\n",
+                  (unsigned int)w, errno, strerror(errno));
+    SD.remove("/uploads/diag_test512.tmp");
+  } else {
+    Serial.printf(
+        "[TEST 6: SD 512B Block Write] Open failed (errno: %d, %s)\r\n", errno,
+        strerror(errno));
+  }
+
+  // Test 7: Verify SD Card multi-block writeback (2x 512-byte blocks)
+  File testF2 = SD.open("/uploads/diag_test1024.tmp", FILE_WRITE);
+  if (testF2) {
+    testF2.setBufferSize(512);
+    alignas(4) uint8_t dummy2[512];
+    memset(dummy2, 'B', sizeof(dummy2));
+    errno = 0;
+    size_t w1 = testF2.write(dummy2, 512);
+    size_t w2 = testF2.write(dummy2, 512);
+    testF2.flush();
+    testF2.close();
+    Serial.printf("[TEST 7: SD 1024B Multi-Block Write] Wrote: %u + %u bytes "
+                  "(errno: %d, %s)\r\n",
+                  (unsigned int)w1, (unsigned int)w2, errno, strerror(errno));
+    SD.remove("/uploads/diag_test1024.tmp");
+  } else {
+    Serial.printf(
+        "[TEST 7: SD 1024B Multi-Block Write] Open failed (errno: %d, %s)\r\n",
+        errno, strerror(errno));
+  }
 
   Serial.println("==================================================\r\n");
   vTaskDelete(NULL);
@@ -659,15 +792,29 @@ void setup() {
       []() {
         HTTPUpload &upload = server.upload();
         server.sendHeader("Connection", "close");
-        if (upload.status == UPLOAD_FILE_END && upload.totalSize > 0 && !uploadWriteError) {
+        if (upload.status == UPLOAD_FILE_END) {
           server.send(200, "application/json",
-                      "{\"status\":\"ok\",\"bytes\":" + String((unsigned long)upload.totalSize) + "}");
+                      "{\"status\":\"ok\",\"bytes\":" +
+                          String((unsigned long)upload.totalSize) + "}");
         } else {
           server.send(500, "application/json",
-                      "{\"status\":\"error\",\"message\":\"Upload aborted or incomplete payload received\"}");
+                      "{\"status\":\"error\",\"message\":\"Upload aborted or "
+                      "incomplete payload received\"}");
         }
+        WiFiClient client = server.client();
+        client.flush();
+        client.stop();
       },
       handleFileUpload);
+
+  // Catch unhandled endpoints (e.g. browser favicon.ico probes) to prevent socket starvation
+  server.onNotFound([]() {
+    server.sendHeader("Connection", "close");
+    server.send(404, "text/plain", "Not Found");
+    WiFiClient client = server.client();
+    client.flush();
+    client.stop();
+  });
 
   server.begin();
   Serial.println(
