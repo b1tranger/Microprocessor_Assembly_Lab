@@ -4,7 +4,8 @@
 > **Course Lecturers**: Tahmina Yeasmin Lima Ma'am & Abrar Mahbub Tanim Sir  
 > **Presentation Team**: Jannatul Ferdus, Gaus Saraf Murady, Sadia Islam  
 > **Local Workspace**: [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)  
-> **Definitive Presentation Guide**: [`Project.MM/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)  
+> **Definitive Presentation Guide**: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)  
+> **Team Presentation Bridge v2 (Rapid 3-Minute Script)**: [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)  
 > **Total Time Budget**: Exactly 10 Minutes (9 Minutes Presentation + 1 Minute Defense/Buffer)
 
 ---
@@ -113,7 +114,7 @@
   > *"Is a 4-dollar chip computationally feasible for this role? Yes, due to three architectural engineering decisions:*
   > * *1. Symmetric Dual-Core Partitioning: The ESP32 has two independent 240 MHz Xtensa CPU cores. Using FreeRTOS, Core 0 runs the LwIP Wi-Fi stack, while Core 1 handles SPI storage read and write operations. Because disk latency never blocks network interrupts, web connections never drop.*
   > * *2. Streaming Memory Guarantee: The ESP32 has roughly 300 KB of usable heap. To prevent out-of-memory kernel panics, we never buffer entire files in RAM. Instead, our multipart upload and download routines stream incoming network packets directly into SD card blocks in 2 KB buffers. Whether a file is 10 KB or 100 MB, RAM consumption remains fixed at just 2 KB.*
-  > * *3. Flash Memory Optimization: Our glassmorphic HTML and CSS layouts are placed into 4 MB Flash ROM using the `PROGMEM` keyword and streamed via `FPSTR()`. This keeps RAM completely clear for network operations."*
+  > * *3. Flash Memory Optimization: Our minimalist industrial dark-theme HTML and CSS layouts are placed into 4 MB Flash ROM using the `PROGMEM` keyword and streamed via `FPSTR()`. This keeps RAM completely clear for network operations."*
 
 #### 2.3 Dual-Phase Implementation Architecture
 * **Conduct**: Point to the two-phase sequence diagram.

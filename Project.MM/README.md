@@ -1,6 +1,15 @@
 # Microprocessor & Microcontrollers Lab Project (Project.MM)
 
+> **Repository Link**: [https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM](https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM)  
+> **Course**: CSE0611324 -- Microprocessors, Microcontrollers and Assembly Language Lab  
+> **Institution**: University of Information Technology and Sciences (UITS)  
+> **Department**: Department of Computer Science & Engineering (CSE)  
+> **Semester**: Autumn 2026
+
 ## Table of Contents
+- [Academic & Group Details](#academic--group-details)
+  - [Course Instructors (Faculty)](#course-instructors-faculty)
+  - [Submitted By (Project Group)](#submitted-by-project-group)
 - [1. Project Overview](#1-project-overview)
 - [2. Repository Architecture](#2-repository-architecture)
 - [3. Quick Start: Local VS Code Simulation (LocalConfig/)](#3-quick-start-local-vs-code-simulation-localconfig)
@@ -9,6 +18,25 @@
 - [4. First-Time Environment Setup](#4-first-time-environment-setup)
 - [5. Simulated Hardware & Web Endpoints](#5-simulated-hardware--web-endpoints)
 - [6. Documentation References](#6-documentation-references)
+
+---
+
+## Academic & Group Details
+
+### Course Instructors (Faculty)
+| Faculty Name | Designation | Department | Institution |
+| :--- | :--- | :--- | :--- |
+| **Tahmina Yeasmin Lima** | Lecturer | Department of Computer Science & Engineering | University of Information Technology and Sciences (UITS) |
+| **Abrar Mahbub Tanim** | Lecturer | Department of Computer Science & Engineering | University of Information Technology and Sciences (UITS) |
+
+### Submitted By (Project Group)
+| Member Name | Student ID | Department & Intake |
+| :--- | :--- | :--- |
+| **Jannatul Ferdus** | `0432410005101058` | Department of CSE, Autumn 2026 |
+| **Gaus Saraf Murady** | `0432410005101088` | Department of CSE, Autumn 2026 |
+| **Sadia Islam** | `0432410005101096` | Department of CSE, Autumn 2026 |
+
+---
 
 ---
 
@@ -24,7 +52,10 @@ The system is fully simulated locally inside Visual Studio Code using the **Wokw
 ```text
 Project.MM/
 │
-├── PRESENTATION_GUIDE.md      # Comprehensive presentation guide & oral defense aide
+├── Presentation/              # Presentation decks, guides, and speech bridges
+│   ├── PRESENTATION_GUIDE.md  # Comprehensive presentation guide & oral defense aide
+│   ├── v1_presentationBridge.md # Presenter's 10-minute speech script & team roles (v1)
+│   └── v2_presentationBridge.md # Rapid 3-minute presentation script & live demo guide (v2)
 ├── README.md                  # Project root overview and navigation
 │
 ├── LocalConfig/               # Local VS Code Workspace (Run interactive simulation here)
@@ -33,7 +64,6 @@ Project.MM/
 │   ├── diagram.json           # Circuit schematics & SPI pin wiring
 │   ├── wokwigw.exe            # Gateway binary for standalone execution
 │   ├── setup_firewall.bat     # One-click UAC auto-elevated Windows Firewall rule installer
-│   ├── presentationBridge.md  # Presenter's 10-minute speech script & team role division
 │   ├── README.md              # Project-level execution and operational guide
 │   ├── .gitignore             # Ignores .pio/ build artifacts & IDE cache
 │   ├── include/
@@ -148,8 +178,9 @@ If you are setting up the environment for the first time or on a new PC, all too
 
 - **Comprehensive Run & Network Access Guide**: [`Project.MM/LocalConfig/runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md)
 - **Local Simulation Workspace Guide**: [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md)
-- **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
-- **Presentation & Oral Defense Guide**: [`Project.MM/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/PRESENTATION_GUIDE.md)
+- **Team Presentation Bridge v2 (Rapid 3-Minute Script & Demo Guide)**: [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)
+- **Team Presentation Bridge v1 (10-Minute Script & Speaker Roles)**: [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)
+- **Presentation & Oral Defense Guide**: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)
 - **Cloud vs. VS Code vs. Physical Hardware**: [`Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md)
 - **Cloud Simulation Workspace Guide**: [`Project.MM/CloudConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig/README.md)
 - **Setup & Dependencies**: [`Project.MM/LocalConfig/setup/SETUP_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup/SETUP_GUIDE.md)

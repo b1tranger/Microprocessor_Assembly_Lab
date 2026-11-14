@@ -152,7 +152,7 @@ Automated setup and offline installation scripts:
 - **[`setup/SETUP_GUIDE.md`](setup/SETUP_GUIDE.md)**: In-depth offline installation and troubleshooting documentation.
 
 > [!TIP]
-> For a complete project show walkthrough, oral defense script, and architectural Q&A, refer to the **[Presentation Guide](../PRESENTATION_GUIDE.md)**.
+> For a complete project show walkthrough, oral defense script, and architectural Q&A, refer to the **[Presentation Guide](../Presentation/PRESENTATION_GUIDE.md)** and **[Presentation Bridge](../Presentation/v2_presentationBridge.md)**.
 
 ---
 

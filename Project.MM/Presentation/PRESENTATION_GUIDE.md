@@ -1,7 +1,8 @@
 # Presentation Guide: ESP32 Embedded NAS & Static Web Node (Project.MM)
 
 > **Course**: CSE0611324 — Microprocessor & Microcontrollers Lab  
-> **Team Presentation Bridge (10-Minute Script & Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)  
+> **Team Presentation Bridge v2 (Rapid 3-Minute Script & Demo)**: [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)  
+> **Team Presentation Bridge v1 (10-Minute Script & Roles)**: [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)  
 > **Local Workspace**: [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)  
 > **Cloud Workspace**: [`Project.MM/CloudConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)  
 > **Simulation Engine**: Wokwi Simulator & Wokwi IoT Gateway (`wokwigw`)  
@@ -1084,7 +1085,8 @@ Follow this script during your final project show for a confident, seamless pres
 
 ## 10. Summary & Quick Links
 
-- **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
+- **Team Presentation Bridge v2 (Rapid 3-Minute Script & Demo)**: [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)
+- **Team Presentation Bridge v1 (10-Minute Script & Speaker Roles)**: [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)
 - **Local Workspace**: [`Project.MM/LocalConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)
 - **Cloud Workspace**: [`Project.MM/CloudConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)
 - **Local Circuit Schematic**: [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json)

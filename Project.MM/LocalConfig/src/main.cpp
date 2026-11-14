@@ -215,8 +215,9 @@ void collectFilesRecursively(File dir, std::vector<StorageItem> &items,
   }
 }
 
-// High-performance streaming of SD card files to client in 1024-byte block chunks.
-// Eliminates WebServer::streamFile() CPU byte-by-byte bottlenecks and socket deadlocks.
+// High-performance streaming of SD card files to client in 2048-byte block
+// chunks. Eliminates WebServer::streamFile() CPU byte-by-byte bottlenecks and
+// socket deadlocks.
 static void streamSDFile(File &file, const String &contentType,
                          bool isAttachment = false,
                          const String &downloadFilename = "") {
@@ -226,13 +227,12 @@ static void streamSDFile(File &file, const String &contentType,
     server.sendHeader("Connection", "close");
     server.send(404, "text/plain", "File Not Found");
     WiFiClient client = server.client();
-    client.flush();
     client.stop();
     return;
   }
 
   size_t totalSize = file.size();
-  file.setBufferSize(1024);
+  file.setBufferSize(2048);
 
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server.sendHeader("Pragma", "no-cache");
@@ -247,8 +247,12 @@ static void streamSDFile(File &file, const String &contentType,
   server.send(200, contentType, "");
 
   WiFiClient client = server.client();
-  uint8_t buffer[1024];
+  client.setNoDelay(
+      true); // Disable Nagle's algorithm for immediate packet dispatch
+
+  uint8_t buffer[2048];
   size_t remaining = totalSize;
+  size_t chunkCount = 0;
 
   while (client.connected() && remaining > 0) {
     size_t toRead = (remaining > sizeof(buffer)) ? sizeof(buffer) : remaining;
@@ -261,12 +265,20 @@ static void streamSDFile(File &file, const String &contentType,
       break;
     }
     remaining -= nWritten;
-    vTaskDelay(1);
+    chunkCount++;
+
+    // Cooperative yield: taskYIELD() services lwIP network stack without 10ms
+    // sleep penalty. Full tick delay only once every 8 chunks (16 KB) to feed
+    // FreeRTOS watchdog.
+    if ((chunkCount & 0x07) == 0) {
+      vTaskDelay(1);
+    } else {
+      taskYIELD();
+    }
   }
 
   file.close();
-  client.flush();
-  client.stop();
+  client.stop(); // Immediate TCP teardown prevents socket backlog buildup
 }
 
 // Route: NAS Dashboard (Streams /www/fileserver.html directly from MicroSD
@@ -442,9 +454,9 @@ void handleFileUpload() {
       uploadFile.flush();
       size_t finalFileSize = uploadFile.size();
       uploadFile.close();
-      Serial.printf("[UPLOAD SUCCESS] Path: %s | Network: %u bytes | SD Committed: %u bytes | File Size: %u bytes\r\n",
-                    currentUploadTarget.c_str(),
-                    (unsigned int)upload.totalSize,
+      Serial.printf("[UPLOAD SUCCESS] Path: %s | Network: %u bytes | SD "
+                    "Committed: %u bytes | File Size: %u bytes\r\n",
+                    currentUploadTarget.c_str(), (unsigned int)upload.totalSize,
                     (unsigned int)uploadFileWrittenBytes,
                     (unsigned int)finalFileSize);
     }
@@ -630,8 +642,8 @@ void handleDownload() {
   String dlName =
       (lastSlash >= 0) ? resolvedPath.substring(lastSlash + 1) : resolvedPath;
 
-  Serial.printf("[DOWNLOAD] Streaming: %s (%u bytes)\r\n",
-                resolvedPath.c_str(), (unsigned int)downloadFile.size());
+  Serial.printf("[DOWNLOAD] Streaming: %s (%u bytes)\r\n", resolvedPath.c_str(),
+                (unsigned int)downloadFile.size());
 
   streamSDFile(downloadFile, "application/octet-stream", true, dlName);
 }
@@ -807,7 +819,8 @@ void setup() {
       },
       handleFileUpload);
 
-  // Catch unhandled endpoints (e.g. browser favicon.ico probes) to prevent socket starvation
+  // Catch unhandled endpoints (e.g. browser favicon.ico probes) to prevent
+  // socket starvation
   server.onNotFound([]() {
     server.sendHeader("Connection", "close");
     server.send(404, "text/plain", "Not Found");

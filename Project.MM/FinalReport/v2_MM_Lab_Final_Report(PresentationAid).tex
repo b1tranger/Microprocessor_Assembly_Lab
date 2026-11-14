@@ -7,21 +7,6 @@
 \usepackage{booktabs}
 \usepackage{listings}
 
-% Make Abstract, Index Terms, Section, and Subsection headings Bold
-\renewcommand{\abstractname}{\textbf{ABSTRACT}}
-\renewcommand{\IEEEkeywordsname}{\textbf{Index Terms}}
-
-\makeatletter
-\renewcommand\section{\@startsection{section}{1}{\z@}%
-  {1.5ex plus 1.5ex minus 0.5ex}%
-  {0.7ex plus 0.5ex minus 0.2ex}%
-  {\normalfont\normalsize\bfseries\centering}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {1.2ex plus 1.0ex minus 0.2ex}%
-  {0.5ex plus 0.2ex}%
-  {\normalfont\normalsize\bfseries}}
-\makeatother
-
 \definecolor{codebg}{RGB}{245, 245, 245}
 \lstset{
     backgroundcolor=\color{codebg},
@@ -36,80 +21,76 @@
 \begin{document}
 
 \title{Microprocessor-Controlled Embedded NAS \& Static Web Hosting Node\\
-{\footnotesize \textsuperscript{*}Course Project Report: CSE0611324 -- Microprocessors, Microcontrollers and Assembly Language Lab}}
+{\footnotesize \textsuperscript{*}Course Project Proposal: CSE0611324 -- Microprocessors, Microcontrollers and Assembly Language Lab}}
 
 \author{
 \IEEEauthorblockN{Jannatul Ferdus}
 \IEEEauthorblockA{\textit{Dept. of Computer Science \& Engineering} \\
 \textit{University of Information Technology and Sciences (UITS)}\\
-Dhaka, Bangladesh \\
+City, Bangladesh \\
 0432410005101058}
 \and
 \IEEEauthorblockN{Gaus Saraf Murady}
 \IEEEauthorblockA{\textit{Dept. of Computer Science \& Engineering} \\
 \textit{University of Information Technology and Sciences (UITS)}\\
-Dhaka, Bangladesh \\
+City, Bangladesh \\
 0432410005101088}
 \and
 \IEEEauthorblockN{Sadia Islam}
 \IEEEauthorblockA{\textit{Dept. of Computer Science \& Engineering} \\
 \textit{University of Information Technology and Sciences (UITS)}\\
-Dhaka, Bangladesh \\
+City, Bangladesh \\
 0432410005101096}
 }
 
 \maketitle
 
 \begin{abstract}
-Conventional Network Attached Storage (NAS) devices and web servers typically depend on full operating systems and power-hungry single-board computers or x86 processors. In this project, we implement a compact, low-power micro-NAS and static web server built around the ESP32-WROOM-32 microcontroller. Using FreeRTOS task separation, the hardware VSPI bus, and chunked HTTP streaming, the node operates as a local wireless file server capable of handling multipart file uploads, binary downloads, live storage telemetry, and static HTML/CSS web hosting without external cloud dependencies.
+Traditional Network Attached Storage (NAS) units and web hosting servers rely on high-power application processors, which consume substantial energy and require complex operating systems. This project designs a low-power, solid-state micro-NAS and web server node built around the ESP32 microcontroller. Utilizing FreeRTOS, a dedicated hardware SPI/SDMMC interface, and asynchronous TCP handling, the system functions as a localized wireless file storage server capable of hosting static web pages, client-side Single-Page Applications (SPAs), and sensor dashboards.
 \end{abstract}
 
 \begin{IEEEkeywords}
-ESP32, Embedded Systems, FreeRTOS, Micro-NAS, VSPI, FAT32, Web Server.
+ESP32, Embedded Systems, FreeRTOS, Micro-NAS, IoT, Web Hosting.
 \end{IEEEkeywords}
 
-\section{\textbf{Introduction}}
-Local data sharing and lightweight web hosting in embedded and field environments often do not justify the power draw or hardware cost of full Linux-based systems such as a Raspberry Pi, which typically consumes between 3 and 7 Watts under load. By comparison, an ESP32 microcontroller costs roughly \$4 and runs below 1 Watt while offering dual-core processing and integrated 802.11 b/g/n Wi-Fi.
+\section{Introduction}
+Embedded systems and the Internet of Things (IoT) demand lightweight, energy-efficient data management alternatives. Conventional Network Attached Storage (NAS) units and web hosting servers rely on power-hungry single-board computers (such as Raspberry Pi) or x86 servers drawing 15 to 60 Watts. This project demonstrates that an ultra-low-cost (\$4), low-power ($<1$ Watt) ESP32 dual-core microcontroller can autonomously function as an air-gapped, zero-trust edge NAS and static web host. By interfacing a FAT32 MicroSD card over the hardware SPI bus, our firmware delivers multipart file uploads, chunked downloads, dynamic file deletion, real-time storage telemetry, and static HTML5 website hosting directly to desktop and mobile browsers via a localized network bridge.
 
-In this work, we develop an embedded NAS and static website host on the ESP32 platform, validated using PlatformIO and a local Wokwi hardware simulation bridged to physical network interfaces via `wokwigw`. By interfacing a FAT32-formatted MicroSD card over the dedicated VSPI bus, our firmware supports browser-based file uploads, direct binary downloads, protected system directories, and static webpage delivery across local Wi-Fi and Ethernet networks without requiring client-side software installation.
+\section{Project Overview \& Objectives}
 
-\section{\textbf{Project Overview \& Objectives}}
+\subsection{Problem Statement \& Solution}
+The system targets low-power edge computing. By leveraging the dual-core Xtensa architecture of the ESP32, Core 0 manages the Wi-Fi/TCP stack (LwIP) while Core 1 handles file system operations via FreeRTOS. This task partitioning prevents network timeouts during SD card read and write loops.
 
-\subsection{\textbf{Problem Statement \& Solution}}
-Microcontrollers have strict memory limits—specifically 520 KB of internal SRAM on the ESP32, with roughly 320 KB available for the dynamic heap. Buffering entire multi-megabyte files in RAM during HTTP transfers causes immediate heap exhaustion and system resets. Additionally, blocking SD card block writes can stall network packet handling.
-
-To solve both issues, our design separates network protocol handling on Core 0 from HTTP request routing and SD sector I/O on Core 1 via FreeRTOS. For file transfers, incoming multipart TCP payloads are accumulated into a fixed 4,096-byte sector-aligned RAM buffer before being flushed to the FAT32 card, keeping runtime memory overhead constant regardless of file size.
-
-\subsection{\textbf{Core Objectives}}
+\subsection{Core Objectives}
 \begin{itemize}
-    \item Build a localized, browser-accessible file storage system on an ESP32 microcontroller using the hardware VSPI interface.
-    \item Develop a responsive web dashboard with live storage metrics, recursive file listing (`/api/files`), and write-protection for system assets.
-    \item Support dual-mode operation: serving binary file downloads alongside static HTML5/CSS/JS web pages from the `/www/` directory.
-    \item Verify system stability, memory usage, and multi-device LAN accessibility across both simulated and physical network bridges.
+    \item Implement a wireless, localized file storage architecture on an embedded platform.
+    \item Design an intuitive HTTP dashboard for file manipulation (directory structure, downloading files, free/used storage metrics).
+    \item Enable dual-purpose functionality: serving file streams alongside static web assets (HTML5/CSS/JavaScript).
+    \item Evaluate system throughput, memory footprints, and architectural constraints.
 \end{itemize}
 
-\section{\textbf{System Architecture \& Working Principle}}
+\section{System Architecture \& Working Principle}
 
-\subsection{\textbf{Key Components \& Specifications}}
-The system combines hardware peripherals and firmware modules tuned for constrained SRAM environments:
+\subsection{Key Components \& Specifications}
+The system architecture integrates hardware modules and software subsystems designed for maximum efficiency under constrained memory resources:
 \begin{itemize}
-    \item \textbf{Microcontroller:} ESP32-WROOM-32 (Xtensa Dual-Core 32-bit LX6 microprocessor at 240 MHz, 520 KB SRAM, and 4 MB SPI Flash).
-    \item \textbf{Storage Subsystem:} MicroSD card module formatted in FAT32, connected to the VSPI hardware peripheral (GPIO 5, 18, 19, 23) and clocked at 4 MHz for reliable block-write timing.
-    \item \textbf{Network Subsystem:} Integrated 2.4 GHz Wi-Fi radio running the LwIP TCP/IP stack and the native Arduino-ESP32 `WebServer` on port 80, bridged to host LAN/hotspot interfaces on port 9080 during simulation.
-    \item \textbf{Firmware Memory Management:} Default web interfaces (`/www/fileserver.html`, `/www/index.html`) and sample reports are converted at build time into `PROGMEM` byte arrays (`default_assets.h`) and streamed via `FPSTR()` directly from Flash ROM.
+    \item \textbf{Microcontroller:} ESP32-WROOM-32 featuring an Xtensa Dual-Core 32-bit LX6 microprocessor operating at 240 MHz with 520 KB internal SRAM.
+    \item \textbf{Storage Subsystem:} MicroSD card module formatted with FAT32, interfaced via the dedicated VSPI hardware peripheral (GPIO 5, 18, 19, 23).
+    \item \textbf{Network Subsystem:} On-chip 2.4 GHz 802.11 b/g/n Wi-Fi transceiver running an asynchronous LwIP TCP/IP stack and ESPAsyncWebServer daemon.
+    \item \textbf{Firmware Memory Management:} HTML UI templates optimized via PROGMEM and FPSTR strings to stream directly from flash ROM, preserving internal SRAM heap.
 \end{itemize}
 
-\subsection{\textbf{Working Method \& Execution Flow}}
-The firmware executes through a two-phase initialization and runtime sequence:
+\subsection{Working Method \& Execution Flow}
+The system operates through a dual-phase execution pipeline:
 \begin{enumerate}
-    \item \textbf{Phase 1 (Storage Initialization \& Seeding):} The firmware explicitly binds the VSPI pins (`SPI.begin(18, 19, 23, 5)`) and mounts the FAT32 volume. It verifies or creates `/default`, `/www`, and `/uploads`, calculates total and used storage (`SD.totalBytes()` and `SD.usedBytes()`), and seeds default assets from Flash ROM if they are missing.
-    \item \textbf{Phase 2 (Network \& HTTP Service):} After associating with the Wi-Fi access point, the node binds REST and static routes (`/`, `/site`, `/api/files`, `/get`, `/upload`, `/delete`) and starts listening on port 80. A FreeRTOS diagnostic task (`xTaskCreatePinnedToCore`) runs stream-drained loopback checks on Core 1 to verify endpoint health without leaking open sockets.
+    \item \textbf{Phase 1 (Storage Boot):} The firmware explicitly binds the VSPI bus (`SPI.begin(18, 19, 23, 5)`) and mounts the FAT32 filesystem. It computes storage capacity metrics (`SD.totalBytes()` and `SD.usedBytes()`) and dynamically seeds default assets including `/www/index.html` and `/lab_report.txt`.
+    \item \textbf{Phase 2 (Network & Web Server Boot):} The node connects to Wi-Fi, binds REST endpoints (`/`, `/site`, `/get`, `/upload`, `/delete`), and starts the asynchronous web server daemon on port 80. Concurrently, a FreeRTOS diagnostic worker (`xTaskCreatePinnedToCore`) runs asynchronous loopback validations on Core 1.
 \end{enumerate}
 
-\section{\textbf{Implementation Procedures}}
+\section{Implementation Procedures}
 
-\subsection{\textbf{Circuit Setup \& Interface Pinout}}
-The MicroSD breakout board connects directly to the ESP32 hardware VSPI pins as listed in Table~\ref{tab:pinout}.
+\subsection{Circuit Setup \& Interface Pinout}
+The MicroSD module connects to the hardware VSPI bus as detailed in Table I.
 
 \begin{table}[htbp]
 \caption{ESP32 to MicroSD Module Pinout}
@@ -118,37 +99,33 @@ The MicroSD breakout board connects directly to the ESP32 hardware VSPI pins as 
 \toprule
 \textbf{ESP32 Pin} & \textbf{SD Module} & \textbf{Function} & \textbf{Description} \\
 \midrule
-3V3 & VCC & Power & Regulated 3.3V Supply \\
-GND & GND & Ground & Common Ground Reference \\
-GPIO 5 & CS & Chip Select & Active-Low SPI Slave Select \\
+3V3 & VCC & Power & Supply (3.3V) \\
+GND & GND & Ground & Common Ground \\
+GPIO 5 & CS & Chip Select & SPI Slave Select \\
 GPIO 23 & MOSI/DI & Data Input & Master Out, Slave In \\
 GPIO 19 & MISO/DO & Data Output & Master In, Slave Out \\
-GPIO 18 & SCK/CLK & Clock & SPI Synchronization Clock \\
+GPIO 18 & SCK/CLK & Clock & SPI Sync Clock \\
 \bottomrule
 \end{tabular}
 \label{tab:pinout}
 \end{center}
 \end{table}
 
-\subsection{\textbf{Firmware Implementation}}
-The firmware routes HTTP requests and streams files in 4 KB sector-aligned blocks using the core setup shown below:
+\subsection{Firmware Implementation}
+The asynchronous web server multiplexes requests using the following core routing structure:
 
 \begin{lstlisting}
 #include <WiFi.h>
-#include <WebServer.h>
+#include <ESPAsyncWebServer.h>
 #include <SPI.h>
 #include <SD.h>
 
 #define SD_CS_PIN 5
-#define UPLOAD_BUF_SIZE 4096
-
-WebServer server(80);
-static uint8_t uploadWriteBuffer[UPLOAD_BUF_SIZE];
+AsyncWebServer server(80);
 
 void setup() {
     Serial.begin(115200);
-    SPI.begin(18, 19, 23, SD_CS_PIN);
-    if (!SD.begin(SD_CS_PIN, SPI, 4000000)) {
+    if (!SD.begin(SD_CS_PIN)) {
         Serial.println("[ERROR] SD Init Failed");
         return;
     }
@@ -156,51 +133,43 @@ void setup() {
     while (WiFi.status() != WL_CONNECTED) {
         delay(200);
     }
-    server.on("/", HTTP_GET, handleRoot);
-    server.on("/site", HTTP_GET, handleSite);
-    server.on("/api/files", HTTP_GET, handleApiFiles);
-    server.on("/get", HTTP_GET, handleDownload);
-    server.on("/upload", HTTP_POST, handleUploadComplete, handleFileUpload);
-    server.on("/delete", HTTP_GET, handleDelete);
+    server.serveStatic("/site", SD, "/www/").setDefaultFile("index.html");
     server.begin();
 }
 
 void loop() {
-    server.handleClient();
+    // Asynchronous background handling on Core 0
 }
 \end{lstlisting}
 
-\section{\textbf{Project Scope and Limitations}}
+\section{Project Scope and Limitations}
 
-\subsection{\textbf{Electrical Stability \& Memory Constraints}}
-On physical hardware, MicroSD flash page writes can draw transient current spikes up to 200 mA. Combined with Wi-Fi transmission bursts, peak current demand can exceed 500 mA, which may trigger brownout resets if powered over weak USB cables. Placing a 10 $\mu$F electrolytic capacitor and a 0.1 $\mu$F ceramic decoupling capacitor across VCC and GND stabilizes the 3.3V rail. On the software side, keeping HTTP headers and TCP buffers active leaves roughly 250--300 KB of usable heap, limiting practical concurrency to 4--8 simultaneous browser clients. Additionally, unencrypted HTTP is used rather than HTTPS because TLS handshakes consume roughly 45 KB of heap per session and cannot use trusted public certificates on local private IP subnets.
+\subsection{Electrical Stability \& Memory Constraints}
+MicroSD flash page write cycles trigger current spikes up to 200 mA, which combined with Wi-Fi bursts can exceed 500 mA peak draw. A 10 $\mu$F electrolytic capacitor combined with a 0.1 $\mu$F ceramic capacitor across VCC and GND prevents brownout reboots. Furthermore, usable heap after loading TCP buffers drops to roughly 250--300 KB, restricting concurrency to 4--8 simultaneous clients.
 
-\subsection{\textbf{Simulation vs. Physical Hardware Comparison}}
-Table~\ref{tab:comparison} summarizes the practical differences observed between our local Wokwi simulation workspace and physical ESP32 hardware deployment.
-
+\subsection{Simulation vs. Physical Constraints}
 \begin{table}[htbp]
 \caption{Simulation vs. Physical Environment Comparison}
 \begin{center}
-\begin{tabular}{p{2.0cm} p{2.8cm} p{2.8cm}}
+\begin{tabular}{p{2.2cm} p{2.7cm} p{2.7cm}}
 \toprule
-\textbf{Parameter} & \textbf{Wokwi Local Simulation} & \textbf{Physical Hardware} \\
+\textbf{Parameter} & \textbf{Wokwi Simulation} & \textbf{Physical Hardware} \\
 \midrule
-Storage Medium & Host-synced virtual FAT32 volume capped at 256 MB (`writeback = true`). & Physical MicroSD card (4 GB--32 GB) with real flash wear and sector latency. \\
-Network Access & Routed via `wokwigw` bridge (`0.0.0.0:9080` $\rightarrow$ `10.13.37.2:80`). & Direct 2.4 GHz Wi-Fi router association or standalone SoftAP (`192.168.4.1`). \\
-SPI Clocking & Clocked at 4 MHz to avoid virtual bus timing errors during block writes. & Supports 4 MHz--25 MHz depending on jumper wire length and capacitance. \\
+Storage & Browser-backed emulated block device. & Physical flash card with sector wear and latency. \\
+USB Host & Cannot emulate external USB hard drives. & Requires ESP32-S3 or dedicated controller IC. \\
+Signal Noise & Zero line capacitance or cross-talk. & High-frequency SPI lines prone to ground bounce. \\
 \bottomrule
 \end{tabular}
 \label{tab:comparison}
 \end{center}
 \end{table}
 
-\section{\textbf{Conclusion}}
-This project demonstrates that an ESP32 microcontroller can reliably serve as an energy-efficient, zero-install edge NAS and static web host. By pairing FreeRTOS dual-core task isolation with 4 KB sector-aligned upload buffering, `PROGMEM` asset storage, and write-protected system directories, the firmware avoids heap exhaustion while maintaining responsive file transfers across desktop and mobile browsers. In off-grid deployments, switching the Wi-Fi driver to SoftAP mode allows the node to operate as a self-contained wireless file hub without an external router or host computer.
+\section{Conclusion}
+This project successfully establishes that high-performance edge storage and static web hosting do not require expensive, power-intensive operating systems. By combining the ESP32 dual-core Xtensa architecture, FreeRTOS task partitioning, streaming chunked upload parsers, and hardware SPI FAT32 integration, the system achieves an optimal balance between low power consumption ($<1$W), high concurrency, and robust file management. Future extensions can incorporate secure authentication layers and multi-sensor telemetry logging for remote, off-grid deployments.
 
 \begin{thebibliography}{00}
-\bibitem{b1} Espressif Systems, \textit{ESP32 Technical Reference Manual}, v4.9, 2023.
-\bibitem{b2} R. Barry, \textit{Mastering the FreeRTOS Real Time Kernel: A Hands-On Tutorial Guide}, Real Time Engineers Ltd., 2016.
-\bibitem{b3} SD Association, \textit{SD Specifications Part 1: Physical Layer Simplified Specification}, Version 8.00, 2020.
+\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' \textit{Phil. Trans. Roy. Soc. London}, vol. A247, pp. 529--551, Apr. 1955.
+\bibitem{b2} Espressif Systems, \textit{ESP32 Technical Reference Manual}, v4.4, 2022.
 \end{thebibliography}
 
 \end{document}
