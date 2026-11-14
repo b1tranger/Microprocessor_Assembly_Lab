@@ -5,122 +5,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ESP32 Static Edge Host</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-main: #0c0d11;
+      --bg-card: #13151b;
+      --bg-sub: #181b22;
+      --border-color: #272b35;
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      border-radius: 0 !important;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #10121a, #08090d 90%);
-      color: #e2e8f0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      -webkit-font-smoothing: antialiased;
     }
 
     .card {
       max-width: 680px;
       width: 100%;
-      background: rgba(20, 24, 38, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       padding: 40px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      text-align: left;
     }
 
-    .badge {
+    .tag {
       display: inline-block;
-      padding: 6px 14px;
-      background: rgba(0, 210, 255, 0.12);
-      border: 1px solid rgba(0, 210, 255, 0.3);
-      color: #00d2ff;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      padding: 4px 10px;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      color: var(--accent);
+      font-size: 0.75rem;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       margin-bottom: 20px;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.85rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-main);
       margin-bottom: 12px;
+      letter-spacing: -0.02em;
     }
 
     p.lead {
-      color: #94a3b8;
-      font-size: 1rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+      line-height: 1.65;
     }
 
     .specs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
       margin-bottom: 32px;
-      text-align: left;
     }
 
     .spec-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 16px;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
     }
 
     .spec-label {
-      font-size: 0.75rem;
-      color: #64748b;
+      font-size: 0.7rem;
+      color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
 
     .spec-val {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
-      color: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .btn {
-      display: inline-block;
-      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
       text-decoration: none;
-      padding: 12px 28px;
-      border-radius: 10px;
+      padding: 10px 22px;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: transform 0.1s, opacity 0.2s;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      cursor: pointer;
     }
 
     .btn:hover {
-      opacity: 0.9;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
+      background: var(--accent);
+      color: #0c0d11;
     }
   </style>
 </head>
 
 <body>
   <div class="card">
-    <span class="badge">ESP32 Static Edge Host</span>
+    <div class="tag">STATIC EDGE NODE</div>
     <h1>Hosted on MicroSD Storage</h1>
     <p class="lead">
-      This static web document is stored as raw blocks on the virtual FAT32 MicroSD card and streamed directly to your
+      This static web document is stored as raw sectors on the virtual FAT32 MicroSD card and streamed directly to your
       browser over hardware SPI.
     </p>
     <div class="specs-grid">
@@ -141,7 +162,9 @@
         <div class="spec-val">ESP32 WebServer:80</div>
       </div>
     </div>
-    <a href="/" class="btn">📂 Go to NAS File Browser</a>
+    <div class="btn-group">
+      <a href="fileserver.html" class="btn">📂 Go to NAS File Browser</a>
+    </div>
   </div>
 </body>
 

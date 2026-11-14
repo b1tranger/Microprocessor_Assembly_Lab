@@ -62,13 +62,6 @@ def generate_header():
                     "data": content
                 })
                 asset_index += 1
-                "var_name": var_name,
-                "sd_path": sd_path,
-                "is_protected": is_protected,
-                "size": len(content),
-                "data": content
-            })
-            asset_index += 1
 
     lines = []
     lines.append("// ============================================================================")

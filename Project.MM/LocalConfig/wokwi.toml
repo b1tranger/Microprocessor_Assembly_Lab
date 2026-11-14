@@ -9,5 +9,5 @@ gateway = "ws://localhost:9011"
 [[sdcard]]
 part = "sd1"
 folder = "data/network"
-size = "1G"
+size = "256M"
 writeback = true

@@ -101,10 +101,10 @@ gateway = "ws://localhost:9011"
 [[sdcard]]
 part = "sd1"
 folder = "data/network"
-size = "1G"
+size = "256M"
 writeback = true
 ```
-*(The `[[sdcard]]` block expands card capacity to **1 GB** and synchronizes all file operations directly with [`data/network/`](data/network/) on your host PC's SSD/HDD).*
+*(The `[[sdcard]]` block expands card capacity to **256 MB** (Wokwi's maximum simulated SD card limit) and synchronizes all file operations directly with [`data/network/`](data/network/) on your host PC's SSD/HDD).*
 
 ### 3. `diagram.json`
 Specifies virtual hardware and hardware SPI wiring (using Wokwi `D`-prefixed silkscreen pin names):

@@ -24,3 +24,4 @@ Wokwi-Offline-Environment/
 # PlatformIO local build cache & artifacts
 Project.MM/LocalConfig/.pio/
 platformio_cache.zip
+/Project.MM/setup/PlatformIO_Espressif_Offline_Installer/.platformio

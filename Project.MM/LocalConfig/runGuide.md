@@ -456,11 +456,11 @@ By default, Wokwi creates an ephemeral in-memory FAT16 virtual card capped at 8 
    [[sdcard]]
    part = "sd1"
    folder = "data/network"
-   size = "1G"
+   size = "256M"
    writeback = true
    ```
 2. **Key Capabilities Enabled**:
-   * **1,024 MB (1 GB) Real Capacity**: The storage limit is expanded from 8 MB to 1 GB, removing capacity constraints for documents, PDFs, and laboratory archives.
+   * **256 MB Real Capacity**: The storage limit is expanded from the 8 MB default to 256 MB (Wokwi's maximum simulated SD card limit), providing ample capacity for documents, PDFs, and laboratory archives.
    * **Live Bi-Directional Host Sync (`writeback = true`)**:
      - Files uploaded by clients through the web interface are saved into `/uploads/` and written directly back to [`data/network/uploads/`](data/network/) on your host computer's SSD.
      - Files deleted via the web interface are deleted from [`data/network/`](data/network/) on the host PC.

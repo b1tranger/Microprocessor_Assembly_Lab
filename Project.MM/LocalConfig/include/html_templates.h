@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 // ============================================================================
-// Modern Glassmorphic Dark UI for ESP32 NAS Dashboard
+// Minimalist Dark UI for ESP32 NAS Dashboard (Sharp Industrial Geometry)
 // ============================================================================
 const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
@@ -12,134 +12,132 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32 Cloud NAS & Web Node</title>
+  <title>ESP32 Cloud NAS & Storage Node</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient: radial-gradient(circle at top left, #1a1c29, #0e1017 80%);
-      --card-bg: rgba(26, 29, 45, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --accent-cyan: #00d2ff;
-      --accent-blue: #3a7bd5;
-      --accent-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-      --danger-gradient: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-      --success-color: #00e676;
-      --text-main: #f0f4f8;
+      --bg-main: #0c0d11;
+      --bg-card: #13151b;
+      --bg-sub: #181b22;
+      --border-color: #272b35;
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
       --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg-gradient);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-main);
       color: var(--text-main);
       min-height: 100vh;
       padding: 30px 20px;
+      -webkit-font-smoothing: antialiased;
     }
     .container {
       max-width: 900px;
       margin: 0 auto;
     }
     .header-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 24px 28px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
     .title-group h1 {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 700;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
       margin-bottom: 4px;
     }
     .title-group p {
       color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    .badge-online {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 230, 118, 0.12);
-      color: var(--success-color);
-      border: 1px solid rgba(0, 230, 118, 0.3);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .badge-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--success-color);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--success-color);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
     }
     .btn-site {
       text-decoration: none;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--accent-cyan);
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
       padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: all 0.2s;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .btn-site:hover {
-      background: rgba(0, 210, 255, 0.1);
-      border-color: var(--accent-cyan);
+      background: var(--accent);
+      color: var(--bg-main);
     }
     .meter-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       padding: 20px 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
     }
     .meter-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+    .meter-title {
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+    .meter-stats {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      color: var(--accent);
+      font-weight: 600;
     }
     .progress-bar-bg {
-      background: rgba(255, 255, 255, 0.08);
-      height: 12px;
-      border-radius: 6px;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      height: 10px;
       overflow: hidden;
       position: relative;
     }
     .progress-bar-fill {
       height: 100%;
-      background: var(--accent-gradient);
-      border-radius: 6px;
+      background: var(--accent);
       transition: width 0.4s ease;
     }
     .upload-box {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 2px dashed rgba(0, 210, 255, 0.3);
-      border-radius: 16px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-color);
       padding: 24px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       text-align: center;
-      transition: all 0.2s ease;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
     }
     .upload-box:hover {
-      border-color: var(--accent-cyan);
-      background: rgba(0, 210, 255, 0.03);
+      border-color: var(--border-focus);
+      background: var(--bg-sub);
     }
     .upload-form {
       display: flex;
@@ -150,41 +148,47 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
     }
     input[type="file"] {
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
     input[type="file"]::file-selector-button {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--card-border);
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
       color: var(--text-main);
       padding: 8px 16px;
-      border-radius: 8px;
       cursor: pointer;
       font-weight: 500;
-      transition: all 0.2s;
+      font-size: 0.82rem;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      margin-right: 12px;
     }
     input[type="file"]::file-selector-button:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: #242936;
+      border-color: var(--accent);
     }
     .btn-upload {
-      background: var(--accent-gradient);
-      color: #fff;
-      border: none;
-      padding: 9px 20px;
-      border-radius: 8px;
+      background: var(--accent);
+      color: var(--bg-main);
+      border: 1px solid var(--accent);
+      padding: 8px 20px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: transform 0.1s, opacity 0.2s;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
     }
-    .btn-upload:hover { opacity: 0.9; }
-    .btn-upload:active { transform: scale(0.98); }
+    .btn-upload:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+    .btn-upload:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .table-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
     }
     table {
       width: 100%;
@@ -192,81 +196,212 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
       text-align: left;
     }
     th {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 14px 18px;
-      font-size: 0.8rem;
+      background: var(--bg-sub);
+      padding: 12px 18px;
+      font-size: 0.72rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--card-border);
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border-color);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
     td {
-      padding: 14px 18px;
-      font-size: 0.9rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
     }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
     .btn-action {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
+      padding: 5px 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
       margin-right: 6px;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: nowrap;
+    }
+    .btn-action .btn-icon,
+    .badge-protected .btn-icon {
+      font-size: 0.82rem;
+      line-height: 1;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      font-size: 0.75rem;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+    .sync-badge:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      display: inline-block;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: 14px 10px;
+      }
+      .header-card {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .title-group h1 {
+        font-size: 1.18rem;
+      }
+      .title-group p {
+        font-size: 0.75rem;
+      }
+      .meter-card {
+        padding: 14px 16px;
+      }
+      .upload-box {
+        padding: 16px 12px;
+      }
+      .upload-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      input[type="file"] {
+        width: 100%;
+        font-size: 0.76rem;
+      }
+      input[type="file"]::file-selector-button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+        text-align: center;
+        padding: 10px;
+      }
+      .btn-upload {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.85rem;
+      }
+      th, td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+      }
+      th {
+        font-size: 0.68rem;
+      }
+      td:first-child {
+        word-break: break-word;
+        max-width: 160px;
+      }
+      .tag-folder {
+        display: inline-block;
+        margin-left: 0;
+        margin-top: 3px;
+        font-size: 0.68rem;
+      }
+      /* Mobile: Download & Delete buttons appear as icons only */
+      .btn-action {
+        padding: 6px 10px;
+        margin-right: 3px;
+        font-size: 0.85rem;
+      }
+      .btn-action .btn-text,
+      .badge-protected .btn-text {
+        display: none;
+      }
+      .btn-action .btn-icon,
+      .badge-protected .btn-icon {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .badge-protected {
+        padding: 6px 8px;
+      }
     }
     .btn-dl {
-      background: rgba(0, 210, 255, 0.1);
-      color: var(--accent-cyan);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
     }
     .btn-dl:hover {
-      background: var(--accent-gradient);
-      color: #fff;
+      background: var(--accent);
+      color: var(--bg-main);
     }
     .btn-del {
-      background: rgba(255, 75, 43, 0.1);
-      color: #ff5252;
-      border: 1px solid rgba(255, 75, 43, 0.2);
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
     }
     .btn-del:hover {
-      background: var(--danger-gradient);
+      background: var(--danger);
       color: #fff;
     }
     .badge-protected {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: rgba(148, 163, 184, 0.12);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 0.78rem;
-      font-weight: 500;
+      background: var(--bg-sub);
+      color: var(--text-dim);
+      border: 1px solid var(--border-color);
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.04em;
       user-select: none;
     }
     .tag-folder {
       display: inline-block;
       font-size: 0.72rem;
-      color: var(--accent-cyan);
-      background: rgba(0, 210, 255, 0.08);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      color: var(--text-muted);
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
       padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      font-family: monospace;
+      margin-left: 8px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
     .progress-box {
       display: none;
-      margin-top: 20px;
+      margin-top: 18px;
       padding: 16px;
-      background: rgba(14, 16, 23, 0.6);
-      border: 1px solid rgba(0, 210, 255, 0.25);
-      border-radius: 12px;
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
       text-align: left;
     }
     .progress-info {
@@ -274,20 +409,22 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
     .speed-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      color: var(--accent-cyan);
+      color: var(--accent);
       font-weight: 600;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
     .eta-badge {
       color: #fbbf24;
       font-weight: 500;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     }
   </style>
 </head>
@@ -296,10 +433,9 @@ const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
     <div class="header-card">
       <div class="title-group">
         <h1>ESP32 Storage NAS Node</h1>
-        <p>Hardware SPI FAT32 MicroSD Storage Engine</p>
+        <p>Hardware VSPI FAT32 MicroSD Storage Engine</p>
       </div>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <span class="badge-online"><span class="badge-dot"></span> Online</span>
+      <div>
         <a href="/site" class="btn-site">🌐 Static Site</a>
       </div>
     </div>
@@ -370,19 +506,19 @@ const char NAS_PAGE_FOOTER[] PROGMEM = R"rawliteral(
         if (xhr.status >= 200 && xhr.status < 400) {
           bar.style.width = '100%';
           pct.textContent = '100%';
-          name.innerHTML = '<strong style="color: #00e676;">✅ Upload Complete!</strong> Stored on host SSD/HDD.';
+          name.innerHTML = '<strong style="color: var(--success);">✅ Upload Complete!</strong> Stored on host SSD/HDD.';
           speed.innerHTML = '⚡ Complete';
           eta.textContent = '⏱ Done';
           setTimeout(function() { window.location.reload(); }, 1000);
         } else {
-          name.innerHTML = '<strong style="color: #ff5252;">❌ Upload Error (' + xhr.status + ')</strong>';
+          name.innerHTML = '<strong style="color: var(--danger);">❌ Upload Error (' + xhr.status + ')</strong>';
           btn.disabled = false;
           btn.style.opacity = '1';
         }
       };
 
       xhr.onerror = function() {
-        name.innerHTML = '<strong style="color: #ff5252;">❌ Network Transmission Failed</strong>';
+        name.innerHTML = '<strong style="color: var(--danger);">❌ Network Transmission Failed</strong>';
         btn.disabled = false;
         btn.style.opacity = '1';
       };

@@ -25,16 +25,19 @@
   - [4.1 Compilation Pipeline: From C++ to Flash Binary](#41-compilation-pipeline-from-c-to-flash-binary)
   - [4.2 Networking Bridge Architecture (Wokwi Gateway)](#42-networking-bridge-architecture-wokwi-gateway)
   - [4.3 Rapid Execution Sequence](#43-rapid-execution-sequence)
+  - [4.4 One-Click Build Refresh Automation (`refresh_firmware.bat` / `.ps1`)](#44-one-click-build-refresh-automation-refresh_firmwarebat--ps1)
 - [5. Firmware Architecture & Dual-Phase Implementation](#5-firmware-architecture--dual-phase-implementation)
   - [5.1 System Execution Flowchart](#51-system-execution-flowchart)
-  - [5.2 Phase 1: Storage Subsystem & Directory Seeding](#52-phase-1-storage-subsystem--directory-seeding)
-  - [5.3 Phase 2: Network Subsystem, REST Routing & FreeRTOS Telemetry](#53-phase-2-network-subsystem-rest-routing--freertos-telemetry)
+  - [5.2 Phase 1: Storage Subsystem, 4 MHz VSPI & Directory Seeding](#52-phase-1-storage-subsystem-4-mhz-vspi--directory-seeding)
+  - [5.3 Phase 2: Network Subsystem, REST Routing & Stream-Drained Diagnostics](#53-phase-2-network-subsystem-rest-routing--stream-drained-diagnostics)
 - [6. Deep-Dive Engineering Nuances & Design Decisions](#6-deep-dive-engineering-nuances--design-decisions)
-  - [6.1 Modular HTML Architecture (`include/html_templates.h`)](#61-modular-html-architecture-includehtml_templatesh)
+  - [6.1 Standalone Web Assets & Pre-Build Embedding (`data/www` & `default_assets.h`)](#61-standalone-web-assets--pre-build-embedding-datawww--default_assetsh)
   - [6.2 Dispelling the "Single File Flashing" Embedded Myth](#62-dispelling-the-single-file-flashing-embedded-myth)
   - [6.3 Flash Memory Management via `PROGMEM` and `FPSTR`](#63-flash-memory-management-via-progmem-and-fpstr)
-  - [6.4 Streaming Multipart File Upload (`handleFileUpload`)](#64-streaming-multipart-file-upload-handlefileupload)
-  - [6.5 Dual-Core FreeRTOS Multitasking](#65-dual-core-freertos-multitasking)
+  - [6.4 High-Throughput 4KB Sector-Aligned Multipart Upload & Abort Purging](#64-high-throughput-4kb-sector-aligned-multipart-upload--abort-purging)
+  - [6.5 Loopback Network Speed vs. Simulated SPI Storage Latency (The 100% Transition)](#65-loopback-network-speed-vs-simulated-spi-storage-latency-the-100-transition)
+  - [6.6 Dual-Core FreeRTOS Concurrency & Socket Resource Management](#66-dual-core-freertos-concurrency--socket-resource-management)
+  - [6.7 Minimalist Industrial UI Philosophy & Mobile-First Touch Targets](#67-minimalist-industrial-ui-philosophy--mobile-first-touch-targets)
 - [7. Tri-Platform Comparison & Real-World Hardware Blueprint](#7-tri-platform-comparison--real-world-hardware-blueprint)
   - [7.1 Tri-Platform Architectural Comparison Matrix](#71-tri-platform-architectural-comparison-matrix)
   - [7.2 The Wokwi Cloud Paywall & Free In-Simulation Loopback Solution](#72-the-wokwi-cloud-paywall--free-in-simulation-loopback-solution)
@@ -46,12 +49,13 @@
 - [8. Step-by-Step Live Demonstration Script](#8-step-by-step-live-demonstration-script)
   - [Step 1: Launch the Network Gateway](#step-1-launch-the-network-gateway)
   - [Step 2: Start the Wokwi Simulation](#step-2-start-the-wokwi-simulation)
-  - [Step 3: Tour the Modern NAS Dashboard](#step-3-tour-the-modern-nas-dashboard)
-  - [Step 4: Live File Upload](#step-4-live-file-upload)
+  - [Step 3: Tour the Minimalist Dark NAS Dashboard](#step-3-tour-the-minimalist-dark-nas-dashboard)
+  - [Step 4: Live File Upload with Real-Time Commit State](#step-4-live-file-upload-with-real-time-commit-state)
   - [Step 5: Live File Download](#step-5-live-file-download)
   - [Step 6: Static Web Server Showcase (`/site`)](#step-6-static-web-server-showcase-site)
-  - [Step 7: File Deletion with Dynamic Storage Reclaim](#step-7-file-deletion-with-dynamic-storage-reclaim)
+  - [Step 7: File Deletion with Dynamic Storage Reclaim & Protection](#step-7-file-deletion-with-dynamic-storage-reclaim--protection)
   - [Step 8: Bonus Showcase — Multi-Device & 2-Computer LAN Access (LocalSend Web Model)](#step-8-bonus-showcase--multi-device--2-computer-lan-access-localsend-web-model)
+  - [Step 9: Mobile Responsive Inspection (Icon-Only Actions)](#step-9-mobile-responsive-inspection-icon-only-actions)
 - [9. Evaluator Q&A Defense (Anticipated Questions & Rebuttals)](#9-evaluator-qa-defense-anticipated-questions--rebuttals)
   - [Q1: Why ESP32 instead of a Raspberry Pi?](#q1-why-esp32-instead-of-a-raspberry-pi)
   - [Q2: What happens if an uploaded file exceeds the ESP32 RAM?](#q2-what-happens-if-an-uploaded-file-exceeds-the-esp32-ram)
@@ -64,6 +68,11 @@
   - [Q9: How would this system operate in a field environment without an internet router?](#q9-how-would-this-system-operate-in-a-field-environment-without-an-internet-router)
   - [Q10: How does this system compare to LocalSend / LocalSend Web?](#q10-how-does-this-system-compare-to-localsend--localsend-web)
   - [Q11: How do you handle campus Wi-Fi AP/Client Isolation during a lab demonstration?](#q11-how-do-you-handle-campus-wi-fi-apclient-isolation-during-a-lab-demonstration)
+  - [Q12: Why is the dashboard styled with sharp geometry (border-radius: 0) and no animated status dot?](#q12-why-is-the-dashboard-styled-with-sharp-geometry-border-radius-0-and-no-animated-status-dot)
+  - [Q13: Why did uploads stay stuck at 100% for several seconds before completing?](#q13-why-did-uploads-stay-stuck-at-100-for-several-seconds-before-completing)
+  - [Q14: How does your firmware guarantee zero corrupted or 0-byte files if an upload is interrupted?](#q14-how-does-your-firmware-guarantee-zero-corrupted-or-0-byte-files-if-an-upload-is-interrupted)
+  - [Q15: Why is the SPI clock initialized to 4 MHz rather than 25 MHz or 40 MHz?](#q15-why-is-the-spi-clock-initialized-to-4-mhz-rather-than-25-mhz-or-40-mhz)
+  - [Q16: How does the asset generation pipeline allow web developers to modify HTML without editing C++ code?](#q16-how-does-the-asset-generation-pipeline-allow-web-developers-to-modify-html-without-editing-c-code)
 - [10. Summary & Quick Links](#10-summary--quick-links)
 
 ---
@@ -83,12 +92,12 @@
 | :--- | :--- |
 | **Microcontroller** | ESP32-WROOM-32 (Xtensa Dual-Core 32-bit LX6 @ 240 MHz) |
 | **Volatile RAM** | 520 KB Internal SRAM (320 KB accessible to user heap) |
-| **Firmware Flash** | 4 MB SPI Flash (Stores compiled code & UI templates via `PROGMEM`) |
-| **Peripheral Storage** | Virtual MicroSD Block Device formatted with FAT32 |
-| **Hardware Bus** | VSPI Hardware Peripheral (GPIO 18, 19, 23, 5) |
-| **Networking** | 802.11 b/g/n Wi-Fi + HTTP/1.1 REST Web Server |
-| **Concurrency** | FreeRTOS Multitasking (Core 0 network stack, Core 1 web server & diagnostics) |
-| **UI Aesthetics** | Glassmorphic Dark UI (`Inter` typography, CSS3 gradients, storage progress bar) |
+| **Firmware Flash** | 4 MB SPI Flash (Stores compiled code, assets & UI templates via `PROGMEM`) |
+| **Peripheral Storage** | Virtual MicroSD Block Device formatted with FAT32 (256 MB max capacity in Wokwi) |
+| **Hardware Bus** | VSPI Hardware Peripheral (GPIO 18, 19, 23, 5) clocked at reliable 4 MHz |
+| **Networking** | 802.11 b/g/n Wi-Fi + HTTP/1.1 REST Web Server + `/api/files` JSON Telemetry |
+| **Concurrency** | FreeRTOS Multitasking (Core 0 lwIP network stack, Core 1 WebServer & stream-drained diagnostics) |
+| **UI Aesthetics** | Minimalist Dark Theme (Matte `#0c0d11`, `border-radius: 0`, icon-only mobile actions, 10s auto-sync) |
 
 ---
 
@@ -102,24 +111,39 @@ Project.MM/
 ├── PRESENTATION_GUIDE.md       # (THIS FILE) The definitive presentation & oral defense guide
 ├── README.md                   # Project overview, architecture summary, and quick links
 │
-├── setup/                      # Toolchain, dependencies, and automated provisioning
-│   ├── SETUP_GUIDE.md          # Comprehensive setup & troubleshooting manual
-│   ├── install_dependencies.ps1# Automated script installing Python & PlatformIO Core
-│   ├── build_firmware.ps1      # Automated build script invoking platformio CLI
-│   ├── start_gateway.ps1       # Automated launcher for Wokwi IoT Gateway
-│   └── wokwigw.exe             # Standalone network gateway binary (WebSocket bridge)
-│
 ├── LocalConfig/                # The Active Local Workspace (Run interactive simulation here)
 │   ├── platformio.ini          # PlatformIO hardware & framework configuration
-│   ├── wokwi.toml              # Wokwi simulation descriptor & network gateway target
+│   ├── wokwi.toml              # Wokwi simulation descriptor & 256 MB virtual SD mount
 │   ├── diagram.json            # Circuit schematic, component positioning & SPI wiring
 │   ├── wokwigw.exe             # Gateway binary bundled inside workspace for self-containment
+│   ├── setup_firewall.bat      # One-click UAC auto-elevated Windows Firewall rule installer
+│   ├── refresh_firmware.bat    # Double-clickable Windows batch launcher to refresh & rebuild firmware
+│   ├── refresh_firmware.ps1    # Standalone PowerShell script syncing assets and compiling with PlatformIO
+│   ├── build_firmware.bat      # Root build launcher alias
+│   ├── runGuide.md             # Comprehensive execution, networking, and setup guide
 │   ├── README.md               # Workspace-specific operational guide
 │   ├── .gitignore              # Ignores .pio build outputs and cache
+│   ├── data/                   # Dedicated host folders for initial assets & virtual SD
+│   │   ├── default/            # Protected default assets (lab_report.txt, etc.)
+│   │   ├── www/                # Editable web UI assets (fileserver.html & index.html)
+│   │   └── network/            # Host folder mapped directly to simulated SD card (256 MB)
+│   │       ├── default/        # Seeded default files
+│   │       ├── www/            # Mirrored web server files served directly from SD
+│   │       └── uploads/        # Upload destination directory for user files
+│   ├── scripts/                # Asset compilation scripts
+│   │   ├── generate_assets.bat # Batch asset generator
+│   │   ├── generate_assets.ps1 # PowerShell asset generator (data/ -> include/default_assets.h)
+│   │   └── generate_assets.py  # PlatformIO pre-build asset generator script
 │   ├── include/
-│   │   └── html_templates.h    # Modular UI header: CSS, layout templates & PROGMEM strings
+│   │   ├── default_assets.h    # Auto-generated C++ PROGMEM byte arrays embedded into Flash ROM
+│   │   └── html_templates.h    # Modular UI header: Minimalist CSS, layout templates & PROGMEM strings
+│   ├── setup/                  # Automated toolchain provisioning
+│   │   ├── SETUP_GUIDE.md      # Comprehensive setup & troubleshooting manual
+│   │   ├── install_dependencies.ps1 # Script installing Python & PlatformIO Core
+│   │   ├── build_firmware.ps1  # Toolchain build script
+│   │   └── start_gateway.ps1   # Automated launcher for Wokwi IoT Gateway
 │   └── src/
-│       └── main.cpp            # Main firmware: Storage mount, routes, upload parser, FreeRTOS
+│       └── main.cpp            # Main firmware: Storage mount, routes, 4KB buffered upload parser, FreeRTOS
 │
 ├── CloudConfig/                # Standalone Wokwi Web Workspace (Run on wokwi.com)
 │   ├── README.md               # Step-by-step Wokwi Web import and execution guide
@@ -130,6 +154,8 @@ Project.MM/
 │
 └── doc/                        # Academic research and formal lab proposals
     ├── CLOUD_VS_VSCODE_VS_HARDWARE.md # Tri-platform architectural comparison
+    ├── note/                   # Theory and assembly notes
+    ├── prompts/                # Full conversation archives and execution summaries
     └── research/
         ├── v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf # Formal course proposal
         ├── ESP32 NAS Simulation Feasibility.pdf         # Storage & networking feasibility study
@@ -198,19 +224,21 @@ Embedded development differs fundamentally from interpreted languages (Python/JS
 
 ```mermaid
 flowchart LR
-    A[main.cpp] --> C[PlatformIO Compiler / xtensa-esp32-elf-g++]
-    B[html_templates.h] --> C
-    D[Arduino Core / SPI / SD / WebServer] --> C
-    C --> E[Linker: firmware.elf]
-    E --> F[ESP-IDF esptool.py]
-    F --> G[firmware.bin 1.24 MB]
-    G --> H[Wokwi Virtual Flash]
+    A[data/ assets] -->|scripts/generate_assets.ps1| B[default_assets.h]
+    B --> C[PlatformIO Compiler / xtensa-esp32-elf-g++]
+    D[main.cpp & html_templates.h] --> C
+    E[Arduino Core / SPI / SD / WebServer] --> C
+    C --> F[Linker: firmware.elf]
+    F --> G[ESP-IDF esptool.py]
+    G --> H[firmware.bin 1.30 MB]
+    H --> I[Wokwi Virtual Flash]
 ```
 
-1. **Preprocessing & Inclusion**: `#include "html_templates.h"` in [`main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp) injects the HTML layout structures into the translation unit.
-2. **Xtensa Cross-Compilation**: `xtensa-esp32-elf-g++` compiles C++ code into machine instructions for the 32-bit Xtensa LX6 architecture.
-3. **Firmware Packaging**: PlatformIO invokes `esptool.py` to merge code, bootloader, and partition tables into `.pio/build/esp32dev/firmware.bin` (approx. 1.24 MB).
-4. **Wokwi Loading**: [`wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml) points directly to this `.bin` file, loading it into virtual SPI flash at address `0x10000`.
+1. **Asset Embedding Pipeline**: [`scripts/generate_assets.ps1`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/scripts/generate_assets.ps1) traverses `data/www/` (`fileserver.html`, `index.html`) and `data/default/` (`lab_report.txt`), generating C++ PROGMEM byte arrays in [`include/default_assets.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/default_assets.h).
+2. **Preprocessing & Inclusion**: `#include "include/default_assets.h"` and `#include "include/html_templates.h"` in [`main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp) inject the HTML layout structures and fallback assets into the translation unit.
+3. **Xtensa Cross-Compilation**: `xtensa-esp32-elf-g++` compiles C++ code into machine instructions for the 32-bit Xtensa LX6 architecture.
+4. **Firmware Packaging**: PlatformIO invokes `esptool.py` to merge code, bootloader, and partition tables into `.pio/build/esp32dev/firmware.bin` (approx. 1.30 MB).
+5. **Wokwi Loading**: [`wokwi.toml`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/wokwi.toml) points directly to this `.bin` file, loading it into virtual SPI flash at address `0x10000`.
 
 ---
 
@@ -260,6 +288,18 @@ cd d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\LocalConfig
 
 ---
 
+### 4.4 One-Click Build Refresh Automation (`refresh_firmware.bat` / `.ps1`)
+To ensure rapid iteration without manual toolchain navigation, [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig) provides dedicated one-click refresh automation:
+
+1. **[`refresh_firmware.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/refresh_firmware.bat)**: Double-clickable from Windows Explorer. Automatically executes with ExecutionPolicy bypass, pauses on completion, and displays build metrics.
+2. **[`refresh_firmware.ps1`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/refresh_firmware.ps1)**:
+   - **Stage 1 (Asset Sync)**: Triggers `generate_assets.ps1` to convert all web pages into Flash ROM C++ structures.
+   - **Stage 2 (Virtual SD Mirror)**: Copies `data/www/` directly to `data/network/www/` for live Wokwi filesystem writeback.
+   - **Stage 3 (Incremental Build)**: Runs PlatformIO compilation (`pio run`), outputting the final `firmware.bin` with exact byte counts.
+3. **[`build_firmware.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/build_firmware.bat)**: Root-level batch alias.
+
+---
+
 ## 5. Firmware Architecture & Dual-Phase Implementation
 
 ### 5.1 System Execution Flowchart
@@ -267,90 +307,97 @@ cd d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\LocalConfig
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Host as Desktop Browser
+    participant Host as Desktop / Mobile Browser
     participant CPU as ESP32 (Core 1)
-    participant SD as MicroSD Card (VSPI)
-    participant RTOS as FreeRTOS Diagnostics (Core 0/1)
+    participant SD as MicroSD Card (VSPI @ 4 MHz)
+    participant RTOS as FreeRTOS Diagnostics (Core 1)
 
-    Note over CPU, SD: PHASE 1: Storage Boot
-    CPU->>SD: SPI.begin(18, 19, 23, 5) & SD.begin()
-    SD-->>CPU: Storage Mounted (FAT32)
-    CPU->>SD: Check exists("/www/index.html") & exists("/lab_report.txt")
-    CPU->>SD: Seed default files to SD card
+    Note over CPU, SD: PHASE 1: Storage Boot & Seeding
+    CPU->>SD: SPI.begin(18, 19, 23, 5) & SD.begin(5, SPI, 4000000)
+    SD-->>CPU: Storage Mounted (FAT32, 256 MB)
+    CPU->>SD: Check & seed /default/lab_report.txt, /www/fileserver.html, /www/index.html
+    CPU->>SD: Ensure /uploads directory exists
 
     Note over CPU, Host: PHASE 2: Network & Web Server Boot
-    CPU->>CPU: WiFi.begin("Wokwi-GUEST") -> Connected (10.13.37.2)
-    CPU->>CPU: Bind Routes: "/", "/site", "/get", "/upload", "/delete"
+    CPU->>CPU: WiFi.begin("Wokwi-GUEST", "", 6) -> Connected (10.13.37.2)
+    CPU->>CPU: Bind Routes: "/", "/fileserver.html", "/site", "/api/files", "/get", "/upload", "/delete"
     CPU->>CPU: server.begin(80)
     CPU->>RTOS: Spawn FreeRTOS diagnostic task (runClientTests)
 
-    par Background Diagnostics
-        RTOS->>CPU: HTTP GET http://127.0.0.1/ -> 200 OK
-        RTOS->>CPU: HTTP GET http://127.0.0.1/site -> 200 OK
-        RTOS->>CPU: HTTP GET http://127.0.0.1/get?file=lab_report.txt -> 200 OK
+    par Background Stream-Drained Diagnostics
+        RTOS->>CPU: GET http://127.0.0.1/ -> 200 OK (drained & yielded 800ms)
+        RTOS->>CPU: GET http://127.0.0.1/site -> 200 OK (drained & yielded 800ms)
+        RTOS->>CPU: GET http://127.0.0.1/get?file=lab_report.txt -> 200 OK (drained)
+        RTOS->>CPU: GET http://127.0.0.1/delete?file=/default/lab_report.txt -> 403 Forbidden
+        RTOS->>CPU: GET http://127.0.0.1/api/files -> 200 OK (JSON)
     and Interactive User Requests
         Host->>CPU: GET http://localhost:9080/
-        CPU->>SD: Open "/" & iterate directory entries
-        CPU-->>Host: Stream Glassmorphic Dashboard (HTML + CSS)
+        CPU->>SD: Stream /www/fileserver.html directly from SD (with Flash fallback)
+        CPU-->>Host: Stream Minimalist Dark Dashboard (HTML + CSS)
+        Host->>CPU: GET http://localhost:9080/api/files (Every 10s auto-sync)
+        CPU-->>Host: Return JSON Storage Telemetry & File Hierarchy
     end
 ```
 
 ---
 
-### 5.2 Phase 1: Storage Subsystem & Directory Seeding
-Located in [`main.cpp#L29-L91`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L29-L91):
-1. **Explicit VSPI Bus Binding**:
+### 5.2 Phase 1: Storage Subsystem, 4 MHz VSPI & Directory Seeding
+Located in [`main.cpp#L130-L190`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L130-L190):
+1. **Explicit VSPI Bus Binding & 4 MHz Clock Stability**:
    ```cpp
    SPI.begin(18, 19, 23, SD_CS_PIN);
-   SD.begin(SD_CS_PIN, SPI);
+   SD.begin(SD_CS_PIN, SPI, 4000000);
    ```
-   Unlike Arduino Uno which only has one SPI bus, the ESP32 has multiple multiplexed buses. Explicitly binding pins prevents pin collision.
-2. **Capacity Diagnostics**: Calculates total capacity and used space via `SD.totalBytes()` and `SD.usedBytes()`.
-3. **Dynamic Block Device Seeding**:
-   If the SD card has never been formatted or is blank:
-   - Creates the directory `/www` via `SD.mkdir("/www")`.
-   - Writes the static website [`SEED_INDEX_HTML`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h#L264-L387) into `/www/index.html`.
-   - Creates a default metadata file `/lab_report.txt`.
-4. **Directory Traversal**: Recursively scans `/` using `root.openNextFile()` and prints the file tree to the Serial Monitor.
+   - While the ESP32 SPI hardware supports up to 40 MHz, virtual SD card simulation in Wokwi (as well as physical breadboard jumpers) suffers signal degradation and block write timeouts above 10 MHz.
+   - Initializing at **4 MHz** ensures 100% block write reliability for FAT32 cluster operations (`CMD24` / `CMD25`).
+2. **256 MB Virtual SD Capacity Alignment**:
+   - Wokwi's virtual disk creation engine restricts virtual SD card images to a maximum of **256 MB** (`size = "256M"` in `wokwi.toml`). Specifying higher values triggers simulator validation errors.
+3. **Dynamic Block Device Seeding & Flash ROM Fallback**:
+   - The firmware checks for the existence of required system directories (`/default`, `/www`, `/uploads`).
+   - If files are missing or 0 bytes, the firmware automatically seeds them using byte arrays compiled into Flash ROM via [`include/default_assets.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/default_assets.h).
+   - If SD card hardware write fails entirely, web endpoints seamlessly fall back to streaming directly from Flash ROM via `server.send_P(200, "text/html", ...)`.
+4. **Directory Traversal**: Recursively scans `/` using `root.openNextFile()` and prints the verified file tree to the Serial Monitor.
 
 ---
 
-### 5.3 Phase 2: Network Subsystem, REST Routing & FreeRTOS Telemetry
-Located in [`main.cpp#L93-L305`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L93-L305):
-1. **Virtual Wi-Fi Initialization**: Connects to `Wokwi-GUEST` with non-blocking status polling.
+### 5.3 Phase 2: Network Subsystem, REST Routing & Stream-Drained Diagnostics
+Located in [`main.cpp#L192-L685`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L192-L685):
+1. **Virtual Wi-Fi Initialization**: Connects to `Wokwi-GUEST` with non-blocking status polling and explicit channel 6 specification to eliminate slow multi-channel scanning in Wokwi.
 2. **RESTful HTTP Endpoint Table**:
 
 | Method | Endpoint | Handler | Action Performed |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/` | `handleRoot` | Dynamically builds storage meter, upload form, and file list |
+| `GET` | `/` | `handleRoot` | Streams `/www/fileserver.html` directly from SD card (with Flash ROM fallback) |
+| `GET` | `/fileserver.html` | `handleRoot` | Direct access route to standalone file server interface |
 | `GET` | `/site` | `handleSite` | Streams `/www/index.html` from SD card with `text/html` MIME |
-| `GET` | `/get?file=<name>` | `handleDownload` | Streams file binary with `application/octet-stream` header |
-| `POST`| `/upload` | `handleFileUpload` | Parses incoming multipart stream and writes blocks to SD |
-| `GET` | `/delete?file=<n>` | `handleDelete` | Deletes file from SD via `SD.remove()` and redirects to `/` |
+| `GET` | `/index.html` | `handleSite` | Direct route to static hosted website |
+| `GET` | `/api/files` | `handleApiFiles` | Returns live JSON object with storage capacity, used bytes, and recursive file tree |
+| `GET` | `/get?file=<path>` | `handleDownload` | Streams file binary with `application/octet-stream` and `Content-Disposition` |
+| `POST`| `/upload` | `handleFileUpload` | 4KB sector-buffered streaming multipart parser saving into `/uploads/<clean_filename>` |
+| `GET` | `/delete?file=<p>` | `handleDelete` | Deletes file via `SD.remove()`; blocks deletion of system files (`403 Forbidden`) |
 
-3. **Background Diagnostic Task (`runClientTests`)**:
-   - Uses FreeRTOS `xTaskCreatePinnedToCore` with a 6144-byte stack on Core 1.
-   - Waits 4 seconds after boot, then executes HTTP client requests against `http://127.0.0.1/` to verify that all endpoints return HTTP `200 OK`.
-   - Automatically deallocates itself using `vTaskDelete(NULL)`.
+3. **Background Diagnostic Task (`runClientTests`) & Socket Hygiene**:
+   - Runs on FreeRTOS Core 1 via `xTaskCreatePinnedToCore`.
+   - Uses helper `performTestRequest(url)`:
+     - Explicitly sets `http.setReuse(false)` and an 8-second timeout.
+     - **Full Response Draining**: Completely drains incoming streams via `stream->read()` into a dummy buffer. This prevents socket buffer backpressure and eliminates unread-data TCP resets.
+     - **Cooperative Yield**: Inserts `vTaskDelay(800 / portTICK_PERIOD_MS)` between tests to grant the single-threaded WebServer loop dedicated Core 1 execution time to cleanly finalize socket closures.
+     - Formatted with standard CRLF (`\r\n`) to prevent serial console staircase artifacts.
 
 ---
 
 ## 6. Deep-Dive Engineering Nuances & Design Decisions
 
-### 6.1 Modular HTML Architecture (`include/html_templates.h`)
+### 6.1 Standalone Web Assets & Pre-Build Embedding (`data/www` & `default_assets.h`)
 In novice embedded projects, developers often embed HTML directly inside C++ functions as long, messy string concatenations (`String html = "<html>..."; html += "<body>...";`). This leads to unmaintainable code and rapid heap fragmentation.
 
-We resolved this by isolating the entire presentation layer into [`Project.MM/LocalConfig/include/html_templates.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h):
-- **C++ Raw String Literals**:
-  ```cpp
-  const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(
-  <!DOCTYPE html>
-  <html>
-  ...
-  </html>
-  )rawliteral";
-  ```
-  Using `R"rawliteral(...)rawliteral"` eliminates the need to escape quotes (`\"`) or newlines (`\n`), allowing clean HTML/CSS to be authored exactly as it would appear in a web editor.
+We resolved this with a **decoupled modern web pipeline**:
+1. **Frontend Isolation ([`data/www/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www))**:
+   - The file server interface [`data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html) and static site [`data/www/index.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/index.html) exist as pure, standalone HTML/CSS/JS files.
+   - Web designers can edit, preview, and test the UI in standard web browsers and tools without running the microcontroller compiler.
+2. **Pre-Build Automation ([`scripts/generate_assets.ps1`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/scripts/generate_assets.ps1))**:
+   - Automatically triggered during build to read `data/` assets and serialize them into C++ byte arrays in [`include/default_assets.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/default_assets.h).
+   - This ensures the microcontroller can mount fresh MicroSD cards and immediately seed all required pages into `/www/`, or fall back to Flash ROM if storage fails.
 
 ---
 
@@ -359,70 +406,70 @@ We resolved this by isolating the entire presentation layer into [`Project.MM/Lo
 
 **The Answer**: **No. That is a common misunderstanding of how embedded toolchains operate.**
 
-1. **Software Engineering Phase (PC Side)**: You can split your code into dozens of `.h` header files and `.cpp` implementation files. This maintains modularity, readability, and separation of concerns.
+1. **Software Engineering Phase (PC Side)**: You can split your code into dozens of `.h` header files, `.cpp` implementation files, and standalone `.html` assets. This maintains modularity, readability, and separation of concerns.
 2. **Compilation & Linking Phase**: The C++ compiler (`xtensa-esp32-elf-g++`) compiles each `.cpp` into an object file (`.o`). The linker then links all object files, libraries (`SD`, `SPI`, `WiFi`), and templates into a single unified binary file: `.pio/build/esp32dev/firmware.bin`.
 3. **Flashing Phase (Hardware Side)**: The physical flasher (`esptool.py`) writes that single `.bin` file into the ESP32's flash memory.
 
-Therefore, modularizing HTML into `include/html_templates.h` has **zero** runtime penalty and represents industry-standard embedded software engineering.
+Therefore, modularizing HTML into `data/www/` and `include/html_templates.h` has **zero** runtime penalty and represents industry-standard embedded software engineering.
 
 ---
 
 ### 6.3 Flash Memory Management via `PROGMEM` and `FPSTR`
 The ESP32 has **4 MB of external SPI Flash ROM**, but only **320 KB of usable internal SRAM heap**.
 
-- **The Problem**: In standard C/C++, constant strings like `"<!DOCTYPE html>..."` are copied from Flash ROM into SRAM upon startup. Storing 12 KB of CSS and HTML templates in SRAM would consume nearly 4% of total heap memory just holding static strings!
-- **The Solution**: We qualify all HTML templates with the `PROGMEM` attribute:
+- **The Problem**: In standard C/C++, constant strings like `"<!DOCTYPE html>..."` are copied from Flash ROM into SRAM upon startup. Storing tens of kilobytes of CSS and HTML templates in SRAM would consume nearly 10% of total heap memory just holding static strings!
+- **The Solution**: We qualify all embedded asset structures with `PROGMEM`:
   ```cpp
-  const char NAS_PAGE_HEADER[] PROGMEM = R"rawliteral(...);
+  static const uint8_t ASSET_DATA_1[] PROGMEM = { ... };
   ```
-  When sending these strings over HTTP, we wrap them with `FPSTR()`:
+  When sending these strings over HTTP without allocating heap RAM, we wrap them with `FPSTR()` or call `server.send_P(200, "text/html", (PGM_P)data, size)`:
   ```cpp
   server.sendContent(FPSTR(NAS_PAGE_HEADER));
   ```
-  `FPSTR` instructs the web server to read bytes directly out of Flash ROM memory space, leaving the 320 KB SRAM completely free for network buffers and filesystem I/O.
+  This instructs the web server to read bytes directly out of Flash ROM memory space, leaving the 320 KB SRAM completely free for network buffers and filesystem I/O.
 
 ---
 
-### 6.4 Streaming Multipart File Upload (`handleFileUpload`)
-> **The Most Critical Performance Feature**: Located in [`main.cpp#L161-L186`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L161-L186).
+### 6.4 High-Throughput 4KB Sector-Aligned Multipart Upload & Abort Purging
+> **The Most Critical Performance Feature**: Located in [`main.cpp#L305-L395`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp#L305-L395).
 
-When a user uploads a 5 MB file, the ESP32 cannot store the file in RAM before saving it (since total RAM is only 320 KB). Doing so would trigger an immediate kernel panic: `Out of Memory / Heap Exhaustion`.
+When handling multipart file uploads, raw network chunks arrive in arbitrary TCP window sizes (typically 1,436 bytes for standard MTUs). Standard FAT32 blocks, however, are strictly formatted into **512-byte sectors**.
 
-Instead, we implemented a **streaming multipart chunk parser**:
-```cpp
-void handleFileUpload() {
-  HTTPUpload& upload = server.upload();
-
-  if (upload.status == UPLOAD_FILE_START) {
-    // 1. Create file handle on SD card
-    uploadFile = SD.open("/" + upload.filename, FILE_WRITE);
-  } else if (upload.status == UPLOAD_FILE_WRITE) {
-    // 2. Stream incoming chunk (typically 1-2 KB) directly to SD SPI bus
-    if (uploadFile) {
-      uploadFile.write(upload.buf, upload.currentSize);
-    }
-  } else if (upload.status == UPLOAD_FILE_END) {
-    // 3. Close handle and commit FAT32 directory table
-    if (uploadFile) {
-      uploadFile.close();
-    }
-  }
-}
-```
-
-```text
-[Browser: 10MB File] 
-       │ 
-       ▼ (Packets in 1.4KB MTU chunks)
-[ESP32 Network Buffer: 2KB] ──> [uploadFile.write()] ──> [MicroSD Card Blocks]
-       │
-   (Flushed immediately; RAM freed for next chunk)
-```
-**Key Takeaway**: Regardless of whether a file is 10 KB or 100 MB, the RAM consumption remains constant at approximately 2 KB!
+1. **The Partial-Sector Bottleneck**:
+   Writing raw 1,436-byte buffers forces the FAT32 driver to perform unaligned **Read-Modify-Write cycles** across sector boundaries, severely degrading SPI throughput and causing cluster allocation errors in virtual simulations.
+2. **The 4KB Sector-Aligned Buffer**:
+   We implemented an intermediate 4,096-byte DRAM buffer:
+   ```cpp
+   #define UPLOAD_SECTOR_BUFFER_SIZE 4096
+   static uint8_t uploadWriteBuffer[UPLOAD_SECTOR_BUFFER_SIZE];
+   ```
+   Incoming 1,436-byte packets are accumulated in RAM and committed to the MicroSD card exclusively in **exact 4,096-byte (8 sectors * 512 bytes)** blocks.
+3. **Punctuation Sanitization & Security**:
+   User filenames containing single quotes, apostrophes (e.g. `Mercenary's`), colons, or quotes are sanitized into underscores (`_`) before FAT32 directory entry creation, preventing filesystem driver corruption.
+4. **Instant Circuit Breaker & Abort Purge**:
+   - If an SD sector write fails, `uploadWriteError` trips immediately, halting further disk writes and preventing infinite warning loops in the console.
+   - If a client disconnects or an upload is aborted mid-stream (`UPLOAD_FILE_ABORTED`), `SD.remove(currentUploadTarget)` is invoked immediately. **Zero-byte or corrupted incomplete files never persist on storage.**
 
 ---
 
-### 6.5 Dual-Core FreeRTOS Multitasking
+### 6.5 Loopback Network Speed vs. Simulated SPI Storage Latency (The 100% Transition)
+> **Demonstrates Deep System-Level Understanding of Simulation Mechanics**:
+
+When testing uploads through `http://localhost:9080/`, evaluators may notice the progress bar reach **100%** almost instantly, followed by a brief 2–4 second pause before the page reloads.
+
+- **Why this happens**:
+  - The browser transmits bytes over your PC's local loopback network adapter at gigabit speeds, filling the OS socket buffer in milliseconds. `xhr.upload.onprogress` reaches 100% immediately.
+  - However, the simulated ESP32 runs at virtual cycle-accurate speed. It must receive packets through simulated lwIP, parse multipart MIME headers, and write hundreds of 512-byte sectors across the simulated SPI bus (GPIO 18/23/19) to virtual SD.
+- **The UI Solution ([`data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html))**:
+  When `p === 100`, the UI dynamically transitions its status displays:
+  - Header: `Writing to Storage: <filename>`
+  - Speed badge: `⚡ Committing...`
+  - Status badge: `⏱ Finalizing SD card write`
+  This visually bridges the gap between network transmission completion and physical flash storage commitment.
+
+---
+
+### 6.6 Dual-Core FreeRTOS Concurrency & Socket Resource Management
 The ESP32 features two Xtensa cores:
 - **Core 0**: Dedicated by default to the ESP-IDF Wi-Fi/Bluetooth stack and RF modulation.
 - **Core 1**: Executes the standard Arduino `setup()` and `loop()`.
@@ -431,7 +478,22 @@ In our project, we spawn an independent diagnostic thread onto Core 1 using `xTa
 ```cpp
 xTaskCreatePinnedToCore(runClientTests, "ClientTest", 6144, NULL, 1, NULL, 1);
 ```
-This demonstrates true preemptive multitasking on bare metal. The web server continues serving user requests in `loop()` while the diagnostic worker validates network endpoints asynchronously.
+- **Socket Hygiene Nuance**: Because both `loopTask` (`server.handleClient()`) and `runClientTests` execute on Core 1, back-to-back HTTP client requests must not abruptly abort TCP sockets without reading response bodies.
+- Our helper `performTestRequest(url)` reads and drains the incoming stream until empty (`stream->read()`), followed by a cooperative FreeRTOS yield (`vTaskDelay(800 / portTICK_PERIOD_MS)`). This grants the web server dedicated execution slices to close sockets gracefully with standard FIN handshakes, eliminating socket starvation and read timeouts (`-11`).
+
+---
+
+### 6.7 Minimalist Industrial UI Philosophy & Mobile-First Touch Targets
+The user interface was overhauled to match modern minimalist engineering standards:
+1. **Sharp Geometry (`border-radius: 0 !important;`)**:
+   - Curved borders introduce unnecessary visual clutter in high-density technical dashboards. Every card, button, input form, and progress bar features strict 90-degree industrial edges.
+2. **De-Cluttered Navigation**:
+   - Removed the flashing "Online" status pill in the header, keeping only the high-contrast logo and static site navigation shortcut.
+3. **Responsive Mobile Breakpoint (`@media (max-width: 640px)`)**:
+   - Form inputs stack vertically into full-width touch targets.
+   - Table action buttons switch from verbose text labels (`⬇ Download`, `🗑 Delete`, `🔒 Protected`) to compact **icon-only buttons (`⬇`, `🗑`, `🔒`)**, shrinking the action column footprint from 180px to 55px and eliminating horizontal overflow on smartphones.
+4. **10-Second Dynamic Auto-Sync**:
+   - An integrated client timer queries `/api/files` every 10 seconds to refresh storage metrics and file lists without page flickering, automatically pausing countdown during active uploads.
 
 ---
 
@@ -575,29 +637,35 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
-### Step 3: Tour the Modern NAS Dashboard
+### Step 3: Tour the Minimalist Dark NAS Dashboard
 1. Open your browser and navigate to: **[http://localhost:9080/](http://localhost:9080/)**
 2. Point out the visual elements:
-   - **Glassmorphic Header**: Node status badge (`Online`) and title.
+   - **Industrial Minimalist Header**: Matte dark aesthetic (`#0c0d11`, `#13151b`), sharp rectangular geometry (`border-radius: 0`), and clean monospace typography.
+   - **Real-Time Auto-Sync Countdown**: The header displays `⟳ Auto-sync: 10s`. The client queries `/api/files` every 10 seconds to update storage metrics and file lists without page flickering or manual browser reloads.
    - **Live Storage Meter**: Real-time calculation of used storage vs. total capacity with a percentage progress bar.
    - **File Management Table**: Displays seeded files (`lab_report.txt`, `www/index.html`) with file size badges and action buttons.
 3. **What to say**:
-   > *"This dashboard is rendered dynamically by the ESP32. All CSS styles and layouts are stored directly in Flash ROM using PROGMEM to conserve internal RAM."*
+   > *"This dashboard is rendered dynamically by the ESP32. We intentionally designed it with sharp, rectangular geometry and zero border radius for an industrial engineering look. An auto-sync timer polls our REST endpoint `/api/files` every 10 seconds, keeping the dashboard current without full page reloads."*
 
 ---
 
-### Step 4: Live File Upload
+### Step 4: Live File Upload with Real-Time Commit State
 1. Click **`Choose File`** in the upload section.
-2. Select any file from your laptop (e.g., a `.txt`, `.pdf`, `.png`, or `.csv` file).
-3. Click **`⬆ Upload to NAS`**.
-4. Observe the page automatically reload with the newly uploaded file appearing in the table.
-5. Check the Serial Monitor:
+2. Select any file from your laptop (e.g., an image, `.pdf`, or `.txt` document).
+3. Click **`⬆ Upload to Storage`**.
+4. Observe the real-time speed badge and ETA calculation.
+5. Watch the progress bar hit **100%** and observe the **storage commit transition**:
+   - Header switches to: `Writing to Storage: <filename>`
+   - Speed badge changes to: `⚡ Committing...`
+   - Status badge shows: `⏱ Finalizing SD card write`
+6. Observe the automatic page reload and appearance in the file table with its exact non-zero byte size.
+7. Check the Serial Monitor:
    ```text
-   [UPLOAD START] Target: /sample.pdf
-   [UPLOAD SUCCESS] Wrote 45892 bytes.
+   [UPLOAD START] Destination: /uploads/sample.pdf
+   [UPLOAD SUCCESS] Path: /uploads/sample.pdf | Wrote: 45892 bytes
    ```
-6. **What to say**:
-   > *"Notice how the file was uploaded seamlessly. Our firmware uses a streaming multipart chunk parser. The ESP32 does not buffer the entire file in RAM; it streams incoming 1.4KB network packets directly into the MicroSD card blocks via the SPI bus."*
+8. **What to say**:
+   > *"Notice how the progress bar smoothly transitioned at 100% to 'Writing to Storage'. Because the browser uploads over the local loopback adapter at gigabit speeds, the network transfer completes in milliseconds, while the ESP32 writes incoming 4KB sector-aligned blocks over the SPI bus to FAT32. This UI transition gives immediate feedback that flash memory is actively committing."*
 
 ---
 
@@ -624,13 +692,14 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
-### Step 7: File Deletion with Dynamic Storage Reclaim
+### Step 7: File Deletion with Dynamic Storage Reclaim & Protection
 1. Return to the dashboard at [http://localhost:9080/](http://localhost:9080/).
 2. Click the red **`Delete`** button next to the file you uploaded.
 3. Confirm the JavaScript alert prompt.
 4. Show that the file disappears from the table, and the storage meter re-adjusts.
-5. **What to say**:
-   > *"The firmware invokes `SD.remove()`, unlinking the FAT32 cluster chain and freeing the blocks for subsequent writes."*
+5. Point out that default files (`/default/lab_report.txt`, `/www/fileserver.html`, `/www/index.html`) display a **`🔒 Protected`** badge and reject deletion with HTTP 403 Forbidden.
+6. **What to say**:
+   > *"The firmware invokes `SD.remove()`, unlinking the FAT32 cluster chain and freeing the blocks for subsequent writes. System assets are strictly write-protected to prevent accidental bricking."*
 
 ---
 
@@ -651,6 +720,17 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
+### Step 9: Mobile Responsive Inspection (Icon-Only Actions)
+1. In the desktop browser, open Developer Tools (`F12`) $\rightarrow$ Toggle device emulation (`Ctrl+Shift+M`) to a mobile viewport (e.g. iPhone or Pixel at `375px` width), or resize the window below `640px`.
+2. Observe how the layout transforms:
+   - Header items stack cleanly into full-width elements.
+   - Upload controls become thumb-friendly touch targets.
+   - The table action buttons collapse from verbose text into **compact icon-only buttons (`⬇`, `🗑`, `🔒`)**, shrinking the action column footprint from 180px down to 55px.
+3. **What to say**:
+   > *"We engineered mobile-first CSS media queries into `fileserver.html`. On screens 640px or narrower, action buttons automatically switch to icon-only representations, preventing horizontal table scrolling on mobile devices."*
+
+---
+
 ## 9. Evaluator Q&A Defense (Anticipated Questions & Rebuttals)
 
 ### Q1: Why ESP32 instead of a Raspberry Pi?
@@ -662,7 +742,7 @@ Follow this script during your final project show for a confident, seamless pres
 ---
 
 ### Q2: What happens if an uploaded file exceeds the ESP32 RAM?
-- **Rebuttal**: Our upload architecture does not load the file into RAM. It uses the `server.upload()` streaming callback. Incoming TCP packets are received in small buffers (1.4 KB) and immediately flushed over SPI to the MicroSD card before the next packet arrives. As a result, the RAM usage remains static regardless of whether the file is 10 KB or 100 MB.
+- **Rebuttal**: Our upload architecture does not load the file into RAM. It uses the `server.upload()` streaming callback. Incoming TCP packets are received in small buffers (1.4 KB) and accumulated into a 4 KB sector-aligned buffer before writing to the MicroSD card. As a result, the RAM usage remains static regardless of whether the file is 10 KB or 100 MB.
 
 ---
 
@@ -714,6 +794,31 @@ Follow this script during your final project show for a confident, seamless pres
 
 ---
 
+### Q12: Why is the dashboard styled with sharp geometry (border-radius: 0) and no animated status dot?
+- **Rebuttal**: In professional high-density engineering appliances and telemetry consoles, curved borders introduce unnecessary visual noise and table misalignment. By establishing a strict `border-radius: 0 !important;` rule and removing distracting pulsating online badges, the interface emphasizes immediate data density, high-contrast monospace technical readability, and modern matte aesthetics.
+
+---
+
+### Q13: Why did uploads stay stuck at 100% for several seconds before completing?
+- **Rebuttal**: In our simulation architecture, client uploads traverse the host machine's loopback interface at gigabit speed, filling the OS socket buffer almost immediately so `xhr.upload.onprogress` reaches 100% in milliseconds. However, the virtual ESP32 runs at cycle-accurate simulation speed, bit-banging and clocking each 512-byte sector across the simulated VSPI bus into the virtual FAT32 SD card. In the web UI, we introduced a dedicated commit transition state (`Writing to Storage`, `⚡ Committing...`, `⏱ Finalizing SD card write`) to explicitly inform users that network delivery has finished and the simulated microcontroller is actively committing blocks to storage.
+
+---
+
+### Q14: How does your firmware guarantee zero corrupted or 0-byte files if an upload is interrupted?
+- **Rebuttal**: In `handleFileUpload()`, on `UPLOAD_FILE_ABORTED` or on write error detection, the firmware immediately closes the active file handle and invokes `SD.remove(currentUploadTarget)`. Furthermore, the POST completion callback strictly verifies `upload.status == UPLOAD_FILE_END && upload.totalSize > 0 && !uploadWriteError`; otherwise, it returns HTTP 500 JSON error. This ensures aborted uploads never linger as empty 0-byte entries on FAT32.
+
+---
+
+### Q15: Why is the SPI clock initialized to 4 MHz rather than 25 MHz or 40 MHz?
+- **Rebuttal**: Virtual SD card simulation in Wokwi (as well as physical Dupont jumper wires on breadboards) suffers from timing signal degradation when clocking bulk data block writes (`CMD24`/`CMD25`) above 10 MHz, causing `FR_DISK_ERR` and stream write failures. Standard 4 MHz SPI provides 100% block write reliability without clock jitter in both virtual simulation and physical hardware prototyping.
+
+---
+
+### Q16: How does the asset generation pipeline allow web developers to modify HTML without editing C++ code?
+- **Rebuttal**: Frontend files exist as standard HTML/CSS/JS in `Project.MM/LocalConfig/data/www/` (`fileserver.html`, `index.html`), which can be edited and previewed directly in web browsers. Our build script [`refresh_firmware.ps1`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/refresh_firmware.ps1) (and its companion `refresh_firmware.bat`) automatically runs `scripts/generate_assets.ps1` to convert all web assets into PROGMEM byte arrays in `include/default_assets.h` before invoking PlatformIO. Developers never need to manually escape HTML strings inside C++ files.
+
+---
+
 ## 10. Summary & Quick Links
 
 - **Team Presentation Bridge (10-Minute Script & Speaker Roles)**: [`Project.MM/LocalConfig/presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/presentationBridge.md)
@@ -721,7 +826,13 @@ Follow this script during your final project show for a confident, seamless pres
 - **Cloud Workspace**: [`Project.MM/CloudConfig/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/CloudConfig)
 - **Local Circuit Schematic**: [`Project.MM/LocalConfig/diagram.json`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/diagram.json)
 - **Firmware Source**: [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp)
-- **HTML/CSS Templates**: [`Project.MM/LocalConfig/include/html_templates.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h)
+- **Standalone File Server Interface**: [`Project.MM/LocalConfig/data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html)
+- **Hosted Static Website**: [`Project.MM/LocalConfig/data/www/index.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/index.html)
+- **Embedded C++ Assets Header**: [`Project.MM/LocalConfig/include/default_assets.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/default_assets.h)
+- **HTML/CSS Templates Header**: [`Project.MM/LocalConfig/include/html_templates.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/html_templates.h)
+- **One-Click Build Refresh Batch Launcher**: [`Project.MM/LocalConfig/refresh_firmware.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/refresh_firmware.bat)
+- **Build Refresh PowerShell Script**: [`Project.MM/LocalConfig/refresh_firmware.ps1`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/refresh_firmware.ps1)
+- **Windows Firewall Auto-Installer**: [`Project.MM/LocalConfig/setup_firewall.bat`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup_firewall.bat)
 - **Automated Setup Scripts**: [`Project.MM/LocalConfig/setup/`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/setup)
 - **Cloud vs. VS Code vs. Physical Hardware**: [`Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/CLOUD_VS_VSCODE_VS_HARDWARE.md)
 - **Root Repository Overview**: [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md)
