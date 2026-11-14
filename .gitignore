@@ -20,6 +20,7 @@ Project.MM/LocalConfig/wokwigw.exe
 # Standalone Wokwi Offline Environment Repo Staging Folder (for separate repository)
 wokwi-offline-environment/
 Wokwi-Offline-Environment/
+windows-miktex-installer
 
 # PlatformIO local build cache & artifacts
 Project.MM/LocalConfig/.pio/
