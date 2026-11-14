@@ -1,13 +1,14 @@
 # Presentation Bridge v2: Rapid 3-Minute Deck & Live Demo Guide (Project.MM)
 
 > **Course**: CSE0611324 — Microprocessors, Microcontrollers and Assembly Language Lab  
-> **Course Lecturers**: Tahmina Yeasmin Lima Ma'am & Abrar Mahbub Tanim Sir  
-> **Presentation Team**: Jannatul Ferdus, Gaus Saraf Murady, Sadia Islam  
+> **Course Instructors / Evaluators**: Tahmina Yeasmin Lima Ma'am (Lecturer) & Abrar Mahbub Tanim Sir (Lecturer)  
+> **Institution**: Department of Computer Science & Engineering, University of Information Technology and Sciences (UITS)  
+> **Presentation Team**: Jannatul Ferdus (0432410005101058), Gaus Saraf Murady (0432410005101088), Sadia Islam (0432410005101096)  
 > **Workspace**: [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)  
 > **Definitive Presentation Guide**: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)  
 > **Legacy 10-Minute Bridge (v1)**: [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)  
-> **Slide Reference Deck**: [`temp/v2.2_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/temp/v2.2_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)  
-> **Time Budget**: **Under 3 Minutes Presentation** + **1–2 Minutes Live File Server Demo** + Faculty Q&A
+> **Slide Reference Deck (v3.0)**: [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)  
+> **Time Budget**: **Under 3 Minutes Presentation (8 Slides)** + **1–2 Minutes Live File Server Demo** + Faculty Q&A
 
 ---
 
@@ -15,21 +16,22 @@
 - [1. Presentation Strategy & Strict Time Allocation](#1-presentation-strategy--strict-time-allocation)
   - [1.1 The Golden 3-Minute Rule](#11-the-golden-3-minute-rule)
   - [1.2 Role & Time Distribution Matrix](#12-role--time-distribution-matrix)
-- [2. Slide Deck Audit: What to Remove, Shorten & Merge](#2-slide-deck-audit-what-to-remove-shorten--merge)
-  - [2.1 Audit of the 10-Slide Deck (`v2.2` PDF)](#21-audit-of-the-10-slide-deck-v22-pdf)
-  - [2.2 Recommended Streamlined 7-Slide Deck Structure](#22-recommended-streamlined-7-slide-deck-structure)
-- [3. Suggested Slide Contents & Visual Blueprints](#3-suggested-slide-contents--visual-blueprints)
-  - [Slide 1: Title, Team & The Power Comparison Hook](#slide-1-title-team--the-power-comparison-hook)
-  - [Slide 2: Scope, Objectives & Simulator Choice](#slide-2-scope-objectives--simulator-choice)
-  - [Slide 3: Hardware, Budget & Technical Feasibility (Merged)](#slide-3-hardware-budget--technical-feasibility-merged)
-  - [Slide 4: Storage Pinout & Dual-Phase Architecture](#slide-4-storage-pinout--dual-phase-architecture)
-  - [Slide 5: Simulation Setup & 4 Local Network Scenarios (New)](#slide-5-simulation-setup--4-local-network-scenarios-new)
-  - [Slide 6: Real-World Impact, Debugging & Hardware Realities (Merged)](#slide-6-real-world-impact-debugging--hardware-realities-merged)
-  - [Slide 7: Conclusion & Demo Transition](#slide-7-conclusion--demo-transition)
+- [2. Slide Deck Audit: Transition from v2.2 (10 Slides) to v3.0 (8 Slides)](#2-slide-deck-audit-transition-from-v22-10-slides-to-v30-8-slides)
+  - [2.1 Audit of the Legacy 10-Slide Deck (`v2.2` PDF)](#21-audit-of-the-legacy-10-slide-deck-v22-pdf)
+  - [2.2 Streamlined 8-Slide Production Deck Structure (`v3.0` PDF)](#22-streamlined-8-slide-production-deck-structure-v30-pdf)
+- [3. Slide Contents & Visual Blueprints (v3.0 Deck)](#3-slide-contents--visual-blueprints-v30-deck)
+  - [Slide 1: ESP32 Embedded NAS & Static Web Node](#slide-1-esp32-embedded-nas--static-web-node)
+  - [Slide 2: The Scope & Simulator Choice](#slide-2-the-scope--simulator-choice)
+  - [Slide 3: Hardware, Budget & Technical Feasibility](#slide-3-hardware-budget--technical-feasibility)
+  - [Slide 4: Hardware Interface & Dual-Phase Firmware](#slide-4-hardware-interface--dual-phase-firmware)
+  - [Slide 5: Simulation Setup & 4 Local Network Scenarios](#slide-5-simulation-setup--4-local-network-scenarios)
+  - [Slide 6: Real-World Impact, Debugging & Hardware Realities](#slide-6-real-world-impact-debugging--hardware-realities)
+  - [Slide 7: Physical Hardware Realities (Negated in Simulation)](#slide-7-physical-hardware-realities-negated-in-simulation)
+  - [Slide 8: Conclusion](#slide-8-conclusion)
 - [4. Rapid 3-Minute Spoken Script](#4-rapid-3-minute-spoken-script)
   - [Part 1: Hook, Scope & Hardware Feasibility (Speaker 1 — 0:00 to 0:50)](#part-1-hook-scope--hardware-feasibility-speaker-1--000-to-050)
-  - [Part 2: Architecture, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:50)](#part-2-architecture-setup--network-scenarios-speaker-2--050-to-150)
-  - [Part 3: Impact, Solutions & Conclusion (Speaker 3 — 1:50 to 2:45)](#part-3-impact-solutions--conclusion-speaker-3--150-to-245)
+  - [Part 2: Interface, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:40)](#part-2-interface-setup--network-scenarios-speaker-2--050-to-140)
+  - [Part 3: Silicon Realities & Conclusion (Speaker 3 — 1:40 to 2:25)](#part-3-silicon-realities--conclusion-speaker-3--140-to-225)
 - [5. Standalone Live File Server Demonstration Guide (1 to 2 Minutes)](#5-standalone-live-file-server-demonstration-guide-1-to-2-minutes)
   - [5.1 Live Demo Sequence](#51-live-demo-sequence)
   - [5.2 Demonstrator Narration Script](#52-demonstrator-narration-script)
@@ -48,7 +50,7 @@ In high-stakes academic evaluations with tight time limits, **over-explaining ki
 
 > [!IMPORTANT]
 > **Cadence Target**: 120 words per minute.
-> - **Total Presentation Word Budget**: **~340–370 words** across the entire 3-minute deck.
+> - **Total Presentation Word Budget**: **~330–360 words** across the 8-slide deck.
 > - **Live Demo Window**: **60 to 90 seconds** focused strictly on the web UI and live file transfer.
 > - **Rule of Conduct**: Never read bullet points off slides. Point to the diagram, state the key takeaway, and advance.
 
@@ -56,236 +58,278 @@ In high-stakes academic evaluations with tight time limits, **over-explaining ki
 
 | Segment | Speaker | Scope & Content | Target Time | Word Budget |
 | :--- | :--- | :--- | :--- | :--- |
-| **Part 1** | **Speaker 1** (Jannatul Ferdus) | **The Hook, Problem Scope & Feasibility**<br>• 60W PC vs. <1W ESP32 Hook<br>• Objectives: Wireless NAS + Static Web Host<br>• Merged Budget (~750 BDT) & 2 KB RAM streaming guarantee | **0:00 – 0:50** (50s) | ~110 words |
-| **Part 2** | **Speaker 2** (Gaus Saraf Murady) | **Architecture, Setup & 4 Network Scenarios**<br>• VSPI Pinout (GPIO 5, 18, 19, 23)<br>• Rapid Setup (Build $\rightarrow$ Firewall $\rightarrow$ Gateway $\rightarrow$ Wokwi)<br>• 4 Simulation Scenarios (Ethernet, Lab Switch, Hotspot, Wi-Fi) | **0:50 – 1:50** (60s) | ~130 words |
-| **Part 3** | **Speaker 3** (Sadia Islam) | **Real-World Impact, Debugging & Wrap-Up**<br>• Bangladesh use cases (Floods, Agri-logging, Offline schools)<br>• Debugging wins (D5 silkscreen, SCK schema, Decoupling caps)<br>• Handoff to live demonstration | **1:50 – 2:45** (55s) | ~115 words |
-| **Demo** | **Operator / Speaker 2** | **Live Interactive File Server Demonstration**<br>• Dashboard capacity & file table<br>• Real-time file upload & sector commit<br>• Static site rendering (`/site`)<br>• Download & storage reclaim | **2:45 – 4:00** (75s) | ~90 words |
+| **Part 1** | **Speaker 1** (Jannatul Ferdus) | **The Hook, Problem Scope & Feasibility (Slides 1–3)**<br>• Slide 1: 60W PC vs. <1W ESP32 Hook & Team Metadata<br>• Slide 2: Scope (Wireless NAS + Static Host) & Wokwi Choice<br>• Slide 3: Merged Budget (~750 BDT) & 2 KB RAM Streaming Guarantee | **0:00 – 0:50** (50s) | ~110 words |
+| **Part 2** | **Speaker 2** (Gaus Saraf Murady) | **Architecture, Setup & Network Scenarios (Slides 4–6)**<br>• Slide 4: VSPI Pinout Mapping & Two-Phase Execution Flow<br>• Slide 5: 5 Rapid Setup Steps & 4 Validated Network Scenarios<br>• Slide 6: Real-World Impact (Floods, Agri-logging, Rural schools) | **0:50 – 1:40** (50s) | ~120 words |
+| **Part 3** | **Speaker 3** (Sadia Islam) | **Hardware Realities & Conclusion (Slides 7–8)**<br>• Slide 7: Silicon Realities (Brownouts, 100 $\mu$F Cap, SPI Capping, Bus Scaling)<br>• Slide 8: Final Summary Quote & Direct Handoff to Live Demo | **1:40 – 2:25** (45s) | ~95 words |
+| **Demo** | **Operator / Speaker 2** | **Live Interactive File Server Demonstration**<br>• Dashboard capacity & file table inspection<br>• Real-time file upload & sector commit<br>• Static site rendering (`/site`)<br>• Download & storage cluster reclaim<br>• Zero-install LocalSend Web 2-PC sharing | **2:25 – 3:45** (80s) | ~90 words |
 | **Q&A** | **All Members** | **Faculty Oral Defense & Questions** | Buffer / As required | — |
 
 ---
 
-## 2. Slide Deck Audit: What to Remove, Shorten & Merge
+## 2. Slide Deck Audit: Transition from v2.2 (10 Slides) to v3.0 (8 Slides)
 
-### 2.1 Audit of the 10-Slide Deck (`v2.2` PDF)
+### 2.1 Audit of the Legacy 10-Slide Deck (`v2.2` PDF)
 
-| Original Slide in `v2.2` PDF | Status & Evaluation | Recommendation for 3-Minute Delivery |
+| Original Slide in `v2.2` PDF | Status & Evaluation | Transformation into `v3.0` PDF |
 | :--- | :--- | :--- |
-| **Slide 1: Title & Hook** | **KEEP & REFINE** | Excellent visual contrast (60W PC vs. 0.5W ESP32). Keep as Slide 1. |
-| **Slide 2: Scope & Simulator Choice** | **SHORTEN** | Too much empty space; the simulator choice (Wokwi) can be a 1-sentence mention. |
-| **Slide 3: Budget & Financial Feasibility** | **MERGE with Slide 4** | Sourcing components is simple; does not need its own full slide. |
-| **Slide 4: Technical & Computational Feasibility** | **MERGE with Slide 3** | As noted by the user, having both Slide 3 and Slide 4 is redundant. Merge them into a single high-impact slide: **"Hardware, Budget & Technical Feasibility"**. |
-| **Slide 5: Dual-Phase Implementation** | **STREAMLINE** | Keep the clean VSPI wiring diagram, but shorten text bullets to two concise phases. |
-| **Slide 6: Live Demonstration Sequence** | **CONVERT / MOVE** | Keep as a transition card or move to after Slide 6 so the team presents all slides *before* switching screens to the live demo. |
-| **Slide 7: Real-Life Impact in Bangladesh** | **SHORTEN & MERGE** | Compelling photos (flood relief, agriculture, rural school). Keep photos but condense text. |
-| **Slide 8: Issues Faced & Debugging Solutions** | **MERGE with Slide 9** | 4 text bullets are too dense to read in 20 seconds. Merge top 2 debugging wins with hardware realities into one engineering slide. |
-| **Slide 9: Physical Hardware Realities** | **MERGE with Slide 8** | Merge with Slide 8 into: **"Engineering Solutions & Hardware Realities"**. |
-| **Slide 10: Conclusion & Questions** | **KEEP** | Clean concluding slide with member names and final summary. |
-| **NEW REQUIREMENT**: Setup Steps & 4 Scenarios | **ADD NEW SLIDE** | Add a dedicated slide after Architecture: **"Simulation Setup & 4 Local Network Scenarios"** directly from [`runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md). |
+| **Slide 1: Title & Hook** | **RETAINED & ENHANCED** | Kept the strong visual comparison (60W PC vs. <1W ESP32) and added faculty/group details directly onto the title card. |
+| **Slide 2: Scope & Simulator Choice** | **CONDENSED** | Retitled to **"The Scope & Simulator Choice"**, streamlined into 3 visual bullet cards (Wireless NAS, Static Web Host, 100% Air-Gapped) plus Wokwi justification. |
+| **Slide 3: Budget & Financial Feasibility** | **MERGED into Slide 3** | Combined component sourcing table with technical feasibility to avoid redundant explanations. |
+| **Slide 4: Technical & Computational Feasibility** | **MERGED into Slide 3** | Merged with Slide 3 into **"Hardware, Budget & Technical Feasibility"** with the 750 BDT BOM table, dual-core callouts, and 2 KB streaming guarantees. |
+| **Slide 5: Dual-Phase Implementation** | **STREAMLINED into Slide 4** | Retitled to **"Hardware Interface & Dual-Phase Firmware"** with hardware VSPI pinout table, Phase 1/Phase 2 execution boxes, and dark-theme UI screenshot. |
+| **NEW REQUIREMENT**: Setup Steps & 4 Scenarios | **ADDED as Slide 5** | Authored **"Simulation Setup & 4 Local Network Scenarios"** directly integrating the 5 execution steps and 4-topology test matrix from [`runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md). |
+| **Slide 6: Live Demonstration Sequence** | **CONVERTED** | Shifted live demo from a mid-presentation slide into an interactive hands-on demo immediately following the concluding slide. |
+| **Slide 7: Real-Life Impact in Bangladesh** | **CONVERTED to Slide 6** | Retitled to **"Real-World Impact, Debugging & Hardware Realities"** featuring the 3 high-impact photos (Flood relief, Agri-logging, Rural schools). |
+| **Slide 8 & 9: Issues Faced & Hardware Realities** | **MERGED into Slide 7** | Consolidated into **"Physical Hardware Realities (Negated in Simulation)"** covering brownout caps, wire capacitance / clock capping, CMD24 bus scaling, and power loss. |
+| **Slide 10: Conclusion & Questions** | **REFINED into Slide 8** | Concluding slide with the 750 BDT summary quote and visual trigger: *"Now let’s observe a live demonstration..."* |
 
-### 2.2 Recommended Streamlined 7-Slide Deck Structure
+### 2.2 Streamlined 8-Slide Production Deck Structure (`v3.0` PDF)
 
 ```
-Slide 1: Title, Team & The Power Comparison Hook (Keep)
+Slide 1: ESP32 Embedded NAS & Static Web Node (Power Comparison Hook & Evaluator Card)
     │
     ▼
-Slide 2: Scope, Objectives & Simulator Choice (Shortened)
+Slide 2: The Scope & Simulator Choice (Wireless NAS, Static Host, 100% Air-Gapped)
     │
     ▼
-Slide 3: Hardware, Budget & Technical Feasibility (Merged Slides 3 & 4)
+Slide 3: Hardware, Budget & Technical Feasibility (~750 BDT BOM + Dual-Core FreeRTOS + 2 KB Streaming)
     │
     ▼
-Slide 4: Storage Pinout & Dual-Phase Architecture (Streamlined Slide 5)
+Slide 4: Hardware Interface & Dual-Phase Firmware (VSPI Pinout Table + Dual-Phase Execution Flow)
     │
     ▼
-Slide 5: Simulation Setup & 4 Local Network Scenarios (NEW from runGuide.md)
+Slide 5: Simulation Setup & 4 Local Network Scenarios (5-Step Setup + 4 Real-World Topologies)
     │
     ▼
-Slide 6: Real-World Impact, Debugging & Hardware Realities (Merged Slides 7, 8 & 9)
+Slide 6: Real-World Impact, Debugging & Hardware Realities (Flood Relief, Agri-logging, Rural Schools)
     │
     ▼
-Slide 7: Conclusion & Demo Transition (Slide 10 -> Transition to Live Demo)
+Slide 7: Physical Hardware Realities (Negated in Simulation) (Decoupling Caps, Clock Capping, Bus Scaling)
+    │
+    ▼
+Slide 8: Conclusion (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)
 ```
 
 ---
 
-## 3. Suggested Slide Contents & Visual Blueprints
+## 3. Slide Contents & Visual Blueprints (v3.0 Deck)
 
-### Slide 1: Title, Team & The Power Comparison Hook
-* **Slide Header**: `CSE0611324 • MICROPROCESSOR LAB | Autumn 2026`
-* **Title**: **ESP32 Embedded NAS & Static Web Node**
-* **Subtitle**: Sub-1W Autonomous Edge Storage & Air-Gapped Web Server
-* **Visuals**:
+### Slide 1: ESP32 Embedded NAS & Static Web Node
+* **Slide Header**: `UITS Logo | CSE0611324 • MICROPROCESSOR LAB | Autumn 2026`
+* **Main Title**: **ESP32 Embedded NAS & Static Web Node**
+* **Left Card — Power & Platform Comparison Diagram**:
   - Horizontal bar graph:
-    - **Traditional PC / NAS**: `60 Watts` (Red)
-    - **ESP32 Edge NAS Node**: `< 1 Watt (0.5W)` (Bright Blue)
-  - Simulator badge: `Wokwi (Full WASM + SPI + LwIP Stack)`
-* **Footer / Side Panel**:
-  - **Faculty Evaluators**: Tahmina Yeasmin Lima (Lecturer), Abrar Mahbub Tanim (Lecturer)
-  - **Presented By**: Jannatul Ferdus (058), Gaus Saraf Murady (088), Sadia Islam (096)
+    - **Traditional PC NAS**: `60 Watts` (Solid Red bar)
+    - **ESP32 Edge NAS Node**: `< 1 Watt (0.5W)` (Solid Blue bar)
+  - Platform comparison:
+    - `Tinkercad / Proteus`: *No ESP32 Wi-Fi stack.*
+    - `Wokwi (Selected)`: *Full WASM + SPI + LwIP.*
+* **Right Card — Academic & Group Metadata**:
+  - **SUBMITTED TO (FACULTY)**:
+    - Tahmina Yeasmin Lima (Lecturer)
+    - Abrar Mahbub Tanim (Lecturer)
+  - **SUBMITTED BY (GROUP MEMBERS)**:
+    - Jannatul Ferdus • `0432410005101058`
+    - Gaus Saraf Murady • `0432410005101088`
+    - Sadia Islam • `0432410005101096`
+* **Footer**: `Department of CSE • Autumn 2026 | Page 01 / 10`
 
 ---
 
-### Slide 2: Scope, Objectives & Simulator Choice
-* **Slide Title**: **Project Scope & Core Objectives**
-* **Visual Layout**: 3 visual cards with modern icons:
-  1. 🗄️ **Wireless Edge NAS**:
-     - Browser-based multipart file uploads, chunked downloads, and dynamic file deletion.
-  2. 🌐 **Static Web Hosting**:
-     - Streams HTML5/CSS landing pages directly from MicroSD card (`/www/index.html`).
-  3. 🛡️ **100% Air-Gapped & Zero-Cloud**:
-     - Operates completely without internet, third-party software, or monthly subscription fees.
-* **Simulator Justification Callout (Bottom Banner)**:
-  - *"Why Wokwi? Unlike Tinkercad or Proteus, Wokwi executes compiled Xtensa binary code with cycle-accurate SPI bus signaling and the full LwIP TCP/IP stack."*
+### Slide 2: The Scope & Simulator Choice
+* **Slide Title**: **The Scope & Simulator Choice**
+* **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.
+* **Right Column — Core Scope Deliverables**:
+  - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
+  - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
+  - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
+* **Footer**: `Scope & Simulation Justification | Page 02 / 10`
 
 ---
 
-### Slide 3: Hardware, Budget & Technical Feasibility (Merged)
+### Slide 3: Hardware, Budget & Technical Feasibility
 * **Slide Title**: **Hardware, Budget & Technical Feasibility**
-* **Left Column — Sourcing & Bill of Materials (< 750 BDT)**:
+* **Left Column — Bill of Materials (< 750 BDT)**:
   | Component | Specification | Local Cost |
   | :--- | :--- | :--- |
   | **ESP32 DevKit V1** | 240 MHz Dual-Core + Wi-Fi | ~400 BDT |
   | **MicroSD SPI Module** | 3.3V Level Shifter Socket | ~80 BDT |
   | **MicroSD Card** | Class 10 (8–32 GB FAT32) | ~250 BDT |
   | **Dupont Jumpers** | 6 Wires (< 15 cm length) | ~20 BDT |
-  | **Total Budget** | **Complete Physical Unit** | **~750 BDT (~$7 USD)** |
-* **Right Column — Technical & Computational Feasibility**:
-  - ⚡ **Dual-Core FreeRTOS Partitioning**:
-    - `Core 0`: Dedicated strictly to LwIP Wi-Fi radio & TCP packet handling.
-    - `Core 1`: Dedicated to FAT32 SD block reads/writes and HTTP routing.
-  - 💾 **Constant 2 KB RAM Streaming Guarantee**:
-    - Multipart uploads and chunked downloads flush directly to SD sectors in 2 KB buffers; RAM consumption never increases with file size.
-  - 📦 **Flash ROM Asset Management**:
-    - Minimalist industrial dark-theme UI stored in 4 MB Flash via `PROGMEM` / `FPSTR()`, saving 300 KB SRAM.
+  - **Total Cost Banner**: **`~750 BDT`** (Large bold red callout)
+* **Right Column — Computational Feasibility Badges**:
+  - **XTENSA CORE 0**: `LwIP Wi-Fi & TCP Stack` (Handles wireless radio interrupts uninterrupted.)
+  - **XTENSA CORE 1**: `FAT32 SPI & WebServer` (Executes SD card reads/writes without blocking Wi-Fi.)
+  - **Constant 2 KB RAM Stream**: 10 MB uploads flush in 1.4 KB chunks straight to SD sectors.
+  - **4 MB Flash PROGMEM**: Minimalist UI stored in ROM via `FPSTR()` saves 300 KB SRAM.
+* **Bottom Graphic**: Photos of ESP32 DevKit, 32 GB SanDisk MicroSD, MicroSD breakout with labeled pins, and Dupont jumper wires.
+* **Footer**: `Page 03 / 10`
 
 ---
 
-### Slide 4: Storage Pinout & Dual-Phase Architecture
+### Slide 4: Hardware Interface & Dual-Phase Firmware
 * **Slide Title**: **Hardware Interface & Dual-Phase Firmware**
-* **Left Graphic — Hardware VSPI Pin Mapping**:
-  - `GPIO 5` $\rightarrow$ `CS` (Chip Select — Active Low)
-  - `GPIO 18` $\rightarrow$ `SCK` (Serial Clock @ 4 MHz)
-  - `GPIO 23` $\rightarrow$ `DI` / `MOSI` (Master Out Slave In)
-  - `GPIO 19` $\rightarrow$ `DO` / `MISO` (Master In Slave Out)
-  - `3V3` & `GND` $\rightarrow$ `VCC` & `GND`
-* **Right Graphic — Two-Phase Execution Flow**:
-  - **Phase 1: Storage Subsystem Initialization**:
-    - Mounts FAT32 over hardware VSPI, verifies `/default`, `/www`, and `/uploads`, seeds default assets from Flash ROM if missing.
-  - **Phase 2: Network & REST Service**:
-    - Connects to Wi-Fi, binds port 80 endpoints (`/`, `/site`, `/get`, `/upload`, `/delete`), and spawns FreeRTOS loopback diagnostics.
+* **Left Column — Pinout & Execution Flow**:
+  - **Top: Hardware VSPI Pin Mapping**:
+    - `[GPIO 5] (esp:D5)` $\rightarrow$ `[CS] (sd1:CS)`
+    - `[GPIO 18] (esp:D18)` $\rightarrow$ `[SCK] (sd1:SCK)`
+    - `[GPIO 23] (esp:D23)` $\rightarrow$ `[MOSI] (sd1:DI)`
+    - `[GPIO 19] (esp:D19)` $\leftarrow$ `[MISO] (sd1:DO)`
+    - `[3V3] (esp:3V3)` $\rightarrow$ `[VCC] (sd1:VCC)`
+    - `[GND] (esp:GND.1)` $\rightarrow$ `[GND] (sd1:GND)`
+  - **Bottom: Two-Phase Execution Flow**:
+    - **Phase 1: Storage Subsystem Initialization (Red Box)**: Mounts FAT32 over hardware VSPI, verifies `/default`, `/www`, and `/uploads`, seeds default assets from Flash ROM if missing.
+    - **Phase 2: Network & REST Service (Blue Box)**: Connects to Wi-Fi, binds port 80 endpoints (`/`, `/site`, `/get`, `/upload`, `/delete`), and spawns FreeRTOS loopback diagnostics.
+* **Right Column**: Live high-resolution screenshot of the dark-mode web UI ("ESP32 Storage NAS Node", "Hardware VSPI FAT32 MicroSD Storage Engine").
+* **Footer**: `Page 04 / 10`
 
 ---
 
-### Slide 5: Simulation Setup & 4 Local Network Scenarios (New)
-* **Slide Title**: **Simulation Execution & Multi-Device Access Model**
-* **Top Banner — Rapid Setup Sequence (Just mention the 5 steps)**:
-  ```text
-  [Step 0: Install Dependencies] ➔ [Step 1: Build Firmware] ➔ [Step 2: Open Port 9080 Firewall] ➔ [Step 3: Launch wokwigw] ➔ [Step 4: Start Wokwi]
-  ```
-* **Bottom Grid — 4 Validated Simulation Scenarios (from `runGuide.md`)**:
+### Slide 5: Simulation Setup & 4 Local Network Scenarios
+* **Slide Title**: **Simulation Setup & 4 Local Network Scenarios**
+* **Left Column — Rapid Setup Pipeline & Power Architecture**:
+  - Vertical pipeline flow:
+    ```text
+    [Step 0: Install Dependencies]
+          │
+    [Step 1: Build Firmware]
+          │
+    [Step 2: Open Port 9080 Firewall]
+          │
+    [Step 3: Launch wokwigw]
+          │
+    [Step 4: Start Wokwi]
+    ```
+  - Graphic: Power bank connected via USB to ESP32 emitting Wi-Fi waves with brownout dip curve.
+* **Right Column — The 4 Validated Network Topologies**:
   | Scenario | Network Topology | Host & Client Connection | Key Advantage |
   | :--- | :--- | :--- | :--- |
   | **1. Home Hybrid** | Router Wi-Fi + Ethernet | Host PC on Ethernet (`192.168.0.x`), Phone on Wi-Fi | Zero interference, maximum upload stability |
   | **2. Lab Workstation** | Campus Lab Ethernet Switch | PC 1 (Host) and PC 2 (Peer) on wired lab switch | **LocalSend Web model**: Instant 2-PC file sharing without software |
   | **3. Showcase Hotspot** | Windows Mobile Hotspot | Laptop Hotspot (`192.168.137.1`), Mobile clients connect | **Deterministic IP presentation safeguard**; defeats campus Wi-Fi isolation |
   | **4. All-Wireless** | Single Wi-Fi SSID | Both Host laptop and phones connect to same router | Standard dorm/home wireless convenience |
+* **Footer**: `Page 05 / 10`
 
 ---
 
-### Slide 6: Real-World Impact, Debugging & Hardware Realities (Merged)
-* **Slide Title**: **Real-World Impact & Engineering Solutions**
-* **Top Row — 3 Socio-Economic Bangladesh Use Cases**:
-  - 🌊 **Monsoon Flood Relief**: Broadcasts offline evacuation maps and survival guides when cell towers fail.
-  - 🌾 **Agri-Sensor Logging**: Collects remote field crop telemetry on SD card for wireless retrieval.
-  - 🏫 **Rural Schools & Clinics**: Offline digital textbooks and health records for 750 BDT with zero cloud fees.
-* **Bottom Row — Key Debugging Wins & Silicon Mitigations**:
-  - 🐛 **Wokwi Silkscreen & Clock Fix**: Mapped `esp:D5` and `sd1:SCK` to restore broken SPI signals.
-  - 🌐 **Gateway & Firewall Automation**: Bundled `wokwigw` with auto-elevating `setup_firewall.bat` for port 9080.
-  - 🔋 **Physical Hardware Transition**: Added 100 $\mu$F decoupling capacitor to stop Wi-Fi brownouts; capped SPI clock at 10 MHz.
+### Slide 6: Real-World Impact, Debugging & Hardware Realities
+* **Top Header**: `PART 2 • SPEAKER 2 (LIVE DEMO)`
+* **Slide Title**: **Real-World Impact, Debugging & Hardware Realities**
+* **Visual Layout — 3 Socio-Economic Deployments in Bangladesh**:
+  1. 🌊 **Monsoon Flood Relief** (Top Left, photo of rugged phone showing offline evacuation map):
+     - *"Broadcasts offline evacuation maps and medical guides when cellular towers fail."*
+  2. 🌾 **Agri-Sensor Logging** (Top Center, photo of breadboard sensor rig & solar field mast):
+     - *"Collects remote field telemetry on SD card for wireless engineer retrieval."*
+  3. 🏫 **Rural Schools & Clinics** (Bottom Center, illustration of rural classroom with girl viewing tablet connected to ESP32):
+     - *"Hosts digital textbooks and clinic records for 900 BDT with zero USD cloud fees."*
+* **Footer**: `Interactive Browser & Mobile LAN Verification | Page 06 / 10`
 
 ---
 
-### Slide 7: Conclusion & Demo Transition
-* **Slide Title**: **Validated Embedded Node Ready for Demonstration**
-* **Summary Statement**:
+### Slide 7: Physical Hardware Realities (Negated in Simulation)
+* **Top Header**: `PART 3 • SPEAKER 3`
+* **Slide Title**: **Physical Hardware Realities (Negated in Simulation)**
+* **4 Engineering Realities Surrounding Hardware Photos**:
+  - ⚡ **Power Brownout Spikes (Orange Box, Top-Left)**:
+    - *Physical Reality*: Wi-Fi TX (>300 mA) + SD writes (200 mA) sag 3.3V rails below 2.8V.
+    - *Fix*: Place 100 $\mu$F + 0.1 $\mu$F decoupling capacitors across VCC/GND.
+  - 📏 **Wire Capacitance & Levels (Green Box, Bottom-Left)**:
+    - *Physical Reality*: Jumpers (>15 cm) distort clock edges; resistor dividers fail at high speed.
+    - *Fix*: Cap SPI clock at 4–10 MHz and use active IC level shifters (74LVC125A).
+  - 🗃️ **Bus & Capacity Scaling (Red Box, Top-Right)**:
+    - *Simulation*: Wokwi caps storage at 256 MB and forces sequential CMD24 writes.
+    - *Silicon*: Scales to 32 GB+ cards, native CMD25 pipelines, and 4-bit SDMMC (20–40 MB/s).
+  - ⚠️ **Power-Loss & Flash Erasure (Blue Box, Bottom-Right)**:
+    - *Physical Reality*: Sudden outages corrupt FAT32 chains (needs supercap/LittleFS), and `SD.remove()` permanently wipes flash blocks.
+* **Center Graphic**: High-resolution photos of MicroSD breakout board and 1000 $\mu$F 16V decoupling capacitor.
+* **Footer**: `Hardware Transition & Next-Gen Scalability | Page 09 / 10`
+
+---
+
+### Slide 8: Conclusion
+* **Slide Title**: **Conclusion**
+* **Center Core Takeaway**:
   > *"We have successfully engineered, simulated, and network-bridged an autonomous, sub-1W embedded NAS and static web host for under 750 BDT."*
-* **Team Members**: Jannatul Ferdus • Gaus Saraf Murady • Sadia Islam
 * **Call to Action**:
-  - 🔴 **"Switching to Live Interactive File Server Demo (http://localhost:9080)"**
+  - **`Now let’s observe a live demonstration...`**
+* **Footer**: `Socio-Economic Value in Rural Bangladesh | Page 07 / 10`
 
 ---
 
 ## 4. Rapid 3-Minute Spoken Script
 
 > [!TIP]
-> Keep speech crisp and punchy. Do not read the slides word-for-word. The slides provide visual evidence; your voice explains the core engineering decisions.
+> Keep speech crisp, confident, and punchy. Point directly to diagrams and tables rather than reading words off the screen.
 
-```
-0:00 ──[ Speaker 1: Hook & Feasibility ]──> 0:50
-0:50 ──[ Speaker 2: Architecture, Setup & 4 Scenarios ]──> 1:50
-1:50 ──[ Speaker 3: Real Impact, Debugging & Hand-off ]──> 2:45
-2:45 ──[ Operator / Team: Live 1-2 Min File Server Demo ]──> 4:00
+```text
+0:00 ──[ Speaker 1: Hook, Scope & Feasibility (Slides 1–3) ]──> 0:50
+0:50 ──[ Speaker 2: Interface, Setup & Impact (Slides 4–6) ]──> 1:40
+1:40 ──[ Speaker 3: Hardware Realities & Conclusion (Slides 7–8) ]──> 2:25
+2:25 ──[ Operator / Team: Live 1–2 Min File Server Demo ]──> 3:45
 ```
 
 ---
 
 ### Part 1: Hook, Scope & Hardware Feasibility (Speaker 1 — 0:00 to 0:50)
 
-*(Slide 1: Title & Hook)*
-> *"Respected teachers and fellow classmates, traditional file servers and commercial NAS units draw 15 to 60 Watts and cost thousands of takas.  
-> Today, our team demonstrates that an ultra-low-cost, 400-Taka ESP32 microcontroller can autonomously operate as a local wireless NAS and static web server, consuming less than 1 Watt of power."*
+*(Slide 1: ESP32 Embedded NAS & Static Web Node)*
+> *"Respected course instructors Tahmina Ma'am and Tanim Sir, and fellow classmates: traditional NAS servers draw 15 to 60 Watts and cost thousands of takas.  
+> Today, our team demonstrates that an ultra-low-cost, 400-Taka ESP32 microcontroller can autonomously operate as a local wireless NAS and static web server, consuming under 1 Watt of power."*
 
-*(Slide 2: Scope & Objectives)*
-> *"Our project achieves two goals:  
-> First, a wireless file storage server that handles uploads, chunked downloads, and file deletion directly in the browser.  
-> Second, a static web host that serves HTML5 pages from an SD card—100% offline, with zero cloud dependency.  
-> We chose Wokwi over Tinkercad and Proteus because Wokwi simulates real compiled ESP32 machine code, hardware SPI lines, and the LwIP network stack."*
+*(Slide 2: The Scope & Simulator Choice)*
+> *"Our project delivers three capabilities:  
+> First, a wireless file server supporting browser uploads, downloads, and file deletion.  
+> Second, a static web host streaming HTML5 landing pages directly from MicroSD storage.  
+> And third, 100% air-gapped operation with zero cloud dependencies or monthly fees.  
+> We selected Wokwi because it executes compiled Xtensa binaries with cycle-accurate SPI signaling and the full LwIP network stack."*
 
 *(Slide 3: Hardware, Budget & Technical Feasibility)*
 > *"As seen in our Bill of Materials, the entire physical hardware costs under 750 Taka.  
-> How can a small chip handle multi-megabyte files?  
-> Through two key engineering designs:  
-> First, FreeRTOS splits tasks across both cores—Core 0 handles Wi-Fi, while Core 1 handles SD storage, so network packets never drop.  
-> Second, our firmware streams incoming files in small 2 KB buffers directly into SD sectors. RAM usage stays strictly at 2 KB regardless of file size."*
+> To prevent memory exhaustion on a chip with only 520 KB of RAM, we engineered two critical solutions:  
+> First, FreeRTOS isolates networking on Core 0 and storage writes on Core 1, preventing packet dropouts.  
+> Second, our firmware streams data in 2 KB chunks straight to SD sectors, locking RAM consumption at a flat 2 KB regardless of file size."*
 
-**Handoff**: *"Now, Gaus will explain our hardware wiring, setup steps, and local network scenarios."*
+**Handoff**: *"Now, Gaus will explain our hardware wiring, setup steps, and network scenarios."*
 
 ---
 
-### Part 2: Architecture, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:50)
+### Part 2: Interface, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:40)
 
-*(Slide 4: Storage Pinout & Dual-Phase Architecture)*
-> *"Our circuit connects the MicroSD module to the ESP32 hardware VSPI bus on GPIO 5, 18, 19, and 23.  
-> At boot, Phase 1 mounts the FAT32 filesystem and seeds default web assets from Flash memory.  
-> Phase 2 connects to Wi-Fi and launches the web server on port 80."*
+*(Slide 4: Hardware Interface & Dual-Phase Firmware)*
+> *"Our circuit connects the MicroSD card module to the ESP32 hardware VSPI bus on GPIO 5, 18, 19, and 23.  
+> At boot, Phase 1 mounts FAT32 and auto-seeds default web assets from Flash memory.  
+> Phase 2 connects to Wi-Fi and launches the web daemon on port 80."*
 
 *(Slide 5: Simulation Setup & 4 Local Network Scenarios)*
-> *"To run the simulation, we authored automated scripts covering five rapid steps: installing dependencies, building firmware, opening firewall port 9080, launching the gateway, and starting Wokwi.  
-> What makes our simulation unique is that it is not trapped inside the browser.  
-> By binding `wokwigw` to port 9080, our server operates across four distinct real-world scenarios:  
+> *"To run the simulation, we execute five rapid automated steps: installing dependencies, building firmware, opening firewall port 9080, launching `wokwigw`, and starting Wokwi.  
+> By binding `wokwigw` to port 9080, our simulated server operates across four real-world topologies:  
 > 1. Home Hybrid, connecting Ethernet PC to Wi-Fi phones.  
-> 2. Lab Workstations, where two lab computers share files across the Ethernet switch like LocalSend Web.  
-> 3. Windows Mobile Hotspot, providing a deterministic IP of `192.168.137.1` that guarantees a working demo even if campus Wi-Fi blocks peer devices.  
+> 2. Lab Workstations, enabling two campus PCs to share files like LocalSend Web with zero software installation.  
+> 3. Windows Mobile Hotspot, providing a deterministic IP of `192.168.137.1` that guarantees access even if campus Wi-Fi has client isolation enabled.  
 > And 4. All-Wireless, connecting all devices to standard Wi-Fi."*
-
-**Handoff**: *"Now, Sadia will present real-world applications, debugging solutions, and wrap up."*
-
----
-
-### Part 3: Impact, Solutions & Conclusion (Speaker 3 — 1:50 to 2:45)
 
 *(Slide 6: Real-World Impact, Debugging & Hardware Realities)*
 > *"This system provides immense real-world value across Bangladesh:  
-> During monsoon floods when mobile towers lose power, this battery-powered node broadcasts emergency maps and medical guides over local Wi-Fi.  
-> In remote fields, it logs agricultural telemetry for engineers to retrieve wirelessly.  
-> And in rural schools, it serves digital textbooks for 750 Taka with zero internet fees.  
-> 
-> During development, we solved critical engineering bugs: fixing the `esp:D5` silkscreen and `SCK` pin identifiers in Wokwi, and creating `setup_firewall.bat` to eliminate LAN timeouts.  
-> For physical hardware deployment, we designed a 100 $\mu$F capacitor filter to absorb Wi-Fi current spikes and capped the SPI clock at 10 MHz to prevent wire capacitance errors."*
+> During monsoon floods when cellular towers lose power, it broadcasts emergency evacuation maps and medical guides over local Wi-Fi.  
+> In coastal districts, it logs agricultural telemetry for field engineers to retrieve wirelessly.  
+> And in rural schools, it delivers digital textbooks for under 750 Taka with zero internet costs."*
 
-*(Slide 7: Conclusion & Demo Transition)*
-> *"In conclusion, we have designed, simulated, and network-verified an autonomous, sub-1-Watt embedded NAS and web server for under 750 Taka.  
-> We will now show you the live file server demo."*
+**Handoff**: *"Now, Sadia will explain our physical hardware transitions and conclude."*
+
+---
+
+### Part 3: Silicon Realities & Conclusion (Speaker 3 — 1:40 to 2:25)
+
+*(Slide 7: Physical Hardware Realities (Negated in Simulation))*
+> *"Transitioning from simulation to physical silicon reveals real-world hardware challenges:  
+> First, Wi-Fi radio bursts draw over 300 mA, causing voltage brownouts; we resolve this by placing a 100 $\mu$F electrolytic capacitor across the power rails.  
+> Second, breadboard jumper capacitance distorts high-speed signals; we cap the SPI clock at 4 to 10 MHz to preserve square wave integrity.  
+> Third, while Wokwi limits virtual storage to 256 MB and requires sequential CMD24 writes, physical hardware scales to 32 GB cards with high-speed 4-bit SDMMC.  
+> And finally, sudden power losses can corrupt FAT32 chains, which we protect against through atomic sector flushes."*
+
+*(Slide 8: Conclusion)*
+> *"In conclusion, we have designed, simulated, and network-bridged an autonomous, sub-1-Watt embedded NAS and web host for under 750 BDT.  
+> We will now demonstrate the live system running in real-time."*
 
 ---
 
@@ -308,7 +352,7 @@ Slide 7: Conclusion & Demo Transition (Slide 10 -> Transition to Live Demo)
      > *"Here is the live dashboard served directly by the ESP32. Notice the live green status badge, the real-time FAT32 storage capacity bar showing used versus total bytes, and the file table."*
 
 2. **Step 2: Live Multipart File Upload (25 seconds)**:
-   - *Action*: Click **Choose File** (or drag and drop), select the test file, and click **Upload to NAS**.
+   - *Action*: Click **Choose File** (or drag and drop), select the test file, and click **Upload to Storage**.
    - *Narration*:
      > *"We select a file and click upload. The browser streams the payload to the ESP32, which flushes 2 KB chunks straight into MicroSD sectors. The page refreshes dynamically, our uploaded file appears in the table, and the storage bar recalculates instantly."*
 

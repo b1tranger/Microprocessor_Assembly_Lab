@@ -7,6 +7,7 @@
   - Presentation Guide: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)
   - Legacy 10-Minute Bridge (v1): [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)
   - Rapid 3-Minute Bridge (v2): [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)
+  - Slide Reference Deck (v3.0): [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)
   - Final Report Source (v4): [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex)
   - Final Report Compiled PDF (v4): [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf)
   - Final Report Clean Source: [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex)
@@ -30,17 +31,19 @@
   - [3.5 Architecture Diagram Integration (Fig. 1)](#35-architecture-diagram-integration-fig-1)
   - [3.6 Download Speed Optimization & TCP Proxy Timeout Resolution](#36-download-speed-optimization--tcp-proxy-timeout-resolution)
   - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)
+  - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)
 - [4. Final Solution & Outcomes](#4-final-solution--outcomes)
   - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)
   - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)
   - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)
   - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)
-  - [4.5 Verification & Artifact Deliverables](#45-verification--artifact-deliverables)
+  - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)
+  - [4.6 Verification & Artifact Deliverables](#46-verification--artifact-deliverables)
 
 ---
 
 ## 1. User Request Summary
-The user requested four major updates across the `Project.MM` embedded NAS repository:
+The user requested five major updates across the `Project.MM` embedded NAS repository:
 1. **Repository Link Updates**: The user moved `PRESENTATION_GUIDE.md` and `presentationBridge.md` into `Project.MM/Presentation/`. All repository references and cross-links pointing to the previous locations needed to be identified and updated.
 2. **Presentation Bridge Versioning & Transformation**:
    - Rename `Project.MM/Presentation/presentationBridge.md` to `v1_presentationBridge.md`.
@@ -59,6 +62,8 @@ The user requested four major updates across the `Project.MM` embedded NAS repos
    - Extract faculty instructors and group members from [`Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf).
    - Add faculty details and project group details to [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md) alongside the GitHub repository URL (`https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM`).
    - Add faculty details to the very top header of the LaTeX report source (`v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`) and recompile to PDF.
+5. **Presentation Bridge v2 Alignment with Slide Deck v3.0**:
+   - Update [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) slide headings, slide counts, role distributions, visual blueprints, and spoken script based on the production slide PDF [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).
 
 ---
 
@@ -67,7 +72,8 @@ The user requested four major updates across the `Project.MM` embedded NAS repos
 - [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md): Synchronized presentation path links.
 - [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md): Synchronized internal bridge document links.
 - [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md): Renamed from `presentationBridge.md`.
-- [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md): Created comprehensive <3-minute rapid presentation bridge and live demo protocol.
+- [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md): Created and updated comprehensive <3-minute rapid presentation bridge and live demo protocol aligned with `v3.0` 8-slide production deck.
+- [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf): Copied from Google Drive source into the repository for reference.
 - [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex): New v4 IEEE conference paper source.
 - [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex): Canonical version without PresentationAid suffix.
 - [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp): Optimized `streamSDFile()` with 2048-byte buffer, `setNoDelay(true)`, and watchdog-safe non-blocking yield.
@@ -80,17 +86,15 @@ The user requested four major updates across the `Project.MM` embedded NAS repos
 
 ### 3.1 Presentation Time Constraint: Under 3 Minutes + 1--2 Minute Live Demo
 - Normal speaking rate in academic English is 120--140 words per minute.
-- A 3-minute hard ceiling leaves at most 360--400 total words across the entire group.
-- Traditional slide presentations attempt to recite all bullet points on screen, leading to immediate overrun. The presentation bridge was redesigned around the **"Look, Point, Explain"** principle:
+- A 3-minute hard ceiling leaves at most 340--370 total words across the entire group.
+- The presentation bridge was redesigned around the **"Look, Point, Explain"** principle:
   - The slides present high-density visual architectures and benchmark numbers.
   - The speakers speak only high-impact synthesis sentences, directing the faculty's eyes to the screen rather than reading paragraphs.
 - A dedicated 1--2 minute live demo section was planned to be initiated immediately following the final slide and prior to open evaluator questioning, asserting control over the evaluation narrative.
 
 ### 3.2 Slide Deck Optimization: Trimming, Merging & New Network Scenarios
-- Analyzing `temp/v2.2_ESP32 Embedded NAS & Static Web Node.pdf` revealed redundancies:
-  1. *Slide 4 ("Technical & Computational Feasibility")* and *Slide 5 ("Budget & Financial Feasibility")* overlapped significantly. Merging them into a single high-impact slide ("Engineering & Budgetary Feasibility") preserved the core technical metrics ($4 cost, <0.5W power, 520 KB SRAM vs 2 KB streaming) while saving 30--40 critical seconds.
-  2. *Slide 3 ("Current Market Alternatives vs. Project.MM")* spent too much time reciting competing vendor specifications. It was condensed into an 8-second verbal takeaway with a clear comparison matrix.
-  3. Integrated the **Rapid 3-Step Setup** (`wokwigw.exe` $\rightarrow$ VS Code Wokwi Play $\rightarrow$ Browser access on `:9080`) and the **4 Validated Network Simulation Scenarios** (Home Hybrid, Campus Lab Switch 2-PC LocalSend, Mobile Hotspot AP Isolation Bypass, All-Wireless).
+- Merging "Technical & Computational Feasibility" with "Budget & Financial Feasibility" into Slide 3 saved 30--40 critical seconds while highlighting the 750 BDT cost vs. 2 KB RAM guarantee.
+- Integrated the **Rapid 5-Step Setup** (`Dependencies` $\rightarrow$ `Build` $\rightarrow$ `Firewall` $\rightarrow$ `Gateway` $\rightarrow$ `Wokwi`) and the **4 Validated Network Simulation Scenarios** (Home Hybrid, Campus Lab Switch 2-PC LocalSend, Mobile Hotspot AP Isolation Bypass, All-Wireless).
 
 ### 3.3 Comprehensive LaTeX Report v4 Architecture
 - Transitioned from `v3` to `v4` IEEE format (`IEEEtran.cls`, `conference_101719.tex` styling).
@@ -113,14 +117,14 @@ The user requested four major updates across the `Project.MM` embedded NAS repos
 ### 3.5 Architecture Diagram Integration (Fig. 1)
 - Integrated [`Project.MM/FinalReport/Diagram/4.2 Networking Bridge Architecture (Wokwi Gateway).png`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/Diagram/4.2%20Networking%20Bridge%20Architecture%20(Wokwi%20Gateway).png) directly into Section III-B ("Working Method & Execution Flow").
 - Added `\usepackage{grffile}` to support filenames with spaces and dots.
-- Scaled the figure cleanly (`width=0.58\columnwidth`) with caption and cross-reference label (`\label{fig:network_bridge}`), illustrating the host-to-simulation path: Chrome/Firefox $\rightarrow$ `0.0.0.0:9080` $\rightarrow$ `wokwigw.exe` $\rightarrow$ `ws://localhost:9011` $\rightarrow$ Wokwi Simulator $\rightarrow$ ESP32 on `10.13.37.2:80`.
+- Scaled the figure cleanly (`width=0.58\columnwidth`) with caption and cross-reference label (`\label{fig:network_bridge}`).
 
 ### 3.6 Download Speed Optimization & TCP Proxy Timeout Resolution
 - **Problem Diagnosis**: During file downloads, transfer speed degraded below 1 KB/s accompanied by recurring `wokwigw.exe` errors: `tcpproxy: for incoming conn ..., error dialing "10.13.37.2:80": context deadline exceeded`.
 - **Root Cause Analysis**:
   1. *Per-Chunk Sleep Latency*: In `streamSDFile()`, an unconditional `vTaskDelay(1)` was executed after every single 1024-byte read, translating to 50--200~ms of wall-clock time per chunk in Wokwi's instruction emulator.
   2. *Nagle's Algorithm & Delayed ACKs*: Without `client.setNoDelay(true)`, sub-MSS chunks caused lwIP to pause waiting for delayed client ACKs (200~ms TCP timer).
-  3. *Synchronous WebServer Head-of-Line Blocking*: The ESP32 `WebServer` processes requests synchronously on Core 1. While locked in the slow download loop, `server.handleClient()` could not accept incoming connections. Parallel browser connections (e.g. background `/api/files` auto-sync) filled the tiny lwIP listen backlog until `wokwigw.exe`'s 2-second dial timeout expired.
+  3. *Synchronous WebServer Head-of-Line Blocking*: The ESP32 `WebServer` processes requests synchronously on Core 1. While locked in the slow download loop, `server.handleClient()` could not accept incoming connections.
 - **Implemented Fix**:
   - Expanded the hardware streaming buffer to 2,048 bytes (`file.setBufferSize(2048)`).
   - Explicitly enabled `client.setNoDelay(true)` to bypass Nagle delays.
@@ -134,7 +138,20 @@ The user requested four major updates across the `Project.MM` embedded NAS repos
   - *Course Instructors / Evaluators*: Tahmina Yeasmin Lima (Lecturer) and Abrar Mahbub Tanim (Lecturer)
   - *Submitted By*: Jannatul Ferdus (ID: `0432410005101058`), Gaus Saraf Murady (ID: `0432410005101088`), Sadia Islam (ID: `0432410005101096`), Autumn 2026.
 - **Header Placement Strategy in IEEEtran**:
-  Rather than crowding the author block or breaking the diagonal author layout, the faculty evaluators and department affiliation were cleanly embedded directly inside the `\title{...}` subtitle block using `{\footnotesize ...}` styling. This ensures the title block acts as the comprehensive academic header on Page 1 while preserving the diagonal cascade of student authors below it.
+  Rather than crowding the author block or breaking the diagonal author layout, the faculty evaluators and department affiliation were cleanly embedded directly inside the `\title{...}` subtitle block using `{\footnotesize ...}` styling.
+
+### 3.8 Slide Deck v3.0 Production Alignment (8 Slides)
+Inspection of `v3.0_ESP32 Embedded NAS & Static Web Node.pdf` revealed an 8-slide production deck with explicit speaker headers:
+- **Slide 1**: `ESP32 Embedded NAS & Static Web Node` (Power & Platform Comparison Hook + Evaluator Card)
+- **Slide 2**: `The Scope & Simulator Choice` (Wireless NAS, Static Web Host, 100% Air-Gapped)
+- **Slide 3**: `Hardware, Budget & Technical Feasibility` (~750 BDT BOM + Dual-Core FreeRTOS + 2 KB Streaming)
+- **Slide 4**: `Hardware Interface & Dual-Phase Firmware` (VSPI Pinout Table + Dual-Phase Execution Flow + Dark UI screenshot)
+- **Slide 5**: `Simulation Setup & 4 Local Network Scenarios` (5 Setup Steps + 4 Network Topologies)
+- **Slide 6**: `Real-World Impact, Debugging & Hardware Realities` (`PART 2 • SPEAKER 2 (LIVE DEMO)`, Monsoon Flood Relief, Agri-logging, Rural schools)
+- **Slide 7**: `Physical Hardware Realities (Negated in Simulation)` (`PART 3 • SPEAKER 3`, Decoupling Caps, Clock Capping, Bus Scaling, Power Loss)
+- **Slide 8**: `Conclusion` (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)
+
+The presentation bridge was synchronized with these exact slide headings, counts, and speaker transitions while keeping the total spoken duration at **2 minutes 25 seconds (~325 words)**, leaving a comfortable **60 to 90 seconds** for the live file server demo before faculty Q&A.
 
 ---
 
@@ -149,42 +166,48 @@ All file links across the repository were audited and updated to reflect the new
 
 ### 4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation
 - `presentationBridge.md` was renamed to [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) to preserve the original 10-minute speech script.
-- Created [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) featuring:
-  - Exact time budget breakdown (< 3 minutes slide presentation + 1--2 minutes live file server demo).
-  - Detailed Slide Deck Audit analyzing each slide from `v2.2_ESP32 Embedded NAS & Static Web Node.pdf`.
-  - Slide-by-slide layout blueprints and copy for the streamlined 7-slide deck (featuring the updated **minimalist industrial dark-theme** UI design description matching `fileserver.html` and `index.html`).
-  - Non-native English delivery strategy with short Subject + Verb + Object structures and "Look, Point, Explain" cues.
-  - Complete, word-counted spoken scripts for Speaker 1 (0:00--0:50), Speaker 2 (0:50--1:50), and Speaker 3 (1:50--2:45).
-  - Action-by-action 1--2 minute live demo script covering dashboard inspection, live file upload, static `/site` showcase, download, delete, and multi-device LAN file sharing (LocalSend Web model).
-  - Evaluator Q&A defense table addressing top faculty grilling questions.
+- Created [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) featuring the rapid 3-minute structure and interactive demo protocol.
 
 ### 4.3 Authoring & Verified Compilation of Report v4
 - Created [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex) and canonical [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex).
 - Resolved table column overflow, code listing margins, and restored diagonal author placement.
-- Added Appendix C ("Repository Architecture & Component Responsibilities") embedding the full directory tree from Section 2.1 of [`PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md) with `literate` character support for tree symbols.
+- Added Appendix C ("Repository Architecture & Component Responsibilities") embedding the full directory tree from Section 2.1 of [`PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md).
 - Shifted subsequent appendices to Appendix D (`main.cpp`), Appendix E (`fileserver.html`), and Appendix F (`index.html`).
-- Implemented literate sanitization mapping for Unicode symbols in HTML listings to guarantee 100\% cross-compiler compatibility.
 
 ### 4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README
 - Added Course Instructors table, Submitted By (Project Group) table, Course Code (`CSE0611324`), Institution (UITS), and direct GitHub repository link (`https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM`) to [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md).
 - Integrated faculty instructors (`Tahmina Yeasmin Lima` and `Abrar Mahbub Tanim`) and institutional affiliation into the `\title{...}` subtitle block of `v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`.
 - Compiled both LaTeX sources using MiKTeX `pdflatex`:
-  ```cmd
-  cd Project.MM\FinalReport
-  pdflatex -interaction=nonstopmode "v4_MM_Lab_Final_Report(PresentationAid).tex"
-  pdflatex -interaction=nonstopmode "v4_MM_Lab_Final_Report.tex"
-  ```
-- **Compilation Result**: Both PDFs compiled cleanly into 12 pages with zero overflow and pristine diagonal author layout.
+  - **Compilation Result**: Both PDFs compiled cleanly into 12 pages with zero overflow and pristine diagonal author layout.
 
-### 4.5 Verification & Artifact Deliverables
+### 4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0
+- Replaced the initial 7-slide layout in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) with the finalized 8-slide structure matching [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).
+- Synchronized exact slide titles:
+  1. *ESP32 Embedded NAS & Static Web Node*
+  2. *The Scope & Simulator Choice*
+  3. *Hardware, Budget & Technical Feasibility*
+  4. *Hardware Interface & Dual-Phase Firmware*
+  5. *Simulation Setup & 4 Local Network Scenarios*
+  6. *Real-World Impact, Debugging & Hardware Realities*
+  7. *Physical Hardware Realities (Negated in Simulation)*
+  8. *Conclusion*
+- Updated speaker assignments according to slide headers:
+  - **Speaker 1 (Jannatul Ferdus)**: Slides 1–3 (0:00–0:50, ~110 words)
+  - **Speaker 2 (Gaus Saraf Murady)**: Slides 4–6 (0:50–1:40, ~120 words)
+  - **Speaker 3 (Sadia Islam)**: Slides 7–8 (1:40–2:25, ~95 words)
+  - **Live Demo (Operator / Team)**: 2:25–3:45 (80s, ~90 words)
+- Preserved the action-by-action live demo script and high-yield evaluator Q&A defense quick reference.
+
+### 4.6 Verification & Artifact Deliverables
 All deliverables have been verified on disk and cross-linked with mandatory clickable Tables of Contents and GitHub repository links:
 1. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/transcript_full.jsonl`
 2. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/conversation.md`
 3. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/summary.md`
 4. `Project.MM/Presentation/v1_presentationBridge.md`
 5. `Project.MM/Presentation/v2_presentationBridge.md`
-6. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`
-7. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`
-8. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`
-9. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf`
-10. `Project.MM/README.md`
+6. `Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`
+7. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`
+8. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`
+9. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`
+10. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf`
+11. `Project.MM/README.md`
