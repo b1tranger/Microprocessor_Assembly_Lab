@@ -32,18 +32,20 @@
   - [3.6 Download Speed Optimization & TCP Proxy Timeout Resolution](#36-download-speed-optimization--tcp-proxy-timeout-resolution)
   - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)
   - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)
+  - [3.9 Simulator Choice & Wokwi Justification Architecture](#39-simulator-choice--wokwi-justification-architecture)
 - [4. Final Solution & Outcomes](#4-final-solution--outcomes)
   - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)
   - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)
   - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)
   - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)
   - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)
-  - [4.6 Verification & Artifact Deliverables](#46-verification--artifact-deliverables)
+  - [4.6 Slide 2 Simulator Justification Callout Recovery](#46-slide-2-simulator-justification-callout-recovery)
+  - [4.7 Verification & Artifact Deliverables](#47-verification--artifact-deliverables)
 
 ---
 
 ## 1. User Request Summary
-The user requested five major updates across the `Project.MM` embedded NAS repository:
+The user requested six major updates across the `Project.MM` embedded NAS repository:
 1. **Repository Link Updates**: The user moved `PRESENTATION_GUIDE.md` and `presentationBridge.md` into `Project.MM/Presentation/`. All repository references and cross-links pointing to the previous locations needed to be identified and updated.
 2. **Presentation Bridge Versioning & Transformation**:
    - Rename `Project.MM/Presentation/presentationBridge.md` to `v1_presentationBridge.md`.
@@ -64,6 +66,8 @@ The user requested five major updates across the `Project.MM` embedded NAS repos
    - Add faculty details to the very top header of the LaTeX report source (`v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`) and recompile to PDF.
 5. **Presentation Bridge v2 Alignment with Slide Deck v3.0**:
    - Update [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) slide headings, slide counts, role distributions, visual blueprints, and spoken script based on the production slide PDF [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).
+6. **Slide 2 Simulator Justification Callout Recovery**:
+   - Recover the Slide 2 details from commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) and explicitly articulate the Simulator Justification callout (*"Why Wokwi? Unlike Tinkercad or Proteus, Wokwi executes compiled Xtensa binary code with cycle-accurate SPI bus signaling and the full LwIP TCP/IP stack."*), tying together Slide 1's bottom platform comparison with Slide 2's footer context (`Scope & Simulation Justification`).
 
 ---
 
@@ -153,6 +157,16 @@ Inspection of `v3.0_ESP32 Embedded NAS & Static Web Node.pdf` revealed an 8-slid
 
 The presentation bridge was synchronized with these exact slide headings, counts, and speaker transitions while keeping the total spoken duration at **2 minutes 25 seconds (~325 words)**, leaving a comfortable **60 to 90 seconds** for the live file server demo before faculty Q&A.
 
+### 3.9 Simulator Choice & Wokwi Justification Architecture
+- **Evaluator Defense Rationale**: In standard academic lab defenses, evaluators frequently ask why standard EDA/simulation tools like Proteus or Tinkercad were not used.
+- **Technical Divergence**:
+  1. *Tinkercad / Proteus Limitations*: Lack real-time 802.11 Wi-Fi radio simulation, LwIP networking stacks, or cycle-accurate hardware SPI peripheral emulation for Xtensa dual-core chips.
+  2. *Wokwi Execution Accuracy*: Wokwi compiles and executes real Xtensa machine code in WebAssembly, accurately clocks hardware SPI lines, and supports live Layer-2/3 packet bridging (`wokwigw`) into physical host subnets.
+- **Presentation Integration**:
+  - Slide 1 visually flags the platform distinction (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`).
+  - Slide 2 grounds the scope with the footer inscription `Scope & Simulation Justification | Page 02 / 10`.
+  - Speaker 1 delivers the concise spoken justification: *"We selected Wokwi because it executes compiled Xtensa binaries with cycle-accurate SPI signaling and the full LwIP network stack."*
+
 ---
 
 ## 4. Final Solution & Outcomes
@@ -198,7 +212,14 @@ All file links across the repository were audited and updated to reflect the new
   - **Live Demo (Operator / Team)**: 2:25–3:45 (80s, ~90 words)
 - Preserved the action-by-action live demo script and high-yield evaluator Q&A defense quick reference.
 
-### 4.6 Verification & Artifact Deliverables
+### 4.6 Slide 2 Simulator Justification Callout Recovery
+- Recovered Slide 2 details from commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md).
+- Added the explicit **Simulator Justification Callout (Bottom Banner & Footer Context)** addressing:
+  - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`.
+  - *Core Justification*: Why Wokwi was selected over Tinkercad/Proteus (full WASM + SPI + LwIP stack).
+  - *Visual Bridge*: Directly ties Slide 1's bottom platform comparison with Slide 2's footer context, matching Speaker 1's verbal script.
+
+### 4.7 Verification & Artifact Deliverables
 All deliverables have been verified on disk and cross-linked with mandatory clickable Tables of Contents and GitHub repository links:
 1. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/transcript_full.jsonl`
 2. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/conversation.md`

@@ -143,6 +143,10 @@ Slide 8: Conclusion (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)
   - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
   - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
   - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
+* **Simulator Justification Callout (Bottom Banner & Footer Context)**:
+  - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`
+  - *Core Justification*: **Why Wokwi?** Unlike Tinkercad or Proteus (which lack an ESP32 802.11 Wi-Fi radio stack and real-time network emulation), Wokwi executes compiled Xtensa binary code in WebAssembly with cycle-accurate SPI bus signaling and the complete LwIP TCP/IP stack.
+  - *Visual Bridge*: Resolves the platform comparison introduced in Slide 1's bottom card (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`), providing the team with an airtight defense on why standard university circuit simulators were bypassed for microprocessor network storage.
 * **Footer**: `Scope & Simulation Justification | Page 02 / 10`
 
 ---

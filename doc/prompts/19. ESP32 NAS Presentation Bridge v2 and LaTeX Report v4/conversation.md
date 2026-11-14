@@ -718,6 +718,43 @@
   - [Step 705: MODEL / PLANNER_RESPONSE](#step-705-model-planner-response)
   - [Step 706: MODEL / GENERIC](#step-706-model-generic)
   - [Step 707: MODEL / PLANNER_RESPONSE](#step-707-model-planner-response)
+  - [Step 708: MODEL / GENERIC](#step-708-model-generic)
+  - [Step 709: MODEL / PLANNER_RESPONSE](#step-709-model-planner-response)
+  - [Step 710: USER_EXPLICIT / USER_INPUT](#step-710-user-explicit-user-input)
+  - [Step 711: SYSTEM / SYSTEM_MESSAGE](#step-711-system-system-message)
+  - [Step 712: MODEL / PLANNER_RESPONSE](#step-712-model-planner-response)
+  - [Step 713: MODEL / GENERIC](#step-713-model-generic)
+  - [Step 714: MODEL / PLANNER_RESPONSE](#step-714-model-planner-response)
+  - [Step 715: MODEL / GENERIC](#step-715-model-generic)
+  - [Step 716: MODEL / PLANNER_RESPONSE](#step-716-model-planner-response)
+  - [Step 717: MODEL / GENERIC](#step-717-model-generic)
+  - [Step 718: MODEL / PLANNER_RESPONSE](#step-718-model-planner-response)
+  - [Step 719: MODEL / GENERIC](#step-719-model-generic)
+  - [Step 720: MODEL / PLANNER_RESPONSE](#step-720-model-planner-response)
+  - [Step 721: MODEL / GENERIC](#step-721-model-generic)
+  - [Step 722: MODEL / PLANNER_RESPONSE](#step-722-model-planner-response)
+  - [Step 723: MODEL / GENERIC](#step-723-model-generic)
+  - [Step 724: MODEL / PLANNER_RESPONSE](#step-724-model-planner-response)
+  - [Step 725: MODEL / GENERIC](#step-725-model-generic)
+  - [Step 726: MODEL / PLANNER_RESPONSE](#step-726-model-planner-response)
+  - [Step 727: MODEL / GENERIC](#step-727-model-generic)
+  - [Step 728: MODEL / PLANNER_RESPONSE](#step-728-model-planner-response)
+  - [Step 729: MODEL / GENERIC](#step-729-model-generic)
+  - [Step 730: MODEL / PLANNER_RESPONSE](#step-730-model-planner-response)
+  - [Step 731: MODEL / GENERIC](#step-731-model-generic)
+  - [Step 732: MODEL / PLANNER_RESPONSE](#step-732-model-planner-response)
+  - [Step 733: MODEL / GENERIC](#step-733-model-generic)
+  - [Step 734: MODEL / PLANNER_RESPONSE](#step-734-model-planner-response)
+  - [Step 735: MODEL / GENERIC](#step-735-model-generic)
+  - [Step 736: MODEL / PLANNER_RESPONSE](#step-736-model-planner-response)
+  - [Step 737: MODEL / GENERIC](#step-737-model-generic)
+  - [Step 738: MODEL / PLANNER_RESPONSE](#step-738-model-planner-response)
+  - [Step 739: MODEL / GENERIC](#step-739-model-generic)
+  - [Step 740: MODEL / PLANNER_RESPONSE](#step-740-model-planner-response)
+  - [Step 741: MODEL / GENERIC](#step-741-model-generic)
+  - [Step 742: MODEL / PLANNER_RESPONSE](#step-742-model-planner-response)
+  - [Step 743: MODEL / GENERIC](#step-743-model-generic)
+  - [Step 744: MODEL / PLANNER_RESPONSE](#step-744-model-planner-response)
 
 ---
 
@@ -26446,6 +26483,1065 @@ Created file.
   "CommandLine": "node \"C:\\Users\\gsmur\\.gemini\\antigravity\\brain\\d5bed0df-0603-464c-8086-fdb4c4e16cbc\\scratch\\sync_archive.js\"",
   "WaitMsBeforeAsync": 5000,
   "toolSummary": "Resync conversation transcript archive"
+}
+```
+
+---
+
+### Step 708: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T14:17:21Z`
+
+#### Content
+
+Created At: 2026-11-14T20:17:21+06:00
+Completed At: 2026-11-14T20:17:24+06:00
+Created At: 2026-11-14T20:17:21+06:00
+Completed At: 2026-11-14T20:17:24+06:00
+Command exited with code 0.
+
+Command output:
+Copying transcript_full.jsonl...
+Parsing transcript_full.jsonl...
+Parsed 708 steps. Generating conversation.md...
+Generated conversation.md (1477728 bytes, 708 steps).
+
+
+---
+
+### Step 709: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T14:17:24Z`
+
+#### Content
+
+[`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) has been updated to align with the production slide deck [`v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf) (copied into the repository for reference).
+
+---
+
+### Key Alignments & Updates
+
+#### 1. Exact Slide Titles & Deck Structure (8 Slides)
+The presentation bridge now reflects the 8 slides from the `v3.0` PDF:
+
+| Slide # | Slide Title in `v3.0` PDF | Assigned Speaker | Target Timing & Words |
+| :---: | :--- | :--- | :---: |
+| **Slide 1** | **ESP32 Embedded NAS & Static Web Node** | **Speaker 1** (Jannatul Ferdus) | 0:00 – 0:15 (~35 words) |
+| **Slide 2** | **The Scope & Simulator Choice** | **Speaker 1** (Jannatul Ferdus) | 0:15 – 0:30 (~35 words) |
+| **Slide 3** | **Hardware, Budget & Technical Feasibility** | **Speaker 1** (Jannatul Ferdus) | 0:30 – 0:50 (~40 words) |
+| **Slide 4** | **Hardware Interface & Dual-Phase Firmware** | **Speaker 2** (Gaus Saraf Murady) | 0:50 – 1:05 (~35 words) |
+| **Slide 5** | **Simulation Setup & 4 Local Network Scenarios** | **Speaker 2** (Gaus Saraf Murady) | 1:05 – 1:25 (~50 words) |
+| **Slide 6** | **Real-World Impact, Debugging & Hardware Realities** | **Speaker 2** (Gaus Saraf Murady) | 1:25 – 1:40 (~35 words) |
+| **Slide 7** | **Physical Hardware Realities (Negated in Simulation)** | **Speaker 3** (Sadia Islam) | 1:40 – 2:10 (~65 words) |
+| **Slide 8** | **Conclusion** | **Speaker 3** (Sadia Islam) | 2:10 – 2:25 (~30 words) |
+| **Demo** | **Live Interactive File Server Demonstration** | **Operator / Speaker 2** | **2:25 – 3:45** (~80s) |
+
+---
+
+#### 2. Spoken Script Adjustments (< 2.5 Minutes Presentation)
+- **Total Presentation Word Budget**: **~325 words** (~2 minutes 25 seconds at a comfortable, natural pace of 130 words per minute).
+- **Live Demo Window**: **60 to 90 seconds** at `http://localhost:9080/`, executed prior to open questioning:
+  1. *Dashboard Overview* (used vs. total capacity meter).
+  2. *Live Multipart Upload* (streaming 2 KB chunk commit to SD).
+  3. *Static Web Host Showcase* (`/site` streamed out of `/www/index.html`).
+  4. *Download & Cluster Deletion* (`SD.remove()` storage reclamation).
+  5. *LocalSend Web 2-PC Sharing Model* (demonstrating multi-device access across lab computers without software).
+
+---
+
+#### 3. Visual Blueprints & Content Synchronized
+- **Slide 1**: Updated with the Power Comparison diagram (PC NAS 60W vs. ESP32 <1W), Wokwi WASM/LwIP badge, and faculty/group details card.
+- **Slide 3**: Outlines the 750 BDT Bill of Materials table alongside dual-core FreeRTOS and 2 KB RAM streaming badges.
+- **Slide 4**: Details the VSPI pinout table (`GPIO 5, 18, 23, 19`), the two-phase boot and networking flow, and the live dark-mode UI screenshot.
+- **Slide 5**: Details the 5 setup steps and the 4 network topologies (Home Hybrid, Campus Lab Switch LocalSend model, Mobile Hotspot AP isolation bypass, and All-Wireless).
+- **Slide 6**: Focuses on Bangladesh applications (Flood relief, Agri-logging, Rural schools).
+- **Slide 7**: Covers silicon transitions (100 $\mu$F brownout decoupling, 4–10 MHz SPI clock capping, CMD24 sector writing, and FAT32 power-loss protection).
+- **Slide 8**: Features the concluding 750 BDT sub-1W summary and direct transition to the live demo.
+
+---
+
+### Relevant Repository Files
+
+* **Updated Presentation Bridge**: [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)
+* **Production Slide Deck**: [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)
+* **Full Defense Reference Guide**: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)
+* **Session Summary Archive**: [`doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/summary.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/doc/prompts/19.%20ESP32%20NAS%20Presentation%20Bridge%20v2%20and%20LaTeX%20Report%20v4/summary.md)
+
+---
+
+### Step 710: USER_EXPLICIT / USER_INPUT
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:34:35Z`
+
+#### Content
+
+<USER_REQUEST>
+from commit f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10 recover this portion @[d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\Presentation\v2_presentationBridge.md:L138-L147] and address "* **Simulator Justification Callout (Bottom Banner)**:
+  - *"Why Wokwi? Unlike Tinkercad or Proteus, Wokwi executes compiled Xtensa binary code with cycle-accurate SPI bus signaling and the full LwIP TCP/IP stack."*"
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-15T00:34:35+06:00.
+
+The user's current state is as follows:
+Active Document: d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\Presentation\v2_presentationBridge.md (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 138
+Other open documents:
+- d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\Presentation\v1_presentationBridge.md (LANGUAGE_UNSPECIFIED)
+- d:\GitHub\UITS\Microprocessor_Assembly_Lab\.gitignore (LANGUAGE_UNSPECIFIED)
+- d:\GitHub\UITS\Microprocessor_Assembly_Lab\doc\prompts\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\summary.md (LANGUAGE_UNSPECIFIED)
+</ADDITIONAL_METADATA>
+
+---
+
+### Step 711: SYSTEM / SYSTEM_MESSAGE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:34:42Z`
+
+#### Content
+
+The following is a <SYSTEM_MESSAGE> not actually sent by the user. It is provided by the system as important information to pay attention to.
+
+<SYSTEM_MESSAGE>
+[Message] timestamp=2026-11-14T18:34:35Z sender=system priority=MESSAGE_PRIORITY_LOW content=[Notice] All your subagents and background tasks have been stopped due to server restart. If you want a subagent to continue working, it needs to be revived by sending it a new message. If resuming work, please check on status and restart as needed.
+</SYSTEM_MESSAGE>
+
+---
+
+### Step 712: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:34:42Z`
+
+#### Thinking
+
+I'm thinking through how to approach this.
+
+
+
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "node \"C:\\Users\\gsmur\\.gemini\\antigravity\\brain\\d5bed0df-0603-464c-8086-fdb4c4e16cbc\\scratch\\sync_archive.js\"",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Sync transcript at turn start"
+}
+```
+
+---
+
+### Step 713: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:34:56Z`
+
+#### Content
+
+Created At: 2026-11-15T00:34:56+06:00
+Completed At: 2026-11-15T00:35:00+06:00
+Created At: 2026-11-15T00:34:56+06:00
+Completed At: 2026-11-15T00:35:00+06:00
+Command exited with code 0.
+
+Command output:
+Copying transcript_full.jsonl...
+Parsing transcript_full.jsonl...
+Parsed 713 steps. Generating conversation.md...
+Generated conversation.md (1485492 bytes, 713 steps).
+
+
+---
+
+### Step 714: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:00Z`
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "git show f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10:Project.MM/Presentation/v2_presentationBridge.md",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Inspect v2_presentationBridge.md in commit f6fa31d"
+}
+```
+
+---
+
+### Step 715: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:09Z`
+
+#### Content
+
+Created At: 2026-11-15T00:35:09+06:00
+Completed At: 2026-11-15T00:35:12+06:00
+The tool's output was truncated due to being too long. You can find the full output in a file at file:///C:/Users/gsmur/.gemini/antigravity/brain/d5bed0df-0603-464c-8086-fdb4c4e16cbc/.system_generated/steps/715/output.txt.
+
+Here is a preview with the middle of the output truncated:
+Created At: 2026-11-15T00:35:09+06:00
+Completed At: 2026-11-15T00:35:12+06:00
+Command exited with code 0.
+
+Command output:
+# Presentation Bridge v2: Rapid 3-Minute Deck & Live Demo Guide (Project.MM)
+
+> **Course**: CSE0611324 — Microprocessors, Microcontrollers and Assembly Language Lab  
+> **Course Instructors / Evaluators**: Tahmina Yeasmin Lima Ma'am (Lecturer) & Abrar Mahbub Tanim Sir (Lecturer)  
+> **Institution**: Department of Computer Science & Engineering, University of Information Technology and Sciences (UITS)  
+> **Presentation Team**: Jannatul Ferdus (0432410005101058), Gaus Saraf Murady (0432410005101088), Sadia Islam (0432410005101096)  
+> **Workspace**: [`Project.MM/LocalConfig`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig)  
+> **Definitive Presentation Guide**: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)  
+> **Legacy 10-Minute Bridge (v1)**: [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)  
+> **Slide Reference Deck (v3.0)**: [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)  
+> **Time Budget**: **Under 3 Minutes Presentation (8 Slides)** + **1–2 Minutes Live File Server Demo** + Faculty Q&A
+
+---
+
+## Table of Contents
+- [1. Presentation Strategy & Strict Time Allocation](#1-presentation-strategy--strict-time-allocation)
+  - [1.1 The Golden 3-Minute Rule](#11-the-golden-3-minute-rule)
+  - [1.2 Role & Time Distribution Matrix](#12-role--time-distribution-matrix)
+- [2. Slide Deck Audit: Transition from v2.2 (10 Slides) to v3.0 (8 Slides)](#2-slide-deck-audit-transition-from-v22-10-slides-to-v30-8-slides)
+  - [2.1 Audit of the Legacy 10-Slide Deck (`v2.2` PDF)](#21-audit-of-the-legacy-10-slide-deck-v22-pdf)
+  - [2.2 Streamlined 8-Slide Production Deck Structure (`v3.0` PDF)](#22-streamlined-8-slide-production-deck-structure-v30-pdf)
+- [3. Slide Contents & Visual Blueprints (v3.0 Deck)](#3-slide-contents--visual-blueprints-v30-deck)
+  - [Slide 1: ESP32 Embedded NAS & Static Web Node](#slide-1-esp32-embedded-nas--static-web-node)
+  - [Slide 2: The Scope & Simulator Choice](#slide-2-the-scope--simulator-choice)
+  - [Slide 3: Hardware, Budget & Technical Feasibility](#slide-3-hardware-budget--technical-feasibility)
+  - [Slide 4: Hardware Interface & Dual-Phase Firmware](#slide-4-hardware-interface--dual-phase-firmware)
+  - [Slide 5: Simulation Setup & 4 Local Network Scenarios](#slide-5-simulation-setup--4-local-network-scenarios)
+  - [Slide 6: Real-World Impact, Debugging & Hardware Realities](#slide-6-real-world-impact-debugging--hardware-realities)
+  - [Slide 7: Physical Hardware Realities (Negated in Simulation)](#slide-7-physical-hardware-realities-negated-in-simulation)
+  - [Slide 8: Conclusion](#slide-8-conclusion)
+- [4. Rapid 3-Minute Spoken Script](#4-rapid-3-minute-spoken-script)
+  - [Part 1: Hook, Scope & Hardware Feasibility (Speaker 1 — 0:00 to 0:50)](#part-1-hook-scope--hardware-feasibility-speaker-1--000-to-050)
+  - [Part 2: Interface, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:40)](#part-2-interface-setup--network-scenarios-speaker-2--050-to-140)
+  - [Part 3: Silicon Realities & Conclusion (Speaker 3 — 1:40 to 2:25)](#part-3-silicon-realities--conclusion-speaker-3--140-to-225)
+- [5. Standalone Live File Server Demonstration Guide (1 to 2 Minutes)](#5-standalone-live-file-server-demonstration-guide-1-to-2-minutes)
+  - [5.1 Live Demo Sequence](#51-live-demo-sequence)
+  - [5.2 Demonstrator Narration Script](#52-demonstrator-narration-script)
+- [6. High-Yield Evaluator Q&A Defense Quick-Reference](#6-high-yield-evaluator-qa-defense-quick-reference)
+
+---
+
+## 1. Presentation Strategy & Strict Time Allocation
+
+### 1.1 The Golden 3-Minute Rule
+In high-stakes academic evaluations with tight time limits, **over-explaining kills presentations**. Faculty evaluators already understand basic computer science terminology; they want to see:
+1. **The engineering problem & the contrast**: Why build this on a microcontroller instead of a PC?
+2. **The feasibility proof**: How does a chip with only 520 KB of RAM stream multi-megabyte files?
+3. **The working proof**: How does your local simulation bridge to real networks and devices?
+4. **The live demonstration**: Immediate, physical proof of operation before questions begin.
+
+> [!IMPORTANT]
+> **Cadence Target**: 120 words per minute.
+> - **Total Presentation Word Budget**: **~330–360 words** across the 8-slide deck.
+> - **Live Demo Window**: **60 to 90 seconds** focused strictly on the web UI and live file transfer.
+> - **Rule of 
+<truncated 18968 of 28860 bytes from the middle of the output>
+ the test file, and click **Upload to Storage**.
+   - *Narration*:
+     > *"We select a file and click upload. The browser streams the payload to the ESP32, which flushes 2 KB chunks straight into MicroSD sectors. The page refreshes dynamically, our uploaded file appears in the table, and the storage bar recalculates instantly."*
+
+3. **Step 3: Hosted Static Website Showcase (15 seconds)**:
+   - *Action*: Click the **🌐 Static Site** button in the header (navigating to `http://localhost:9080/site`).
+   - *Narration*:
+     > *"Clicking Static Site loads `/site`. This complete HTML5 landing page is not on my PC disk—it is being streamed directly out of `/www/index.html` on the FAT32 SD card. The ESP32 is acting as a true standalone web host."*
+
+4. **Step 4: File Download & Storage Reclamation (15 seconds)**:
+   - *Action*: Return to `/`. Click **Download** on `lab_report.txt`, then click **Delete** on the newly uploaded file and confirm.
+   - *Narration*:
+     > *"Clicking Download streams the raw binary file with an octet-stream header. Clicking Delete invokes `SD.remove()`, instantly freeing FAT clusters and updating the storage meter."*
+
+5. **Step 5: Multi-Device / Lab PC File Sharing (The LocalSend Web Model) (15 seconds)**:
+   - *Action*: Point to the URL bar and mention the host IP address (e.g., `192.168.137.1:9080` or `10.100.x.x:9080`).
+   - *Narration*:
+     > *"Because our gateway binds to `0.0.0.0:9080`, this works exactly like LocalSend Web: any teacher or student in this lab can open our IP on their smartphone or laptop right now, without installing any software, to upload and download files directly from the ESP32."*
+   - *Wrap*:
+     > *"Thank you. We are now ready for your questions!"*
+
+---
+
+## 6. High-Yield Evaluator Q&A Defense Quick-Reference
+
+| Question | Core Engineering Defense / Rebuttal | Key Technical Keywords |
+| :--- | :--- | :--- |
+| **Q1: Why use an ESP32 instead of a Raspberry Pi?** | A Raspberry Pi costs \$45–\$75, draws 3–7 Watts, and requires a full Linux OS with security patch cycles. The ESP32 costs \$4 (~400 BDT), consumes < 0.5 Watts, boots instantly (< 500 ms), and runs bare-metal FreeRTOS with zero OS vulnerabilities. | Cost, Sub-1W, FreeRTOS, Instant Boot |
+| **Q2: What happens if an uploaded file exceeds the ESP32 RAM?** | It uploads safely without crashing. We never buffer the full file in memory. The firmware uses a streaming multipart parser that writes incoming 2 KB TCP packets directly to SD sectors before accepting the next packet. Heap overhead remains constant at ~2 KB. | Constant 2 KB Heap, `server.upload()`, Direct Flush |
+| **Q3: Is the HTTP server running on the PC or inside the ESP32?** | It is 100% native to the ESP32 C++ firmware (`WebServer server(80)`). The PC runs no web server software (no Apache, Nginx, or Node.js). In simulation, `wokwigw.exe` is merely a transparent Layer 2/3 packet bridge forwarding host port 9080 to the virtual ESP32. | Native `WebServer.h`, Packet Bridge |
+| **Q4: Why choose SPI mode over 4-bit SDMMC for the SD card?** | 4-bit SDMMC requires 6 pins, including GPIO 12 which is an internal strapping pin that can brick bootup if pulled high at power-on. SPI mode requires only 4 pins (`GPIO 5, 18, 19, 23`), avoids strapping pins, and is 100% supported by low-cost breakout modules. | Strapping Pin GPIO 12, 4-Pin VSPI |
+| **Q5: How does this system operate in a disaster zone without a Wi-Fi router?** | Using native **SoftAP Mode** (`WiFi.softAP("ESP32-Edge-NAS")`). The ESP32 broadcasts its own Wi-Fi SSID and assigns client IPs via an internal DHCP server on `192.168.4.1`. Clients connect directly to the node without an external router or internet. | SoftAP Mode, DHCP, `192.168.4.1`, Air-Gapped |
+| **Q6: How does the file server allow 2 computers in the lab to share files like LocalSend Web?** | LocalSend Web runs a temporary browser server on a PC. Our project does the same thing on an embedded microprocessor. Because `wokwigw` binds to `0.0.0.0:9080` and Windows Firewall port 9080 is open, any other PC or phone on the same lab network accesses the shared storage via browser without software installation. | Zero-Install, `0.0.0.0:9080`, Multi-Device LAN |
+| **Q7: What if the campus network has Client/AP Isolation enabled?** | If campus Wi-Fi blocks inter-device communication, the host laptop turns on **Windows Mobile Hotspot**. Windows creates an independent Wi-Fi network assigning the host `192.168.137.1`. Client devices connect to this hotspot, completely bypassing campus isolation. | Mobile Hotspot, `192.168.137.1`, Bypass Isolation |
+| **Q8: Why does the firmware clock the SPI bus at 4 MHz instead of 25 MHz?** | In simulation, 4 MHz prevents virtual SPI bus timing synchronization errors during sector writes. On physical breadboards, 4 to 10 MHz prevents bus errors caused by parasitic capacitance on jumper wires longer than 10 cm. | Timing Sync, Parasitic Capacitance |
+
+
+---
+
+### Step 716: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:12Z`
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "node -e \"\nconst { execSync } = require('child_process');\nconst output = execSync('git show f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10:Project.MM/Presentation/v2_presentationBridge.md', { encoding: 'utf8' });\nconst lines = output.split('\\n');\nconsole.log('Lines 130-155:');\nlines.slice(130, 155).forEach((l, idx) => console.log((idx + 131) + ': ' + l));\n\"",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Check lines 130-155 in commit f6fa31d"
+}
+```
+
+---
+
+### Step 717: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:22Z`
+
+#### Content
+
+Created At: 2026-11-15T00:35:22+06:00
+Completed At: 2026-11-15T00:35:25+06:00
+Created At: 2026-11-15T00:35:22+06:00
+Completed At: 2026-11-15T00:35:25+06:00
+Command exited with code 0.
+
+Command output:
+Lines 130-155:
+131:   - **SUBMITTED BY (GROUP MEMBERS)**:
+132:     - Jannatul Ferdus • `0432410005101058`
+133:     - Gaus Saraf Murady • `0432410005101088`
+134:     - Sadia Islam • `0432410005101096`
+135: * **Footer**: `Department of CSE • Autumn 2026 | Page 01 / 10`
+136: 
+137: ---
+138: 
+139: ### Slide 2: The Scope & Simulator Choice
+140: * **Slide Title**: **The Scope & Simulator Choice**
+141: * **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.
+142: * **Right Column — Core Scope Deliverables**:
+143:   - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
+144:   - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
+145:   - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
+146: * **Footer**: `Scope & Simulation Justification | Page 02 / 10`
+147: 
+148: ---
+149: 
+150: ### Slide 3: Hardware, Budget & Technical Feasibility
+151: * **Slide Title**: **Hardware, Budget & Technical Feasibility**
+152: * **Left Column — Bill of Materials (< 750 BDT)**:
+153:   | Component | Specification | Local Cost |
+154:   | :--- | :--- | :--- |
+155:   | **ESP32 DevKit V1** | 240 MHz Dual-Core + Wi-Fi | ~400 BDT |
+
+
+---
+
+### Step 718: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:25Z`
+
+#### Thinking
+
+The commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` outlines the project's scope. It confirms the project will implement wireless NAS functionality, including file operations, and serve static HTML5 content. The NAS component should support native uploads, downloads, and file deletion.
+
+
+The initial scope document included a detailed project scope with three core functionalities: Wireless Edge NAS for file operations, static web hosting from a MicroSD card, and an air-gapped design. The simulator justification was also part of the initial draft, highlighting the simulator's ability to execute compiled code and simulate the TCP/IP stack. This confirms the user request to recover and address the simulator justification callout in the specified presentation file.
+
+
+Examining the PDF, the simulator justification appears on Slide 1 in the power/platform comparison and in Slide 2's footer. The comparison clearly contrasts simulators without ESP32 Wi-Fi stack support with Wokwi, which offers a full WASM implementation, confirming the justification. The identified slides address the request to locate the simulator justification within the specified presentation.
+
+
+
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 160,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\Project.MM\\Presentation\\v2_presentationBridge.md",
+  "StartLine": 135
+}
+```
+
+---
+
+### Step 719: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:46Z`
+
+#### Content
+
+Created At: 2026-11-15T00:35:46+06:00
+Completed At: 2026-11-15T00:35:47+06:00
+Created At: 2026-11-15T00:35:46+06:00
+Completed At: 2026-11-15T00:35:47+06:00
+Showing lines 135-160 of 389
+135: * **Footer**: `Department of CSE • Autumn 2026 | Page 01 / 10`
+136: 
+137: ---
+138: 
+139: ### Slide 2: The Scope & Simulator Choice
+140: * **Slide Title**: **The Scope & Simulator Choice**
+141: * **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.
+142: * **Right Column — Core Scope Deliverables**:
+143:   - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
+144:   - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
+145:   - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
+146: * **Footer**: `Scope & Simulation Justification | Page 02 / 10`
+147: 
+148: ---
+149: 
+150: ### Slide 3: Hardware, Budget & Technical Feasibility
+151: * **Slide Title**: **Hardware, Budget & Technical Feasibility**
+152: * **Left Column — Bill of Materials (< 750 BDT)**:
+153:   | Component | Specification | Local Cost |
+154:   | :--- | :--- | :--- |
+155:   | **ESP32 DevKit V1** | 240 MHz Dual-Core + Wi-Fi | ~400 BDT |
+156:   | **MicroSD SPI Module** | 3.3V Level Shifter Socket | ~80 BDT |
+157:   | **MicroSD Card** | Class 10 (8–32 GB FAT32) | ~250 BDT |
+158:   | **Dupont Jumpers** | 6 Wires (< 15 cm length) | ~20 BDT |
+159:   - **Total Cost Banner**: **`~750 BDT`** (Large bold red callout)
+160: * **Right Column — Computational Feasibility Badges**:
+
+---
+
+### Step 720: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:35:47Z`
+
+#### Thinking
+
+The slide outlines the project scope: a wireless NAS with file operations and a static web host streaming HTML5. The graphic suggests a real-world office environment and a network attached storage (NAS) system.
+
+
+The slide's content focuses on the project's scope (wireless NAS, static web host) and its air-gapped nature, but omits explicit justification for the simulator choice implied by the title and footer. This discrepancy suggests the content is incomplete. The missing element is the direct justification for selecting Wokwi, which contrasts with other simulation platforms (Tinkercad/Proteus) detailed in the preceding slide's spoken script.
+
+
+The slide's content requires a section detailing the simulator choice and its justification. The speaker's statement, "We selected Wokwi because it executes compiled Xtensa binaries with cycle-accurate SPI signaling and the full LwIP network stack," provides the missing technical rationale. This justification must be incorporated into the slide's content, contrasting Wokwi's capabilities with other simulators.
+
+
+
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 35,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\Project.MM\\Presentation\\v2_presentationBridge.md",
+  "StartLine": 15
+}
+```
+
+---
+
+### Step 721: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:05Z`
+
+#### Content
+
+Created At: 2026-11-15T00:36:05+06:00
+Completed At: 2026-11-15T00:36:05+06:00
+Created At: 2026-11-15T00:36:05+06:00
+Completed At: 2026-11-15T00:36:05+06:00
+Showing lines 15-35 of 389
+15: ## Table of Contents
+16: - [1. Presentation Strategy & Strict Time Allocation](#1-presentation-strategy--strict-time-allocation)
+17:   - [1.1 The Golden 3-Minute Rule](#11-the-golden-3-minute-rule)
+18:   - [1.2 Role & Time Distribution Matrix](#12-role--time-distribution-matrix)
+19: - [2. Slide Deck Audit: Transition from v2.2 (10 Slides) to v3.0 (8 Slides)](#2-slide-deck-audit-transition-from-v22-10-slides-to-v30-8-slides)
+20:   - [2.1 Audit of the Legacy 10-Slide Deck (`v2.2` PDF)](#21-audit-of-the-legacy-10-slide-deck-v22-pdf)
+21:   - [2.2 Streamlined 8-Slide Production Deck Structure (`v3.0` PDF)](#22-streamlined-8-slide-production-deck-structure-v30-pdf)
+22: - [3. Slide Contents & Visual Blueprints (v3.0 Deck)](#3-slide-contents--visual-blueprints-v30-deck)
+23:   - [Slide 1: ESP32 Embedded NAS & Static Web Node](#slide-1-esp32-embedded-nas--static-web-node)
+24:   - [Slide 2: The Scope & Simulator Choice](#slide-2-the-scope--simulator-choice)
+25:   - [Slide 3: Hardware, Budget & Technical Feasibility](#slide-3-hardware-budget--technical-feasibility)
+26:   - [Slide 4: Hardware Interface & Dual-Phase Firmware](#slide-4-hardware-interface--dual-phase-firmware)
+27:   - [Slide 5: Simulation Setup & 4 Local Network Scenarios](#slide-5-simulation-setup--4-local-network-scenarios)
+28:   - [Slide 6: Real-World Impact, Debugging & Hardware Realities](#slide-6-real-world-impact-debugging--hardware-realities)
+29:   - [Slide 7: Physical Hardware Realities (Negated in Simulation)](#slide-7-physical-hardware-realities-negated-in-simulation)
+30:   - [Slide 8: Conclusion](#slide-8-conclusion)
+31: - [4. Rapid 3-Minute Spoken Script](#4-rapid-3-minute-spoken-script)
+32:   - [Part 1: Hook, Scope & Hardware Feasibility (Speaker 1 — 0:00 to 0:50)](#part-1-hook-scope--hardware-feasibility-speaker-1--000-to-050)
+33:   - [Part 2: Interface, Setup & Network Scenarios (Speaker 2 — 0:50 to 1:40)](#part-2-interface-setup--network-scenarios-speaker-2--050-to-140)
+34:   - [Part 3: Silicon Realities & Conclusion (Speaker 3 — 1:40 to 2:25)](#part-3-silicon-realities--conclusion-speaker-3--140-to-225)
+35: - [5. Standalone Live File Server Demonstration Guide (1 to 2 Minutes)](#5-standalone-live-file-server-demonstration-guide-1-to-2-minutes)
+
+---
+
+### Step 722: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:05Z`
+
+#### Thinking
+
+The content of Slide 2 focuses on the project's scope and simulator selection, specifically highlighting a wireless NAS with native file operations. The slide includes an office workspace graphic with a NAS device, likely to illustrate the project's tangible aspects.
+
+
+The slide's content should detail the project's scope, including a wireless NAS with native file operations and a static web host streaming HTML5 from an SD card, emphasizing an air-gapped setup. The "Simulator Justification Callout" at the bottom will explain the choice of Wokwi over other simulators, highlighting Wokwi's support for the ESP32's Wi-Fi capabilities, including Xtensa binary code execution, cycle-accurate SPI bus signaling, and the full LwIP TCP/IP stack, unlike other simulators. The speaker should be prepared to rebut the audience.
+
+
+
+
+#### Tool Calls
+
+```json
+// Call: edit_file
+{
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\Project.MM\\Presentation\\v2_presentationBridge.md",
+  "Replacement": "### Slide 2: The Scope & Simulator Choice\n* **Slide Title**: **The Scope & Simulator Choice**\n* **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.\n* **Right Column — Core Scope Deliverables**:\n  - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.\n  - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.\n  - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.\n* **Simulator Justification Callout (Bottom Banner & Footer Context)**:\n  - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`\n  - *Core Justification*: **Why Wokwi?** Unlike Tinkercad or Proteus (which lack an ESP32 802.11 Wi-Fi radio stack and real-time network emulation), Wokwi executes compiled Xtensa binary code in WebAssembly with cycle-accurate SPI bus signaling and the complete LwIP TCP/IP stack.\n  - *Visual Bridge*: Resolves the platform comparison introduced in Slide 1's bottom card (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`), providing the team with an airtight defense on why standard university circuit simulators were bypassed for microprocessor network storage.\n* **Footer**: `Scope & Simulation Justification | Page 02 / 10`",
+  "Target": "### Slide 2: The Scope & Simulator Choice\n* **Slide Title**: **The Scope & Simulator Choice**\n* **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.\n* **Right Column — Core Scope Deliverables**:\n  - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.\n  - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.\n  - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.\n* **Footer**: `Scope & Simulation Justification | Page 02 / 10`"
+}
+```
+
+---
+
+### Step 723: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:25Z`
+
+#### Content
+
+Created At: 2026-11-15T00:36:25+06:00
+Completed At: 2026-11-15T00:36:25+06:00
+Created At: 2026-11-15T00:36:25+06:00
+Completed At: 2026-11-15T00:36:25+06:00
+Made 1 replacement in d:\GitHub\UITS\Microprocessor_Assembly_Lab\Project.MM\Presentation\v2_presentationBridge.md starting at line 139 (+4/-0 lines).
+
+---
+
+### Step 724: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:25Z`
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 160,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\Project.MM\\Presentation\\v2_presentationBridge.md",
+  "StartLine": 135
+}
+```
+
+---
+
+### Step 725: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:34Z`
+
+#### Content
+
+Created At: 2026-11-15T00:36:34+06:00
+Completed At: 2026-11-15T00:36:34+06:00
+Created At: 2026-11-15T00:36:34+06:00
+Completed At: 2026-11-15T00:36:34+06:00
+Showing lines 135-160 of 393
+135: * **Footer**: `Department of CSE • Autumn 2026 | Page 01 / 10`
+136: 
+137: ---
+138: 
+139: ### Slide 2: The Scope & Simulator Choice
+140: * **Slide Title**: **The Scope & Simulator Choice**
+141: * **Left Graphic**: Realistic office workspace photo with commercial NAS beside laptop displaying file server dashboard.
+142: * **Right Column — Core Scope Deliverables**:
+143:   - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
+144:   - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
+145:   - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
+146: * **Simulator Justification Callout (Bottom Banner & Footer Context)**:
+147:   - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`
+148:   - *Core Justification*: **Why Wokwi?** Unlike Tinkercad or Proteus (which lack an ESP32 802.11 Wi-Fi radio stack and real-time network emulation), Wokwi executes compiled Xtensa binary code in WebAssembly with cycle-accurate SPI bus signaling and the complete LwIP TCP/IP stack.
+149:   - *Visual Bridge*: Resolves the platform comparison introduced in Slide 1's bottom card (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`), providing the team with an airtight defense on why standard university circuit simulators were bypassed for microprocessor network storage.
+150: * **Footer**: `Scope & Simulation Justification | Page 02 / 10`
+151: 
+152: ---
+153: 
+154: ### Slide 3: Hardware, Budget & Technical Feasibility
+155: * **Slide Title**: **Hardware, Budget & Technical Feasibility**
+156: * **Left Column — Bill of Materials (< 750 BDT)**:
+157:   | Component | Specification | Local Cost |
+158:   | :--- | :--- | :--- |
+159:   | **ESP32 DevKit V1** | 240 MHz Dual-Core + Wi-Fi | ~400 BDT |
+160:   | **MicroSD SPI Module** | 3.3V Level Shifter Socket | ~80 BDT |
+
+---
+
+### Step 726: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:34Z`
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "git diff Project.MM\\Presentation\\v2_presentationBridge.md",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Verify git diff on v2_presentationBridge.md"
+}
+```
+
+---
+
+### Step 727: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:43Z`
+
+#### Content
+
+Created At: 2026-11-15T00:36:43+06:00
+Completed At: 2026-11-15T00:36:46+06:00
+Created At: 2026-11-15T00:36:43+06:00
+Completed At: 2026-11-15T00:36:46+06:00
+Command exited with code 0.
+
+Command output:
+warning: in the working copy of 'Project.MM/Presentation/v2_presentationBridge.md', LF will be replaced by CRLF the next time Git touches it
+diff --git a/Project.MM/Presentation/v2_presentationBridge.md b/Project.MM/Presentation/v2_presentationBridge.md
+index 6829edb..9f43000 100644
+--- a/Project.MM/Presentation/v2_presentationBridge.md
++++ b/Project.MM/Presentation/v2_presentationBridge.md
+@@ -143,6 +143,10 @@ Slide 8: Conclusion (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)
+   - 🗄️ **Wireless NAS**: Native uploads, downloads, and file delete.
+   - 🌐 **Static Web Host**: Streams HTML5 directly from SD card.
+   - 🛡️ **100% Air-Gapped**: Zero cloud fees or PC server software.
++* **Simulator Justification Callout (Bottom Banner & Footer Context)**:
++  - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`
++  - *Core Justification*: **Why Wokwi?** Unlike Tinkercad or Proteus (which lack an ESP32 802.11 Wi-Fi radio stack and real-time network emulation), Wokwi executes compiled Xtensa binary code in WebAssembly with cycle-accurate SPI bus signaling and the complete LwIP TCP/IP stack.
++  - *Visual Bridge*: Resolves the platform comparison introduced in Slide 1's bottom card (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`), providing the team with an airtight defense on why standard university circuit simulators were bypassed for microprocessor network storage.
+ * **Footer**: `Scope & Simulation Justification | Page 02 / 10`
+ 
+ ---
+
+
+---
+
+### Step 728: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:46Z`
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 50,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "StartLine": 20
+}
+```
+
+---
+
+### Step 729: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:57Z`
+
+#### Content
+
+Created At: 2026-11-15T00:36:57+06:00
+Completed At: 2026-11-15T00:36:57+06:00
+Created At: 2026-11-15T00:36:57+06:00
+Completed At: 2026-11-15T00:36:57+06:00
+Showing lines 20-50 of 213
+20: 
+21: ---
+22: 
+23: ## Table of Contents
+24: - [1. User Request Summary](#1-user-request-summary)
+25: - [2. Code & Files Inspected / Modified](#2-code--files-inspected--modified)
+26: - [3. Analysis & Key Insights](#3-analysis--key-insights)
+27:   - [3.1 Presentation Time Constraint: Under 3 Minutes + 1--2 Minute Live Demo](#31-presentation-time-constraint-under-3-minutes--12-minute-live-demo)
+28:   - [3.2 Slide Deck Optimization: Trimming, Merging & New Network Scenarios](#32-slide-deck-optimization-trimming-merging--new-network-scenarios)
+29:   - [3.3 Comprehensive LaTeX Report v4 Architecture](#33-comprehensive-latex-report-v4-architecture)
+30:   - [3.4 Layout Refinements: Column Containment, Line Wrapping & Diagonal Authors](#34-layout-refinements-column-containment-line-wrapping--diagonal-authors)
+31:   - [3.5 Architecture Diagram Integration (Fig. 1)](#35-architecture-diagram-integration-fig-1)
+32:   - [3.6 Download Speed Optimization & TCP Proxy Timeout Resolution](#36-download-speed-optimization--tcp-proxy-timeout-resolution)
+33:   - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)
+34:   - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)
+35: - [4. Final Solution & Outcomes](#4-final-solution--outcomes)
+36:   - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)
+37:   - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)
+38:   - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)
+39:   - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)
+40:   - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)
+41:   - [4.6 Verification & Artifact Deliverables](#46-verification--artifact-deliverables)
+42: 
+43: ---
+44: 
+45: ## 1. User Request Summary
+46: The user requested five major updates across the `Project.MM` embedded NAS repository:
+47: 1. **Repository Link Updates**: The user moved `PRESENTATION_GUIDE.md` and `presentationBridge.md` into `Project.MM/Presentation/`. All repository references and cross-links pointing to the previous locations needed to be identified and updated.
+48: 2. **Presentation Bridge Versioning & Transformation**:
+49:    - Rename `Project.MM/Presentation/presentationBridge.md` to `v1_presentationBridge.md`.
+50:    - Author a new `v2_presentationBridge.md` specifically tailored for a presentation under 3 minutes, presenting a slide similar to [`temp/v2.2_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/temp/v2.2_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf) under the strict time constraint.
+
+---
+
+### Step 730: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:36:57Z`
+
+#### Thinking
+
+I'm thinking through how to approach this.
+
+
+
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 213,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "StartLine": 165
+}
+```
+
+---
+
+### Step 731: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:12Z`
+
+#### Content
+
+Created At: 2026-11-15T00:37:12+06:00
+Completed At: 2026-11-15T00:37:12+06:00
+Created At: 2026-11-15T00:37:12+06:00
+Completed At: 2026-11-15T00:37:12+06:00
+Showing lines 165-213 of 213
+165: - [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) line 7.
+166: 
+167: ### 4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation
+168: - `presentationBridge.md` was renamed to [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) to preserve the original 10-minute speech script.
+169: - Created [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) featuring the rapid 3-minute structure and interactive demo protocol.
+170: 
+171: ### 4.3 Authoring & Verified Compilation of Report v4
+172: - Created [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex) and canonical [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex).
+173: - Resolved table column overflow, code listing margins, and restored diagonal author placement.
+174: - Added Appendix C ("Repository Architecture & Component Responsibilities") embedding the full directory tree from Section 2.1 of [`PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md).
+175: - Shifted subsequent appendices to Appendix D (`main.cpp`), Appendix E (`fileserver.html`), and Appendix F (`index.html`).
+176: 
+177: ### 4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README
+178: - Added Course Instructors table, Submitted By (Project Group) table, Course Code (`CSE0611324`), Institution (UITS), and direct GitHub repository link (`https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM`) to [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md).
+179: - Integrated faculty instructors (`Tahmina Yeasmin Lima` and `Abrar Mahbub Tanim`) and institutional affiliation into the `\title{...}` subtitle block of `v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`.
+180: - Compiled both LaTeX sources using MiKTeX `pdflatex`:
+181:   - **Compilation Result**: Both PDFs compiled cleanly into 12 pages with zero overflow and pristine diagonal author layout.
+182: 
+183: ### 4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0
+184: - Replaced the initial 7-slide layout in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) with the finalized 8-slide structure matching [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).
+185: - Synchronized exact slide titles:
+186:   1. *ESP32 Embedded NAS & Static Web Node*
+187:   2. *The Scope & Simulator Choice*
+188:   3. *Hardware, Budget & Technical Feasibility*
+189:   4. *Hardware Interface & Dual-Phase Firmware*
+190:   5. *Simulation Setup & 4 Local Network Scenarios*
+191:   6. *Real-World Impact, Debugging & Hardware Realities*
+192:   7. *Physical Hardware Realities (Negated in Simulation)*
+193:   8. *Conclusion*
+194: - Updated speaker assignments according to slide headers:
+195:   - **Speaker 1 (Jannatul Ferdus)**: Slides 1–3 (0:00–0:50, ~110 words)
+196:   - **Speaker 2 (Gaus Saraf Murady)**: Slides 4–6 (0:50–1:40, ~120 words)
+197:   - **Speaker 3 (Sadia Islam)**: Slides 7–8 (1:40–2:25, ~95 words)
+198:   - **Live Demo (Operator / Team)**: 2:25–3:45 (80s, ~90 words)
+199: - Preserved the action-by-action live demo script and high-yield evaluator Q&A defense quick reference.
+200: 
+201: ### 4.6 Verification & Artifact Deliverables
+202: All deliverables have been verified on disk and cross-linked with mandatory clickable Tables of Contents and GitHub repository links:
+203: 1. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/transcript_full.jsonl`
+204: 2. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/conversation.md`
+205: 3. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/summary.md`
+206: 4. `Project.MM/Presentation/v1_presentationBridge.md`
+207: 5. `Project.MM/Presentation/v2_presentationBridge.md`
+208: 6. `Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`
+209: 7. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`
+210: 8. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`
+211: 9. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`
+212: 10. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf`
+213: 11. `Project.MM/README.md`
+
+---
+
+### Step 732: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:12Z`
+
+#### Tool Calls
+
+```json
+// Call: edit_file
+{
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "Replacement": "  - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)\n  - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)\n  - [3.9 Simulator Choice & Wokwi Justification Architecture](#39-simulator-choice--wokwi-justification-architecture)\n- [4. Final Solution & Outcomes](#4-final-solution--outcomes)\n  - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)\n  - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)\n  - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)\n  - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)\n  - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)\n  - [4.6 Slide 2 Simulator Justification Callout Recovery](#46-slide-2-simulator-justification-callout-recovery)\n  - [4.7 Verification & Artifact Deliverables](#47-verification--artifact-deliverables)",
+  "Target": "  - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)\n  - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)\n- [4. Final Solution & Outcomes](#4-final-solution--outcomes)\n  - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)\n  - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)\n  - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)\n  - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)\n  - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)\n  - [4.6 Verification & Artifact Deliverables](#46-verification--artifact-deliverables)"
+}
+```
+
+---
+
+### Step 733: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:26Z`
+
+#### Content
+
+Created At: 2026-11-15T00:37:26+06:00
+Completed At: 2026-11-15T00:37:26+06:00
+Created At: 2026-11-15T00:37:26+06:00
+Completed At: 2026-11-15T00:37:26+06:00
+Made 1 replacement in d:\GitHub\UITS\Microprocessor_Assembly_Lab\doc\prompts\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\summary.md starting at line 33 (+3/-1 lines).
+
+---
+
+### Step 734: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:26Z`
+
+#### Tool Calls
+
+```json
+// Call: edit_file
+{
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "Replacement": "5. **Presentation Bridge v2 Alignment with Slide Deck v3.0**:\n   - Update [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) slide headings, slide counts, role distributions, visual blueprints, and spoken script based on the production slide PDF [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).\n6. **Slide 2 Simulator Justification Callout Recovery**:\n   - Recover the Slide 2 details from commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) and explicitly articulate the Simulator Justification callout (*\"Why Wokwi? Unlike Tinkercad or Proteus, Wokwi executes compiled Xtensa binary code with cycle-accurate SPI bus signaling and the full LwIP TCP/IP stack.\"*), tying together Slide 1's bottom platform comparison with Slide 2's footer context (`Scope & Simulation Justification`).",
+  "Target": "5. **Presentation Bridge v2 Alignment with Slide Deck v3.0**:\n   - Update [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) slide headings, slide counts, role distributions, visual blueprints, and spoken script based on the production slide PDF [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)."
+}
+```
+
+---
+
+### Step 735: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:39Z`
+
+#### Content
+
+Created At: 2026-11-15T00:37:39+06:00
+Completed At: 2026-11-15T00:37:39+06:00
+Created At: 2026-11-15T00:37:39+06:00
+Completed At: 2026-11-15T00:37:39+06:00
+Made 1 replacement in d:\GitHub\UITS\Microprocessor_Assembly_Lab\doc\prompts\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\summary.md starting at line 67 (+2/-0 lines).
+
+---
+
+### Step 736: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:39Z`
+
+#### Tool Calls
+
+```json
+// Call: read_file
+{
+  "EndLine": 175,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "StartLine": 145
+}
+```
+
+---
+
+### Step 737: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:49Z`
+
+#### Content
+
+Created At: 2026-11-15T00:37:49+06:00
+Completed At: 2026-11-15T00:37:50+06:00
+Created At: 2026-11-15T00:37:49+06:00
+Completed At: 2026-11-15T00:37:50+06:00
+Showing lines 145-175 of 217
+145:   Rather than crowding the author block or breaking the diagonal author layout, the faculty evaluators and department affiliation were cleanly embedded directly inside the `\title{...}` subtitle block using `{\footnotesize ...}` styling.
+146: 
+147: ### 3.8 Slide Deck v3.0 Production Alignment (8 Slides)
+148: Inspection of `v3.0_ESP32 Embedded NAS & Static Web Node.pdf` revealed an 8-slide production deck with explicit speaker headers:
+149: - **Slide 1**: `ESP32 Embedded NAS & Static Web Node` (Power & Platform Comparison Hook + Evaluator Card)
+150: - **Slide 2**: `The Scope & Simulator Choice` (Wireless NAS, Static Web Host, 100% Air-Gapped)
+151: - **Slide 3**: `Hardware, Budget & Technical Feasibility` (~750 BDT BOM + Dual-Core FreeRTOS + 2 KB Streaming)
+152: - **Slide 4**: `Hardware Interface & Dual-Phase Firmware` (VSPI Pinout Table + Dual-Phase Execution Flow + Dark UI screenshot)
+153: - **Slide 5**: `Simulation Setup & 4 Local Network Scenarios` (5 Setup Steps + 4 Network Topologies)
+154: - **Slide 6**: `Real-World Impact, Debugging & Hardware Realities` (`PART 2 • SPEAKER 2 (LIVE DEMO)`, Monsoon Flood Relief, Agri-logging, Rural schools)
+155: - **Slide 7**: `Physical Hardware Realities (Negated in Simulation)` (`PART 3 • SPEAKER 3`, Decoupling Caps, Clock Capping, Bus Scaling, Power Loss)
+156: - **Slide 8**: `Conclusion` (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)
+157: 
+158: The presentation bridge was synchronized with these exact slide headings, counts, and speaker transitions while keeping the total spoken duration at **2 minutes 25 seconds (~325 words)**, leaving a comfortable **60 to 90 seconds** for the live file server demo before faculty Q&A.
+159: 
+160: ---
+161: 
+162: ## 4. Final Solution & Outcomes
+163: 
+164: ### 4.1 Path Updates for Moved Presentation Documents
+165: All file links across the repository were audited and updated to reflect the new `Project.MM/Presentation/` directory:
+166: - [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md) lines 25--35 and 150--155.
+167: - [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md) line 155.
+168: - [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md) lines 4 and 1087.
+169: - [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) line 7.
+170: 
+171: ### 4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation
+172: - `presentationBridge.md` was renamed to [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) to preserve the original 10-minute speech script.
+173: - Created [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) featuring the rapid 3-minute structure and interactive demo protocol.
+174: 
+175: ### 4.3 Authoring & Verified Compilation of Report v4
+
+---
+
+### Step 738: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:37:50Z`
+
+#### Tool Calls
+
+```json
+// Call: edit_file
+{
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md",
+  "Replacement": "### 3.9 Simulator Choice & Wokwi Justification Architecture\n- **Evaluator Defense Rationale**: In standard academic lab defenses, evaluators frequently ask why standard EDA/simulation tools like Proteus or Tinkercad were not used.\n- **Technical Divergence**:\n  1. *Tinkercad / Proteus Limitations*: Lack real-time 802.11 Wi-Fi radio simulation, LwIP networking stacks, or cycle-accurate hardware SPI peripheral emulation for Xtensa dual-core chips.\n  2. *Wokwi Execution Accuracy*: Wokwi compiles and executes real Xtensa machine code in WebAssembly, accurately clocks hardware SPI lines, and supports live Layer-2/3 packet bridging (`wokwigw`) into physical host subnets.\n- **Presentation Integration**:\n  - Slide 1 visually flags the platform distinction (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`).\n  - Slide 2 grounds the scope with the footer inscription `Scope & Simulation Justification | Page 02 / 10`.\n  - Speaker 1 delivers the concise spoken justification: *\"We selected Wokwi because it executes compiled Xtensa binaries with cycle-accurate SPI signaling and the full LwIP network stack.\"*\n\n---",
+  "Target": "---"
+}
+```
+
+---
+
+### Step 739: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:38:02Z`
+
+#### Content
+
+Created At: 2026-11-15T00:38:02+06:00
+Completed At: 2026-11-15T00:38:02+06:00
+Created At: 2026-11-15T00:38:02+06:00
+Completed At: 2026-11-15T00:38:02+06:00
+Made 5 replacements in d:\GitHub\UITS\Microprocessor_Assembly_Lab\doc\prompts\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\summary.md starting at line 21 (+50/-0 lines).
+
+---
+
+### Step 740: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:38:02Z`
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "git checkout doc/prompts/19.*\\summary.md",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Restore summary.md"
+}
+```
+
+---
+
+### Step 741: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:38:11Z`
+
+#### Content
+
+Created At: 2026-11-15T00:38:11+06:00
+Completed At: 2026-11-15T00:38:14+06:00
+Created At: 2026-11-15T00:38:11+06:00
+Completed At: 2026-11-15T00:38:14+06:00
+Command exited with code 1.
+
+Command output:
+fatal: Unable to create 'D:/GitHub/UITS/Microprocessor_Assembly_Lab/.git/index.lock': Permission denied
+
+
+---
+
+### Step 742: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:38:14Z`
+
+#### Tool Calls
+
+```json
+// Call: write_file
+{
+  "Content": "# 19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\n\n- **Conversation ID**: `d5bed0df-0603-464c-8086-fdb4c4e16cbc`\n- **Timestamp**: `2026-11-14T17:02:14+06:00`\n- **Model**: `Gemini 3.8 Flash`\n- **Target Files & Artifacts**:\n  - Presentation Guide: [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md)\n  - Legacy 10-Minute Bridge (v1): [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md)\n  - Rapid 3-Minute Bridge (v2): [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md)\n  - Slide Reference Deck (v3.0): [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf)\n  - Final Report Source (v4): [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex)\n  - Final Report Compiled PDF (v4): [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf)\n  - Final Report Clean Source: [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex)\n  - Final Report Clean PDF: [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf)\n  - Project Overview: [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md)\n  - Local Simulation Workspace: [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md)\n  - Operational Run Guide: [`Project.MM/LocalConfig/runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md)\n  - Firmware Source: [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp)\n  - Web Interfaces: [`Project.MM/LocalConfig/data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html) \\& [`Project.MM/LocalConfig/data/www/index.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/index.html)\n\n---\n\n## Table of Contents\n- [1. User Request Summary](#1-user-request-summary)\n- [2. Code & Files Inspected / Modified](#2-code--files-inspected--modified)\n- [3. Analysis & Key Insights](#3-analysis--key-insights)\n  - [3.1 Presentation Time Constraint: Under 3 Minutes + 1--2 Minute Live Demo](#31-presentation-time-constraint-under-3-minutes--12-minute-live-demo)\n  - [3.2 Slide Deck Optimization: Trimming, Merging & New Network Scenarios](#32-slide-deck-optimization-trimming-merging--new-network-scenarios)\n  - [3.3 Comprehensive LaTeX Report v4 Architecture](#33-comprehensive-latex-report-v4-architecture)\n  - [3.4 Layout Refinements: Column Containment, Line Wrapping & Diagonal Authors](#34-layout-refinements-column-containment-line-wrapping--diagonal-authors)\n  - [3.5 Architecture Diagram Integration (Fig. 1)](#35-architecture-diagram-integration-fig-1)\n  - [3.6 Download Speed Optimization & TCP Proxy Timeout Resolution](#36-download-speed-optimization--tcp-proxy-timeout-resolution)\n  - [3.7 Academic Metadata, Faculty Details & Group Details Integration](#37-academic-metadata-faculty-details--group-details-integration)\n  - [3.8 Slide Deck v3.0 Production Alignment (8 Slides)](#38-slide-deck-v30-production-alignment-8-slides)\n  - [3.9 Simulator Choice & Wokwi Justification Architecture](#39-simulator-choice--wokwi-justification-architecture)\n- [4. Final Solution & Outcomes](#4-final-solution--outcomes)\n  - [4.1 Path Updates for Moved Presentation Documents](#41-path-updates-for-moved-presentation-documents)\n  - [4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation](#42-presentation-bridge-v1-rename--presentation-bridge-v2-creation)\n  - [4.3 Authoring & Verified Compilation of Report v4](#43-authoring--verified-compilation-of-report-v4)\n  - [4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README](#44-academic-cover-details--faculty-title-integration-in-latex--readme)\n  - [4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0](#45-synchronization-of-presentation-bridge-v2-with-slide-deck-v30)\n  - [4.6 Slide 2 Simulator Justification Callout Recovery](#46-slide-2-simulator-justification-callout-recovery)\n  - [4.7 Verification & Artifact Deliverables](#47-verification--artifact-deliverables)\n\n---\n\n## 1. User Request Summary\nThe user requested six major updates across the `Project.MM` embedded NAS repository:\n1. **Repository Link Updates**: The user moved `PRESENTATION_GUIDE.md` and `presentationBridge.md` into `Project.MM/Presentation/`. All repository references and cross-links pointing to the previous locations needed to be identified and updated.\n2. **Presentation Bridge Versioning & Transformation**:\n   - Rename `Project.MM/Presentation/presentationBridge.md` to `v1_presentationBridge.md`.\n   - Author a new `v2_presentationBridge.md` specifically tailored for a presentation under 3 minutes, presenting a slide similar to [`temp/v2.2_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/temp/v2.2_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf) under the strict time constraint.\n   - Include a standalone 1--2 minute live file server demonstration sequence to be conducted before faculty evaluators ask questions.\n   - Incorporate the rapid simulation setup steps and the 4 validated network scenarios from [`Project.MM/LocalConfig/runGuide.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/runGuide.md) into the slide suggestions.\n   - Provide concrete recommendations on which slides to remove, shorten, or merge (e.g., merging \"Technical & Computational Feasibility\" with \"Budget & Financial Feasibility\").\n   - Include suggested slide contents alongside a simplified script that avoids over-explaining.\n3. **Final Report v4 (`Project.MM/FinalReport/`)**:\n   - Update [`Project.MM/FinalReport/v3_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v3_MM_Lab_Final_Report(PresentationAid).tex) with the latest project progress and create a new file with suffix `v4`: [`v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex).\n   - Add the full source code for [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp) in an \"Appendix\" section at the very bottom.\n   - Add truncated code snippets for [`data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html) and [`data/www/index.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/index.html) (truncating `<style>` sections with `/* ... */` while retaining complete `<body>` markup and frontend logic).\n   - Integrate the latest visual and structural updates (dark-mode industrial UI, single-column table containment, line wrapping, diagonal author arrangement, file tree in Appendix C, and Wokwi gateway architecture diagram Fig. 1).\n4. **Academic Metadata, Download Speed Diagnostics & Faculty Details**:\n   - Resolve download speed degradation (< 1 KB/s) and `tcpproxy: context deadline exceeded` timeout errors.\n   - Extract faculty instructors and group members from [`Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf).\n   - Add faculty details and project group details to [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md) alongside the GitHub repository URL (`https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM`).\n   - Add faculty details to the very top header of the LaTeX report source (`v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`) and recompile to PDF.\n5. **Presentation Bridge v2 Alignment with Slide Deck v3.0**:\n   - Update [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) slide headings, slide counts, role distributions, visual blueprints, and spoken script based on the production slide PDF [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).\n6. **Slide 2 Simulator Justification Callout Recovery**:\n   - Recover the Slide 2 details from commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) and explicitly articulate the Simulator Justification callout (*\"Why Wokwi? Unlike Tinkercad or Proteus, Wokwi executes compiled Xtensa binary code with cycle-accurate SPI bus signaling and the full LwIP TCP/IP stack.\"*), tying together Slide 1's bottom platform comparison with Slide 2's footer context (`Scope & Simulation Justification`).\n\n---\n\n## 2. Code & Files Inspected / Modified\n- [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md): Updated relative paths pointing to presentation guides and added academic details table + GitHub repo link.\n- [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md): Synchronized presentation path links.\n- [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md): Synchronized internal bridge document links.\n- [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md): Renamed from `presentationBridge.md`.\n- [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md): Created and updated comprehensive <3-minute rapid presentation bridge and live demo protocol aligned with `v3.0` 8-slide production deck.\n- [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf): Copied from Google Drive source into the repository for reference.\n- [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex): New v4 IEEE conference paper source.\n- [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex): Canonical version without PresentationAid suffix.\n- [`Project.MM/LocalConfig/src/main.cpp`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/src/main.cpp): Optimized `streamSDFile()` with 2048-byte buffer, `setNoDelay(true)`, and watchdog-safe non-blocking yield.\n- [`Project.MM/LocalConfig/data/www/fileserver.html`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/data/www/fileserver.html): Added auto-sync deferral on download click to eliminate connection contention.\n- [`Project.MM/LocalConfig/include/default_assets.h`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/include/default_assets.h): Regenerated Flash ROM PROGMEM asset arrays.\n\n---\n\n## 3. Analysis & Key Insights\n\n### 3.1 Presentation Time Constraint: Under 3 Minutes + 1--2 Minute Live Demo\n- Normal speaking rate in academic English is 120--140 words per minute.\n- A 3-minute hard ceiling leaves at most 340--370 total words across the entire group.\n- The presentation bridge was redesigned around the **\"Look, Point, Explain\"** principle:\n  - The slides present high-density visual architectures and benchmark numbers.\n  - The speakers speak only high-impact synthesis sentences, directing the faculty's eyes to the screen rather than reading paragraphs.\n- A dedicated 1--2 minute live demo section was planned to be initiated immediately following the final slide and prior to open evaluator questioning, asserting control over the evaluation narrative.\n\n### 3.2 Slide Deck Optimization: Trimming, Merging & New Network Scenarios\n- Merging \"Technical & Computational Feasibility\" with \"Budget & Financial Feasibility\" into Slide 3 saved 30--40 critical seconds while highlighting the 750 BDT cost vs. 2 KB RAM guarantee.\n- Integrated the **Rapid 5-Step Setup** (`Dependencies` $\\rightarrow$ `Build` $\\rightarrow$ `Firewall` $\\rightarrow$ `Gateway` $\\rightarrow$ `Wokwi`) and the **4 Validated Network Simulation Scenarios** (Home Hybrid, Campus Lab Switch 2-PC LocalSend, Mobile Hotspot AP Isolation Bypass, All-Wireless).\n\n### 3.3 Comprehensive LaTeX Report v4 Architecture\n- Transitioned from `v3` to `v4` IEEE format (`IEEEtran.cls`, `conference_101719.tex` styling).\n- Incorporated all architectural decisions:\n  - Decoupled FreeRTOS dual-core operation (Core 0 networking vs Core 1 storage & server).\n  - Hardware VSPI bus pin mapping avoiding strapping pins (GPIO 12 MTDI avoidance).\n  - CMD24 single-sector write decomposition resolving simulation write-abort bugs.\n  - Zero-overhead chunked multipart streaming parser maintaining 2 KB RAM overhead.\n  - Flash ROM PROGMEM template fallback saving >300 KB volatile SRAM.\n  - Dual-Network Layer-2/3 gateway bridging via `wokwigw.exe`.\n  - Tri-Platform Architectural Comparison Matrix (Wokwi Local vs Wokwi Cloud vs Physical Hardware).\n  - Evaluator Q&A Defense Quick-Reference.\n  - Complete source code listings in Appendices D, E, and F with style truncation in HTML headers.\n\n### 3.4 Layout Refinements: Column Containment, Line Wrapping & Diagonal Authors\n1. **Table I Single-Column Containment**: Converted Table I from multi-column `table*` to single-column `table` with condensed column padding (`\\tabcolsep=2.5pt`) and font resizing (`\\scriptsize`), ensuring it stays strictly within the left column width without overflowing into the right column.\n2. **Appendix E Font Link Overflow**: In Appendix E (and D), external stylesheet links were broken across multiple lines and listing break rules adjusted (`breakatwhitespace=false`) to ensure clean within-column wrapping.\n3. **Restoring Diagonal Author Placement**: In standard `IEEEtran.cls` conference mode, 3 authors separated by `\\and` default to a 2-column layout. By inserting explicit line breaks and horizontal spacing (`\\and[\\linebreak\\hfill]` and `\\and[\\hfill\\linebreak]`), the original diagonal cascade was restored: Jannatul Ferdus (top right), Gaus Saraf Murady (center), and Sadia Islam (bottom left).\n\n### 3.5 Architecture Diagram Integration (Fig. 1)\n- Integrated [`Project.MM/FinalReport/Diagram/4.2 Networking Bridge Architecture (Wokwi Gateway).png`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/Diagram/4.2%20Networking%20Bridge%20Architecture%20(Wokwi%20Gateway).png) directly into Section III-B (\"Working Method & Execution Flow\").\n- Added `\\usepackage{grffile}` to support filenames with spaces and dots.\n- Scaled the figure cleanly (`width=0.58\\columnwidth`) with caption and cross-reference label (`\\label{fig:network_bridge}`).\n\n### 3.6 Download Speed Optimization & TCP Proxy Timeout Resolution\n- **Problem Diagnosis**: During file downloads, transfer speed degraded below 1 KB/s accompanied by recurring `wokwigw.exe` errors: `tcpproxy: for incoming conn ..., error dialing \"10.13.37.2:80\": context deadline exceeded`.\n- **Root Cause Analysis**:\n  1. *Per-Chunk Sleep Latency*: In `streamSDFile()`, an unconditional `vTaskDelay(1)` was executed after every single 1024-byte read, translating to 50--200~ms of wall-clock time per chunk in Wokwi's instruction emulator.\n  2. *Nagle's Algorithm & Delayed ACKs*: Without `client.setNoDelay(true)`, sub-MSS chunks caused lwIP to pause waiting for delayed client ACKs (200~ms TCP timer).\n  3. *Synchronous WebServer Head-of-Line Blocking*: The ESP32 `WebServer` processes requests synchronously on Core 1. While locked in the slow download loop, `server.handleClient()` could not accept incoming connections.\n- **Implemented Fix**:\n  - Expanded the hardware streaming buffer to 2,048 bytes (`file.setBufferSize(2048)`).\n  - Explicitly enabled `client.setNoDelay(true)` to bypass Nagle delays.\n  - Replaced the per-chunk `vTaskDelay(1)` with non-blocking `taskYIELD()`, reserving `vTaskDelay(1)` for once every 8 chunks (16~KB) to feed the FreeRTOS Task Watchdog Timer.\n  - Added download auto-sync deferral in `fileserver.html` to push back background `/api/files` polling by 20 seconds when `.btn-dl` is clicked.\n\n### 3.7 Academic Metadata, Faculty Details & Group Details Integration\n- **Cover Page Details Extracted**: Extracted from [`Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/doc/research/v2_MM_Lab_Project_Proposal_88_96_58.docx.pdf):\n  - *Course*: `CSE0611324` -- Microprocessors, Microcontrollers and Assembly Language Lab\n  - *Department & University*: Department of Computer Science & Engineering (CSE), University of Information Technology and Sciences (UITS)\n  - *Course Instructors / Evaluators*: Tahmina Yeasmin Lima (Lecturer) and Abrar Mahbub Tanim (Lecturer)\n  - *Submitted By*: Jannatul Ferdus (ID: `0432410005101058`), Gaus Saraf Murady (ID: `0432410005101088`), Sadia Islam (ID: `0432410005101096`), Autumn 2026.\n- **Header Placement Strategy in IEEEtran**:\n  Rather than crowding the author block or breaking the diagonal author layout, the faculty evaluators and department affiliation were cleanly embedded directly inside the `\\title{...}` subtitle block using `{\\footnotesize ...}` styling.\n\n### 3.8 Slide Deck v3.0 Production Alignment (8 Slides)\nInspection of `v3.0_ESP32 Embedded NAS & Static Web Node.pdf` revealed an 8-slide production deck with explicit speaker headers:\n- **Slide 1**: `ESP32 Embedded NAS & Static Web Node` (Power & Platform Comparison Hook + Evaluator Card)\n- **Slide 2**: `The Scope & Simulator Choice` (Wireless NAS, Static Web Host, 100% Air-Gapped)\n- **Slide 3**: `Hardware, Budget & Technical Feasibility` (~750 BDT BOM + Dual-Core FreeRTOS + 2 KB Streaming)\n- **Slide 4**: `Hardware Interface & Dual-Phase Firmware` (VSPI Pinout Table + Dual-Phase Execution Flow + Dark UI screenshot)\n- **Slide 5**: `Simulation Setup & 4 Local Network Scenarios` (5 Setup Steps + 4 Network Topologies)\n- **Slide 6**: `Real-World Impact, Debugging & Hardware Realities` (`PART 2 • SPEAKER 2 (LIVE DEMO)`, Monsoon Flood Relief, Agri-logging, Rural schools)\n- **Slide 7**: `Physical Hardware Realities (Negated in Simulation)` (`PART 3 • SPEAKER 3`, Decoupling Caps, Clock Capping, Bus Scaling, Power Loss)\n- **Slide 8**: `Conclusion` (Sub-1W / 750 BDT Summary Quote ➔ Handoff to Live Demo)\n\nThe presentation bridge was synchronized with these exact slide headings, counts, and speaker transitions while keeping the total spoken duration at **2 minutes 25 seconds (~325 words)**, leaving a comfortable **60 to 90 seconds** for the live file server demo before faculty Q&A.\n\n### 3.9 Simulator Choice & Wokwi Justification Architecture\n- **Evaluator Defense Rationale**: In standard academic lab defenses, evaluators frequently ask why standard EDA/simulation tools like Proteus or Tinkercad were not used.\n- **Technical Divergence**:\n  1. *Tinkercad / Proteus Limitations*: Lack real-time 802.11 Wi-Fi radio simulation, LwIP networking stacks, or cycle-accurate hardware SPI peripheral emulation for Xtensa dual-core chips.\n  2. *Wokwi Execution Accuracy*: Wokwi compiles and executes real Xtensa machine code in WebAssembly, accurately clocks hardware SPI lines, and supports live Layer-2/3 packet bridging (`wokwigw`) into physical host subnets.\n- **Presentation Integration**:\n  - Slide 1 visually flags the platform distinction (`Tinkercad / Proteus: No ESP32 Wi-Fi stack` vs. `Wokwi (Selected): Full WASM + SPI + LwIP`).\n  - Slide 2 grounds the scope with the footer inscription `Scope & Simulation Justification | Page 02 / 10`.\n  - Speaker 1 delivers the concise spoken justification: *\"We selected Wokwi because it executes compiled Xtensa binaries with cycle-accurate SPI signaling and the full LwIP network stack.\"*\n\n---\n\n## 4. Final Solution & Outcomes\n\n### 4.1 Path Updates for Moved Presentation Documents\nAll file links across the repository were audited and updated to reflect the new `Project.MM/Presentation/` directory:\n- [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md) lines 25--35 and 150--155.\n- [`Project.MM/LocalConfig/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/LocalConfig/README.md) line 155.\n- [`Project.MM/Presentation/PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md) lines 4 and 1087.\n- [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) line 7.\n\n### 4.2 Presentation Bridge v1 Rename & Presentation Bridge v2 Creation\n- `presentationBridge.md` was renamed to [`Project.MM/Presentation/v1_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v1_presentationBridge.md) to preserve the original 10-minute speech script.\n- Created [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) featuring the rapid 3-minute structure and interactive demo protocol.\n\n### 4.3 Authoring & Verified Compilation of Report v4\n- Created [`Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex) and canonical [`Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex).\n- Resolved table column overflow, code listing margins, and restored diagonal author placement.\n- Added Appendix C (\"Repository Architecture & Component Responsibilities\") embedding the full directory tree from Section 2.1 of [`PRESENTATION_GUIDE.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/PRESENTATION_GUIDE.md).\n- Shifted subsequent appendices to Appendix D (`main.cpp`), Appendix E (`fileserver.html`), and Appendix F (`index.html`).\n\n### 4.4 Academic Cover Details & Faculty Title Integration in LaTeX & README\n- Added Course Instructors table, Submitted By (Project Group) table, Course Code (`CSE0611324`), Institution (UITS), and direct GitHub repository link (`https://github.com/b1tranger/Microprocessor_Assembly_Lab/tree/main/Project.MM`) to [`Project.MM/README.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/README.md).\n- Integrated faculty instructors (`Tahmina Yeasmin Lima` and `Abrar Mahbub Tanim`) and institutional affiliation into the `\\title{...}` subtitle block of `v4_MM_Lab_Final_Report(PresentationAid).tex` and `v4_MM_Lab_Final_Report.tex`.\n- Compiled both LaTeX sources using MiKTeX `pdflatex`:\n  - **Compilation Result**: Both PDFs compiled cleanly into 12 pages with zero overflow and pristine diagonal author layout.\n\n### 4.5 Synchronization of Presentation Bridge v2 with Slide Deck v3.0\n- Replaced the initial 7-slide layout in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md) with the finalized 8-slide structure matching [`Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v3.0_ESP32%20Embedded%20NAS%20&%20Static%20Web%20Node.pdf).\n- Synchronized exact slide titles:\n  1. *ESP32 Embedded NAS & Static Web Node*\n  2. *The Scope & Simulator Choice*\n  3. *Hardware, Budget & Technical Feasibility*\n  4. *Hardware Interface & Dual-Phase Firmware*\n  5. *Simulation Setup & 4 Local Network Scenarios*\n  6. *Real-World Impact, Debugging & Hardware Realities*\n  7. *Physical Hardware Realities (Negated in Simulation)*\n  8. *Conclusion*\n- Updated speaker assignments according to slide headers:\n  - **Speaker 1 (Jannatul Ferdus)**: Slides 1–3 (0:00–0:50, ~110 words)\n  - **Speaker 2 (Gaus Saraf Murady)**: Slides 4–6 (0:50–1:40, ~120 words)\n  - **Speaker 3 (Sadia Islam)**: Slides 7–8 (1:40–2:25, ~95 words)\n  - **Live Demo (Operator / Team)**: 2:25–3:45 (80s, ~90 words)\n- Preserved the action-by-action live demo script and high-yield evaluator Q&A defense quick reference.\n\n### 4.6 Slide 2 Simulator Justification Callout Recovery\n- Recovered Slide 2 details from commit `f6fa31dd975c3a6f5ecd0ebd5645b783870b3d10` in [`Project.MM/Presentation/v2_presentationBridge.md`](https://github.com/b1tranger/Microprocessor_Assembly_Lab/blob/main/Project.MM/Presentation/v2_presentationBridge.md).\n- Added the explicit **Simulator Justification Callout (Bottom Banner & Footer Context)** addressing:\n  - *Footer Inscription*: `Scope & Simulation Justification | Page 02 / 10`.\n  - *Core Justification*: Why Wokwi was selected over Tinkercad/Proteus (full WASM + SPI + LwIP stack).\n  - *Visual Bridge*: Directly ties Slide 1's bottom platform comparison with Slide 2's footer context, matching Speaker 1's verbal script.\n\n### 4.7 Verification & Artifact Deliverables\nAll deliverables have been verified on disk and cross-linked with mandatory clickable Tables of Contents and GitHub repository links:\n1. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/transcript_full.jsonl`\n2. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/conversation.md`\n3. `doc/prompts/19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4/summary.md`\n4. `Project.MM/Presentation/v1_presentationBridge.md`\n5. `Project.MM/Presentation/v2_presentationBridge.md`\n6. `Project.MM/Presentation/v3.0_ESP32 Embedded NAS & Static Web Node.pdf`\n7. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).tex`\n8. `Project.MM/FinalReport/v4_MM_Lab_Final_Report(PresentationAid).pdf`\n9. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.tex`\n10. `Project.MM/FinalReport/v4_MM_Lab_Final_Report.pdf`\n11. `Project.MM/README.md`\n",
+  "Overwrite": true,
+  "Path": "d:\\GitHub\\UITS\\Microprocessor_Assembly_Lab\\doc\\prompts\\19. ESP32 NAS Presentation Bridge v2 and LaTeX Report v4\\summary.md"
+}
+```
+
+---
+
+### Step 743: MODEL / GENERIC
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:39:18Z`
+
+#### Content
+
+Created At: 2026-11-15T00:39:18+06:00
+Completed At: 2026-11-15T00:39:19+06:00
+Created At: 2026-11-15T00:39:18+06:00
+Completed At: 2026-11-15T00:39:19+06:00
+Created file.
+
+---
+
+### Step 744: MODEL / PLANNER_RESPONSE
+
+- **Status**: `DONE`
+- **Timestamp**: `2026-11-14T18:39:19Z`
+
+#### Tool Calls
+
+```json
+// Call: run_command
+{
+  "CommandLine": "node \"C:\\Users\\gsmur\\.gemini\\antigravity\\brain\\d5bed0df-0603-464c-8086-fdb4c4e16cbc\\scratch\\sync_archive.js\"",
+  "WaitMsBeforeAsync": 5000,
+  "toolSummary": "Sync transcript before final reply"
 }
 ```
 
